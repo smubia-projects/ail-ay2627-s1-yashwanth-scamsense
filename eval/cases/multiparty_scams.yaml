@@ -1,0 +1,269 @@
+# Multi-party scam conversations. ALL SYNTHETIC: reconstructed from commonly reported public scam patterns
+# (police/SPF & ScamShield style advisories), not copied from real victims. Numbers/domains are made up.
+# split: dev  = cases the developer was allowed to look at while tuning prompts/rules
+#        test = held-out; not used for tuning
+- id: mp01_gov_courier_police_prosecutor
+  label: scam
+  category: gov_official_impersonation
+  synthetic: true
+  split: dev
+  text: |
+    Courier: Hello, this is Ninja Express customer service. A parcel under your name containing 5 passports was intercepted at customs.
+    Courier: I will transfer you to the police now. Please hold.
+    Officer Lim: I am Inspector Lim from the Singapore Police Force. Your NRIC S1234567D is linked to a money laundering case.
+    Officer Lim: Do not tell anyone, this is a confidential investigation. Add me on WhatsApp +65 9123 4567.
+    Prosecutor Tan: This is the prosecutor handling your case. Officer Lim is correct. You must transfer your savings to a safe account 123-456-789 for verification, immediately, or a warrant will be issued.
+    You: ok what do I do
+- id: mp02_gov_telco_mas
+  label: scam
+  category: gov_official_impersonation
+  synthetic: true
+  split: test
+  text: |
+    Singtel Rep: Good afternoon, your mobile line was used to send illegal messages and will be disconnected in 2 hours.
+    Singtel Rep: To clear your name I will connect you to the Monetary Authority of Singapore officer.
+    MAS Officer Wong: I'm Officer Wong from MAS. Your bank accounts are involved in fraud. We need to protect your funds.
+    MAS Officer Wong: Do not inform your bank or family. Move your money into the MAS holding account that I will give you. Download the MAS Secure app from this link: http://mas-secure-app.top/install.apk
+    Victim: is this really MAS?
+    MAS Officer Wong: Yes. My supervisor Mr Goh will confirm in a call.
+- id: mp03_gov_ica_interpol
+  label: scam
+  category: gov_official_impersonation
+  synthetic: true
+  split: test
+  text: |
+    ICA Officer: This is ICA. Your passport has been used in an international smuggling case.
+    ICA Officer: You are now under investigation. Interpol will contact you on Telegram. You must not leave your house or speak to anyone.
+    Interpol Agent: I am Agent Reyes of Interpol. We are freezing your accounts. To prove your innocence, pay a bail guarantee of $8,000 by bank transfer to account 012-345678-9.
+    ICA Officer: Please cooperate or you will be arrested at your home within the hour.
+- id: mp04_bank_sms_callback_lead
+  label: scam
+  category: bank_phishing
+  synthetic: true
+  split: dev
+  text: |
+    DBS Alert: Your DBS digital token will expire today. Re-activate at https://dbs-secure-verify.top/login
+    Bank Officer Amy: Hello, this is Amy from DBS fraud team. We saw you clicked our link. There is an unauthorised transaction of $4,980.
+    Bank Officer Amy: To cancel it, I need the OTP we just sent. Please read it out now.
+    Security Lead Raj: Hi, I'm the security team lead. Amy is helping you. Please share the OTP quickly, the transaction goes through in 5 minutes.
+- id: mp05_bank_apk
+  label: scam
+  category: bank_phishing
+  synthetic: true
+  split: test
+  text: |
+    OCBC Notice: Suspicious login detected on your OCBC account. Call our hotline immediately.
+    Caller (Mr Tan): This is OCBC fraud department. We need to secure your account. Please install our security app, I will send an apk file.
+    Caller (Mr Tan): Go to settings and allow installation from unknown sources, then open the app and enter your internet banking login.
+    Caller (Supervisor Lee): I am the senior manager. Mr Tan's instructions are correct. Do it now, your funds are at risk.
+- id: mp06_carousell_escrow
+  label: scam
+  category: ecommerce_marketplace
+  synthetic: true
+  split: test
+  text: |
+    Buyer: Hi is the PS5 still available? I will take it, no need to bargain.
+    Buyer: I'm overseas so a courier will collect. Please add me on Telegram to arrange.
+    Carousell Protect: We have created a secure payment for your item. The buyer has paid. To receive funds, verify your bank card at https://carousell-protect-pay.xyz/receive
+    Buyer: Please do it fast so the courier can come today.
+    Courier Agent: I am the courier. A $50 insurance fee is needed before pickup, please PayNow 9876 5432.
+- id: mp07_marketplace_seller_deposit
+  label: scam
+  category: ecommerce_marketplace
+  synthetic: true
+  split: test
+  text: |
+    Seller: Hello, the iPhone 15 is $450 only, very urgent sale because I'm leaving Singapore.
+    Seller: Please pay a $100 deposit by PayNow to 8123 4567 to reserve. Many people are asking.
+    Seller's Friend: Hi, I'm his friend. He is legit, I bought a laptop from him last week. Pay the deposit first, he will ship by courier.
+    Seller: Courier requires a further $60 delivery insurance, please transfer.
+- id: mp08_fake_job_mentor
+  label: scam
+  category: fake_job
+  synthetic: true
+  split: dev
+  text: |
+    Recruiter Jane: Hi! We are hiring part-time online assistants. Earn $300 per day by liking and boosting products, no experience needed.
+    Recruiter Jane: Please add our mentor on Telegram to start tasks.
+    Mentor Alex: Welcome! Complete 3 tasks and you get $30 commission today. Here is your first task link.
+    Member Lily: Hi I'm also in the group, I withdrew $2,000 yesterday, it's real! Just top up to unlock the higher set.
+    Mentor Alex: For the premium set you need to top up $500 USDT, then your commission will be refunded with profit.
+- id: mp09_fake_job_team_leader
+  label: scam
+  category: fake_job
+  synthetic: true
+  split: test
+  text: |
+    HR Michelle: Congratulations, you have been shortlisted for a flexible work-from-home job. Daily pay $200-$800.
+    Team Leader Ben: Your task is to rate hotels. Complete each set to receive commission. Please register on the platform with this link: https://hotel-rate-jobs.cc
+    HR Michelle: Ben is our senior team leader, he will guide you.
+    Team Leader Ben: Your account shows a negative balance. You must deposit $1,200 to complete the set, then all your money will be released.
+- id: mp10_investment_friend_analyst
+  label: scam
+  category: investment
+  synthetic: true
+  split: test
+  text: |
+    Daniel: Hey it's Daniel from the gym group, I made 40% returns last month with a forex mentor, guaranteed profits.
+    Daniel: Let me introduce my analyst, she'll teach you.
+    Analyst Chloe: Hi, I give private trading signals with 90% accuracy. Deposit $2,000 on this platform and I'll manage it with you: https://smart-fx-trade.top
+    Support Agent: Your withdrawal of $6,500 is pending. Withdrawal tax of 20% must be paid first to release your funds.
+- id: mp11_investment_crypto_dating
+  label: scam
+  category: investment
+  synthetic: true
+  split: test
+  text: |
+    Emma: Hi, I saw your profile. I'm a trader based in Hong Kong. Not looking for money, just friendship :)
+    Emma: My uncle is a crypto analyst, he has insider tips. I made $20k in two weeks.
+    Uncle Chen: Hello. Send USDT to this wallet address to start. Guaranteed 15% weekly returns, risk-free.
+    Platform Support: Congratulations on your profit. Your account is frozen for AML checks. Pay a $3,000 security deposit to unfreeze.
+- id: mp12_romance_customs_lawyer
+  label: scam
+  category: romance
+  synthetic: true
+  split: dev
+  text: |
+    Sarah: My love, I sent you a gift parcel from the UK, it has jewellery and a laptop. I miss you so much, I can't wait to meet you.
+    Customs Officer: This is Singapore customs. A parcel in your name is held. You must pay a clearance fee of $1,800 to release it.
+    Sarah: Please baby, help me pay, I'll repay you when I arrive. Don't tell your family yet, it's our surprise.
+    Lawyer Mr Hall: I am Sarah's lawyer. The customs fee can be paid by bank transfer or gift cards. Time is running out.
+- id: mp13_romance_military
+  label: scam
+  category: romance
+  synthetic: true
+  split: test
+  text: |
+    General Mark: I am a US Army officer deployed overseas. I have fallen in love with you, my dear. I can't video call because of security rules.
+    General Mark: I want to come to Singapore to marry you but I need help with leave fees.
+    Army Finance Agent: This is the army finance officer. To approve General Mark's leave a processing fee of $2,500 is needed by wire transfer. Please be discreet.
+- id: mp14_family_mum_uncle
+  label: scam
+  category: friend_family_impersonation
+  synthetic: true
+  split: test
+  text: |
+    Mum (new number): Hi, this is my new number, my old phone is spoilt. Can you help me pay a bill urgently? My banking app is not working.
+    Mum (new number): Please PayNow $2,800 to 9012 3456. I will pay you back tonight.
+    Uncle Henry: Hi, it's Uncle Henry, your mum asked me to help. Yes it's urgent, please send it now, she is very stressed.
+    Mum (new number): Don't call me, I'm in a meeting. Just send.
+- id: mp15_family_son_police
+  label: scam
+  category: friend_family_impersonation
+  synthetic: true
+  split: test
+  text: |
+    Unknown caller: Mum, it's me. I had an accident and I'm in trouble. Please don't tell Dad.
+    Police Officer: This is Sergeant Ong. Your son caused a car accident and needs bail. Transfer $15,000 to the bail account immediately or he will be locked up.
+    Lawyer Mr Koh: I'm your son's lawyer. The sergeant is right. Transfer within the hour to account 111-222-333.
+- id: mp16_loan_agent_manager
+  label: scam
+  category: loan
+  synthetic: true
+  split: test
+  text: |
+    Agent Kelvin: Need quick cash? Approved loans up to $30,000 with no credit check, 0.5% interest.
+    Agent Kelvin: Send me a photo of your NRIC and your Singpass login so I can process.
+    Finance Manager Ms Lau: Your loan is approved. Please pay a processing fee of $800 and insurance fee of $600 by transfer to account 088-123456-7 first.
+    Agent Kelvin: Ms Lau is the manager, it is safe to pay. Cash will be released today after payment.
+- id: mp17_parcel_cs_police
+  label: scam
+  category: parcel_delivery
+  synthetic: true
+  split: dev
+  text: |
+    SingPost Alert: Your parcel could not be delivered. Pay a $1.99 redelivery fee at https://singpost-redelivery.xyz/pay
+    Customer Service: We noticed you did not pay the fee. Your parcel contains prohibited items. I will transfer you to the police.
+    Police Officer Yeo: I am Officer Yeo. The package has been linked to your IC. You need to cooperate, do not hang up, and transfer money for verification.
+- id: mp18_techsupport_ms_bank
+  label: scam
+  category: tech_support
+  synthetic: true
+  split: test
+  text: |
+    Microsoft Support: Warning! Your computer has a virus and hackers are accessing your bank. Call us immediately.
+    Technician: Please download AnyDesk so I can remove the virus. Give me the 9-digit code.
+    Bank Rep: I'm from your bank. The technician told us about the hack. Log in to your internet banking now so we can move your money into a safe account.
+- id: mp19_telco_overrefund
+  label: scam
+  category: tech_support
+  synthetic: true
+  split: test
+  text: |
+    Technician: Hello from Singtel. We overcharged your broadband, a refund of $450 is ready. Please install QuickSupport so I can process it.
+    Technician: Oops, I accidentally refunded $4,500 to your account. Please help me return the extra $4,050 by buying Google Play gift cards and sending me the codes.
+    Supervisor Lim: I'm his supervisor. Please help us fix this error or he will lose his job. We will not tell anyone.
+- id: mp20_iras_refund
+  label: scam
+  category: gov_official_impersonation
+  synthetic: true
+  split: test
+  text: |
+    IRAS Notice: You are eligible for a tax refund of $782.50. Claim it at https://iras-refund-claim.top/form
+    Tax Officer Ng: Hello, this is IRAS. Your refund needs bank verification. Please provide your internet banking login and OTP.
+    Legal Officer Poh: If the refund is not claimed in 24 hours you will face legal action for tax evasion.
+- id: mp21_mom_workpass
+  label: scam
+  category: gov_official_impersonation
+  synthetic: true
+  split: test
+  text: |
+    MOM Officer: Your work pass has irregularities and may be cancelled. I will transfer you to the police for further investigation.
+    Police Officer Gan: Your Singpass was used for illegal activities. Share your Singpass password and the 2FA code so we can freeze it.
+    MOM Officer: Officer Gan is correct. Do not tell your employer or you will be deported.
+- id: mp22_ceo_gift_cards
+  label: scam
+  category: friend_family_impersonation
+  synthetic: true
+  split: test
+  text: |
+    CEO Mr Lee (new number): Hi, I'm in a meeting and can't talk. I need a favour urgently, keep this between us.
+    CEO Mr Lee (new number): Please buy 5 x $200 Apple gift cards and send me the codes by WhatsApp. I will reimburse you.
+    Executive Assistant: Hi, this is Mr Lee's assistant. He is really busy and asked me to confirm, it is genuine. Please do it today.
+- id: mp23_shopee_refund
+  label: scam
+  category: ecommerce_marketplace
+  synthetic: true
+  split: test
+  text: |
+    Seller: Sorry, your order was out of stock. Shopee will refund you, please contact their customer service on Telegram.
+    Shopee Support: Hello, to process the refund of $89, please verify your card. Enter your card number, CVV and OTP at https://shopee-refund-center.top
+    Seller: Please do it, otherwise the refund will expire in 1 hour.
+- id: mp24_rental_agent_owner
+  label: scam
+  category: ecommerce_marketplace
+  synthetic: true
+  split: test
+  text: |
+    Agent Vincent: Hello, the 3-bedroom condo is $2,200 a month, very cheap. Many viewers so please pay the holding deposit of $2,200 by PayNow first.
+    Owner Mdm Chia: I'm the owner. I'm overseas so Vincent handles viewing. Pay the deposit to his account 0123456789 and the keys will be couriered to you.
+    Agent Vincent: Please pay today or another tenant takes it.
+- id: mp25_unlabeled_police_block
+  label: scam
+  category: gov_official_impersonation
+  synthetic: true
+  split: test
+  format: unlabeled
+  text: |
+    Hello this is the courier company, a parcel with your name was found with illegal items. I will transfer you to the police.
+    Hello I am Officer Chen from the police. You are a suspect in a money laundering case. You must not tell anybody. Move your savings into a safe account for checking, I will send the account number on WhatsApp.
+    I am the senior officer, please listen to Officer Chen or we will arrest you today.
+- id: mp26_unlabeled_family_block
+  label: scam
+  category: friend_family_impersonation
+  synthetic: true
+  split: test
+  format: unlabeled
+  text: |
+    Hi mum, this is my new number, my phone fell in water. I need your help to pay my supplier urgently, my banking app is locked. Can you PayNow $3,500 to 9234 5678? I will return it tonight.
+    Hi auntie, I'm your son's colleague. He asked me to tell you it's real and he is in a meeting, please send quickly.
+- id: mp27_unlabeled_bank_block
+  label: scam
+  category: bank_phishing
+  synthetic: true
+  split: dev
+  format: unlabeled
+  text: |
+    UOB: Your account will be suspended today due to suspicious activity. Verify at uob-verify-secure.top/login
+    Hello I am from UOB security department. Please confirm the OTP sent to you to cancel the fraudulent transaction.
+    I am the supervisor, this is urgent, please share the OTP now.

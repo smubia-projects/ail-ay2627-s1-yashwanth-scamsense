@@ -1,0 +1,149 @@
+# Genuine / benign messages used as FALSE-POSITIVE checks. Written in the style of real notices and chats;
+# several deliberately contain words that scams also use (OTP, transfer, urgent, link, PayNow) to stress the system.
+# Domains here are official ones (dbs.com.sg, singpost.com, gov.sg ...) or neutral placeholders.
+- id: l01_bank_otp
+  label: legit
+  category: bank_notice
+  synthetic: true
+  split: dev
+  text: "DBS: Your OTP is 483920 for the transaction at SHOPEE. Do not share this OTP with anyone, including DBS staff. If you did not request this, call the number on the back of your card."
+- id: l02_singpost_delivery
+  label: legit
+  category: delivery_notice
+  synthetic: true
+  split: test
+  text: "SingPost: Your parcel SG8827361 will be delivered today between 2pm and 5pm. Track your item at https://www.singpost.com/track-items. No action needed."
+- id: l03_friend_dinner
+  label: legit
+  category: normal_chat
+  synthetic: true
+  split: test
+  text: |
+    Ben: are we still on for dinner at 7?
+    Ali: yes! I booked the table at the Thai place. Bring your sister too
+    Ben: nice, see you there
+- id: l04_split_bill_paynow
+  label: legit
+  category: normal_chat
+  synthetic: true
+  split: dev
+  text: |
+    Priya: Dinner was $84 total, so $21 each. Can everyone PayNow me when you can?
+    Marcus: sure, sending now
+    Priya: thanks guys, no rush!
+- id: l05_bank_txn_alert
+  label: legit
+  category: bank_notice
+  synthetic: true
+  split: test
+  text: "OCBC: A card transaction of SGD 12.50 was made at NTUC FAIRPRICE on your card ending 4821. If this was not you, please contact us using the number on the back of your card. Never share your PIN or OTP."
+- id: l06_cpf_notice
+  label: legit
+  category: gov_notice
+  synthetic: true
+  split: test
+  text: "CPF Board: Your CPF contribution for this month has been credited. You can view your statement by logging in to the CPF website at https://www.cpf.gov.sg. We will never ask for your Singpass password by SMS."
+- id: l07_grab_ride
+  label: legit
+  category: delivery_notice
+  synthetic: true
+  split: test
+  text: "Grab: Your driver is 3 minutes away. Plate SKX1234Y, white Toyota. Share this trip with family at https://www.grab.com/sg/"
+- id: l08_shopee_order
+  label: legit
+  category: delivery_notice
+  synthetic: true
+  split: test
+  text: "Shopee: Your order #230915ABCDEF has been shipped and will arrive in 2-3 days. Track it in the Shopee app under My Purchases. Thank you for shopping with us!"
+- id: l09_clinic_reminder
+  label: legit
+  category: normal_chat
+  synthetic: true
+  split: test
+  text: "Reminder: You have a dental appointment tomorrow at 10:30am at Bright Smile Clinic. Please bring your NRIC. Reply Y to confirm or call the clinic to reschedule."
+- id: l10_family_nric
+  label: legit
+  category: normal_chat
+  synthetic: true
+  split: test
+  text: |
+    Mum: Can you remember to bring my NRIC when you pick me up from the clinic?
+    You: ok mum, I'll be there at 3
+    Mum: thanks, also buy some eggs
+- id: l11_scam_warning_from_family
+  label: legit
+  category: scam_warning
+  synthetic: true
+  split: dev
+  text: |
+    Dad: Please be careful. Auntie got a call from someone saying he is police and asked her to transfer money to a safe account. That is a scam.
+    Dad: Remember the bank will never ask for your OTP. Don't click links in SMS. Call 1799 if unsure.
+    You: ok dad, thanks for the reminder
+- id: l12_telco_bill
+  label: legit
+  category: bank_notice
+  synthetic: true
+  split: test
+  text: "Singtel: Your bill of $48.90 is ready. Pay via the My Singtel app or at https://www.singtel.com by 25 Sep. GIRO customers need not take any action."
+- id: l13_work_chat
+  label: legit
+  category: normal_chat
+  synthetic: true
+  split: test
+  text: |
+    Colleague: urgent - the client moved the meeting to 3pm, can you transfer the files to the shared drive before that?
+    You: sure, uploading now
+    Colleague: great, also add me to the calendar invite
+- id: l14_landlord_rent
+  label: legit
+  category: normal_chat
+  synthetic: true
+  split: test
+  text: |
+    Landlord: Hi, a reminder that October rent of $2,400 is due on the 1st. You can PayNow to the usual number as before.
+    Tenant: Noted, will do it tomorrow morning. Also the aircon is making noise, can the technician come this week?
+    Landlord: Sure, I'll arrange it.
+- id: l15_carousell_sensible
+  label: legit
+  category: normal_chat
+  synthetic: true
+  split: test
+  text: |
+    Buyer: Hi is the desk lamp still available?
+    Seller: Yes it is, $15. Can meet at Tampines MRT tomorrow evening, cash on collection.
+    Buyer: ok can do 7pm. I'll message you when I'm there
+- id: l16_bank_promo
+  label: legit
+  category: bank_notice
+  synthetic: true
+  split: test
+  text: "UOB: Enjoy 5% cashback on dining this month with your UOB card. T&Cs apply. View details in the UOB TMRW app or at https://www.uob.com.sg/promotions."
+- id: l17_job_interview
+  label: legit
+  category: normal_chat
+  synthetic: true
+  split: test
+  text: "Hi Jamie, thank you for applying for the Marketing Executive role at Northwind Pte Ltd. We would like to invite you for an interview on Thursday 2pm at our office at 1 Raffles Place. Please reply to confirm. - HR Team"
+- id: l18_zoom_meeting
+  label: legit
+  category: normal_chat
+  synthetic: true
+  split: dev
+  text: |
+    Teacher: Reminder, parent-teacher meeting is tomorrow 3pm on Zoom. Please download the Zoom app before then and join with the link in the school portal.
+    Parent: Thank you teacher, will do.
+- id: l19_gov_sg_alert
+  label: legit
+  category: gov_notice
+  synthetic: true
+  split: test
+  text: "gov.sg: Your Singpass login was successful from a new device on 12 Sep at 3:45pm. If this was not you, change your password at https://www.singpass.gov.sg and report it. Do not share your password or OTP with anyone."
+- id: l20_friend_borrow
+  label: legit
+  category: normal_chat
+  synthetic: true
+  split: test
+  text: |
+    Jun: bro can I borrow $50 till payday? forgot my wallet at home lol
+    You: haha ok, PayNow you now
+    Jun: thanks man, I'll pay you back on Friday

@@ -148,3 +148,10 @@ def test_rule_level():
     assert rule_level(hits) == "high"
     assert rule_level(check_text(M("Act now immediately"))) == "low"
     assert rule_level(check_text(M("You will be arrested"))) == "medium"
+
+
+def test_scam_awareness_message_not_flagged_as_request():
+    t = "Auntie got a call from someone saying he is police and asked her to transfer money to a safe account. That is a scam."
+    assert not [h for h in check_text(M(t)) if h.severity == Severity.HIGH]
+    # but a scammer saying "this is not a scam" must NOT suppress the request rule
+    assert "safe_account" in ids("Move your money to the safe account now. This is not a scam.")

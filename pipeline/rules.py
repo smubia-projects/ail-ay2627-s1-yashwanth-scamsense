@@ -298,8 +298,14 @@ _NEGATABLE = {"safe_account", "credential_request", "personal_transfer", "remote
 _WARNING_CONTEXT = re.compile(r"(?i)\b(?:never|do not|don't|dont|will not|won't|not)\b[^.\n]{0,40}\b(?:ask|request|share|give|disclose|reveal|provide|tell|call you)\b")
 
 
+# the message is *describing* the behaviour as a scam ("asked her to transfer money... That is a scam"), not requesting it
+_AWARENESS = re.compile(r"(?i)\b(?:that|this|it|which|these|those|such)\s+(?:is|are|was|were)\s+(?:a\s+)?(?:scams?|frauds?)\b|\bbeware\b|\bbe careful\b|\bwatch out\b|\bscam (?:alert|warning)\b")
+
+
 def _hit_is_negated(text: str, start: int, end: int) -> bool:
     window = text[max(0, start - 60): end + 20]
+    if _AWARENESS.search(text[max(0, start - 100): end + 60]):
+        return True
     return bool(_WARNING_CONTEXT.search(window)) or bool(re.search(NEG + r"\b[^.\n]{0,30}$", text[max(0, start - 45): start], re.I))
 
 

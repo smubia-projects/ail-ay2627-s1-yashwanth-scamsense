@@ -1,0 +1,91 @@
+# Single-message scams (SMS / DM style). SYNTHETIC reconstructions of commonly reported patterns; domains/numbers are made up.
+- id: s01_dbs_lookalike_sms
+  label: scam
+  category: bank_phishing
+  synthetic: true
+  split: dev
+  text: "DBS: Your account has been locked due to unusual activity. Verify now to avoid permanent suspension: https://dbs-secure-login.top/verify"
+- id: s02_singpost_fee
+  label: scam
+  category: parcel_delivery
+  synthetic: true
+  split: test
+  text: "[SingPost] Your parcel SG8827361 is held. Pay a redelivery fee of $1.99 within 24 hours: https://singpost-redelivery.xyz/pay or it will be returned."
+- id: s03_prize
+  label: scam
+  category: gov_official_impersonation
+  synthetic: true
+  split: test
+  text: "Congratulations! You have won $5,000 in the Lucky Draw. Claim your prize at bit.ly/3xClaim99 before it expires today. Reply YES to confirm."
+- id: s04_whatsapp_job
+  label: scam
+  category: fake_job
+  synthetic: true
+  split: dev
+  text: "Hi, we are hiring part time online staff. Earn $200-$600 per day just by liking videos. No experience required. WhatsApp me at wa.me/6591234567 to start today."
+- id: s05_crypto_invest
+  label: scam
+  category: investment
+  synthetic: true
+  split: test
+  text: "Join our VIP crypto group! Our analyst gives trading signals with guaranteed returns of 40% weekly. Deposit USDT today and double your money. Limited slots."
+- id: s06_friend_new_number
+  label: scam
+  category: friend_family_impersonation
+  synthetic: true
+  split: test
+  text: "Hi mum, this is my new number. My phone is broken so I cannot use my banking app. Can you PayNow $1,500 to 9123 4567 for me? I will pay you back tonight. Urgent please."
+- id: s07_loan
+  label: scam
+  category: loan
+  synthetic: true
+  split: test
+  text: "URGENT LOAN: Approved up to $50,000 at 0.8% with no checks. Pay a $300 processing fee first and cash is released in 10 minutes. Reply with your NRIC and Singpass."
+- id: s08_wrong_number_pig
+  label: scam
+  category: investment
+  synthetic: true
+  split: test
+  text: "Hi Mr Tan, are we still meeting for dinner on Friday? Oh sorry wrong number. You seem like a nice person though, I am a gold trader and I can teach you how to earn 30% monthly."
+- id: s09_overpayment
+  label: scam
+  category: ecommerce_marketplace
+  synthetic: true
+  split: test
+  text: "Hello, I want to buy your sofa. I have transferred $1,500 but it was more than the price by mistake. Please refund the extra $600 to my account first, then I will arrange the courier. Click the bank confirmation: https://bank-payment-confirm.cc/receipt"
+- id: s10_tech_popup
+  label: scam
+  category: tech_support
+  synthetic: true
+  split: test
+  text: "WARNING: Your Windows PC is infected with 3 viruses! Hackers can steal your bank details. Call Microsoft Support immediately and install TeamViewer so our technician can fix it."
+- id: s11_cpf_refund
+  label: scam
+  category: gov_official_impersonation
+  synthetic: true
+  split: dev
+  text: "CPF Board: A refund of $1,230.40 is pending to your account. Verify your Singpass at https://cpf-refund-sg.top/login within 24 hours to receive it."
+- id: s12_singpass_expiry
+  label: scam
+  category: bank_phishing
+  synthetic: true
+  split: test
+  text: "Singpass: Your Singpass will expire today. Re-verify your identity at https://singpass-verify.cc and enter your password and the OTP to avoid being locked out."
+- id: s13_voicemail_police
+  label: scam
+  category: gov_official_impersonation
+  synthetic: true
+  split: test
+  text: "This is the Immigration and Checkpoints Authority. There is a serious issue with your passport and a warrant of arrest has been issued. Press 9 to speak to an officer or call back immediately."
+- id: s14_romance_opener
+  label: scam
+  category: romance
+  synthetic: true
+  split: test
+  text: "Hi dear, I am a widow working overseas and I feel so lonely. I trust you and I want to send you a gift. Please keep this secret and send me your address and a small fee for the shipping."
+- id: s15_gift_card_boss
+  label: scam
+  category: friend_family_impersonation
+  synthetic: true
+  split: test
+  text: "Hi, it's your boss. I'm stuck in a meeting. Please quickly buy 3 iTunes gift cards of $100 each and send me the codes. I will reimburse you later. Keep it confidential."

@@ -5,3 +5,4 @@ __pycache__/
 .pytest_cache/
 *.log
 eval/raw/
+eval/results_mock.md
