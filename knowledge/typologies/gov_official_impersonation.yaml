@@ -1,0 +1,48 @@
+# verified: false — see `todo`
+verified: false
+todo: 'TODO(owner): verify this description against current SPF / ScamShield / MAS advisories (scamshield.gov.sg,
+  police.gov.sg) before presenting as authoritative. Written from general knowledge; no statistics or
+  URLs are included on purpose.'
+id: gov_official_impersonation
+name: Government / police official impersonation
+summary: Callers or chat contacts pose as police, MAS, ICA, courts or other agencies, claim the victim
+  is linked to a crime or illegal parcel, then hand them to a second 'officer' who demands money transfers,
+  'safe account' deposits or Singpass/banking access.
+typical_flow:
+- Cold call or message from a 'courier / telco / bank' about a problem
+- Transferred to a 'police officer' or 'MAS investigator'
+- Victim told they are under investigation and must keep it confidential
+- Moved to WhatsApp/Telegram; sent 'official' documents or an arrest warrant
+- Told to transfer money to a 'safe/holding account' or hand over banking details / install an app
+red_flags:
+- Government agencies do not ask you to transfer money or reveal OTPs/Singpass
+- Threat of arrest, warrant or frozen accounts
+- Instruction not to tell family or the bank
+- Call handed to a more 'senior' officer
+- Request to install remote-access or 'verification' apps
+- Official-looking documents sent over chat apps
+keywords:
+- police
+- officer
+- MAS
+- ICA
+- court
+- arrest
+- warrant
+- investigation
+- money laundering
+- safe account
+- confidential
+- case number
+- transfer you
+- senior officer
+- Interpol
+- prosecutor
+- freeze
+- illegal
+- parcel
+- passport
+what_to_do:
+- Hang up / stop replying. Genuine officers will not demand money or secrecy.
+- Do not transfer money, share OTPs or install apps.
+- Call the agency yourself using a number from its official website, or call the National Anti-Scam Helpline.

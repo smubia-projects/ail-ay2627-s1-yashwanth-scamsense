@@ -1,0 +1,41 @@
+# verified: false — see `todo`
+verified: false
+todo: 'TODO(owner): verify this description against current SPF / ScamShield / MAS advisories (scamshield.gov.sg,
+  police.gov.sg) before presenting as authoritative. Written from general knowledge; no statistics or
+  URLs are included on purpose.'
+id: ecommerce_marketplace
+name: E-commerce / marketplace scam
+summary: Fake buyers or sellers on marketplaces (e.g. Carousell, Facebook Marketplace) push the victim
+  off-platform, demand advance payment, send fake payment-confirmation links, or ask for 'verification'
+  fees.
+typical_flow:
+- Item listed too cheap, or buyer eagerly agrees without bargaining
+- Move chat to WhatsApp/Telegram
+- Seller wants a deposit or full payment first, or buyer sends a fake 'payment received' link
+- Victim pays or enters card details; item never arrives / payment never comes
+red_flags:
+- Price far below market
+- Insists on payment before meeting or via PayNow/transfer
+- Sends a 'secure payment' or 'courier' link
+- Avoids meeting or cash-on-delivery
+- Asks for card details or OTP to 'receive' payment
+keywords:
+- carousell
+- marketplace
+- buyer
+- seller
+- deposit
+- item
+- available
+- payment link
+- courier
+- paynow
+- escrow
+- shipping
+- collect payment
+- refund
+- listing
+what_to_do:
+- Use in-app payment/escrow and meet in person for cash deals.
+- Never enter card details or OTP to 'receive' money.
+- Report the listing to the platform.

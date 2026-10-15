@@ -1,0 +1,6 @@
+Courier: Hello, this is Ninja Express. A parcel under your name containing 5 passports was intercepted by customs. Contact the police.
+Courier: I will transfer you to Officer Lim from the Singapore Police Force.
+Officer Lim: I am Inspector Lim. You are suspected of money laundering and a warrant has been issued. Do not tell anyone, this is a confidential investigation.
+Officer Lim: Add me on WhatsApp +65 9123 4567. You must transfer your savings to a safe account 123-456-789 so we can verify them.
+Prosecutor Tan: This is the prosecutor on your case. Officer Lim is correct. Do it immediately or you will be arrested.
+You: ok

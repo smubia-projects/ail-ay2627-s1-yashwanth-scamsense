@@ -1,0 +1,44 @@
+# verified: false — see `todo`
+verified: false
+todo: 'TODO(owner): verify this description against current SPF / ScamShield / MAS advisories (scamshield.gov.sg,
+  police.gov.sg) before presenting as authoritative. Written from general knowledge; no statistics or
+  URLs are included on purpose.'
+id: investment
+name: Investment / crypto scam
+summary: Contacts promote 'guaranteed' or unusually high returns through fake trading platforms, insider
+  tips or crypto schemes, often via social media or dating contacts. Small withdrawals are allowed early;
+  larger deposits are later trapped behind 'fees' or 'taxes'.
+typical_flow:
+- Approach via social media, group chat or a new friend
+- Shown screenshots of big profits
+- Introduced to an app/website
+- Encouraged to deposit more, with fake dashboard gains
+- Withdrawal blocked behind fees/taxes
+red_flags:
+- Guaranteed or very high returns
+- Pressure to invest quickly
+- Unregistered platform or unknown app
+- Payments to personal accounts or crypto wallets
+- Withdrawal needs extra fees
+keywords:
+- invest
+- returns
+- profit
+- trading
+- forex
+- crypto
+- bitcoin
+- USDT
+- guaranteed
+- insider
+- signals
+- platform
+- mentor
+- analyst
+- withdraw
+- capital
+- dividend
+what_to_do:
+- Do not deposit more to 'unlock' funds.
+- Check if the firm is regulated (MAS Financial Institutions Directory).
+- Report to the police and your bank.

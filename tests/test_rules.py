@@ -39,7 +39,7 @@ def test_official_domains_not_flagged(url):
     ("https://singpots.com/track", "lookalike_domain"),
     ("https://sing-post.top/parcel", "lookalike_domain"),
     ("https://dbs-secure-login.com", "brand_in_domain"),
-    ("https://dbs.com.sg.verify-account.xyz", "brand_in_domain"),
+    ("https://dbs.com.sg.verify-account.xyz", "official_domain_as_subdomain"),
     ("https://paypa1.com/login", "lookalike_domain"),
     ("https://0cbc-online.com", "brand_in_domain"),
     ("https://gov-sg-refund.top/claim", "brand_in_domain"),

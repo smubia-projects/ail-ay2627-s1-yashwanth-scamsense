@@ -1,0 +1,41 @@
+# verified: false — see `todo`
+verified: false
+todo: 'TODO(owner): verify this description against current SPF / ScamShield / MAS advisories (scamshield.gov.sg,
+  police.gov.sg) before presenting as authoritative. Written from general knowledge; no statistics or
+  URLs are included on purpose.'
+id: parcel_delivery
+name: Parcel / delivery scam
+summary: SMS or email claims a parcel could not be delivered or customs fees are due, linking to a fake
+  tracking page that collects card details/OTPs; in a variant, a 'courier' call claims the parcel contains
+  illegal items and hands the victim to 'police'.
+typical_flow:
+- Message about a missed delivery, address issue or small fee
+- Link to a fake courier site
+- Entry of card details / OTP for a small fee
+- Card charged repeatedly, or victim handed to 'police' variant
+red_flags:
+- Parcel you were not expecting
+- Link to non-official courier domain or shortener
+- Small fee requiring card/OTP
+- Urgent deadline to reschedule
+- Courier suddenly transfers you to police
+keywords:
+- parcel
+- delivery
+- courier
+- SingPost
+- Ninja Van
+- DHL
+- customs
+- redelivery
+- address
+- tracking
+- package
+- held
+- fee
+- reschedule
+- undelivered
+what_to_do:
+- Track parcels only through the courier's official app or website.
+- Do not enter card details via links in messages.
+- If you did, call your bank to block the card.

@@ -1,0 +1,40 @@
+# verified: false — see `todo`
+verified: false
+todo: 'TODO(owner): verify this description against current SPF / ScamShield / MAS advisories (scamshield.gov.sg,
+  police.gov.sg) before presenting as authoritative. Written from general knowledge; no statistics or
+  URLs are included on purpose.'
+id: loan
+name: Loan scam
+summary: Unlicensed lenders or fake agents advertise fast approval, then require upfront 'processing',
+  'insurance' or 'admin' fees; or collect Singpass/bank details for later fraud and misuse the victim's
+  account as a mule.
+typical_flow:
+- Unsolicited SMS/WhatsApp promising easy loans with no checks
+- Request for ID photos, Singpass or bank login
+- Upfront fee required before disbursement
+- More fees invented; loan never arrives; data misused
+red_flags:
+- Unsolicited loan offer
+- Upfront fees before any money is released
+- Request for Singpass, internet banking or OTP
+- No licence information
+- Pressure to act today
+keywords:
+- loan
+- approved
+- instant
+- low interest
+- no credit check
+- processing fee
+- insurance fee
+- licensed
+- borrow
+- debt
+- disburse
+- agent
+- singpass
+- bank statement
+what_to_do:
+- Only borrow from licensed moneylenders or banks.
+- Never share Singpass or banking logins.
+- Stop paying fees and report to the police.

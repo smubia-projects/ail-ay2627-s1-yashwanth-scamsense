@@ -1,0 +1,44 @@
+# verified: false — see `todo`
+verified: false
+todo: 'TODO(owner): verify this description against current SPF / ScamShield / MAS advisories (scamshield.gov.sg,
+  police.gov.sg) before presenting as authoritative. Written from general knowledge; no statistics or
+  URLs are included on purpose.'
+id: tech_support
+name: Fake tech support / remote access
+summary: A pop-up, call or message claims your device, account or internet service is compromised, and
+  gets you to install remote-access software or visit a fake support site; the scammer then takes control
+  of banking apps or charges 'service fees'.
+typical_flow:
+- Pop-up/call claiming virus, hacked account or expiring subscription
+- Directed to install AnyDesk/TeamViewer or a support app
+- Scammer views screen and guides you to log in to banking
+- Money moved out or large 'fee' charged
+red_flags:
+- Unsolicited call about your computer/phone/internet
+- Asked to install remote-access tools
+- Asked to open banking while sharing screen
+- Payment via gift cards or crypto
+- Fear-based urgency
+keywords:
+- virus
+- hacked
+- technician
+- support
+- microsoft
+- apple
+- anydesk
+- teamviewer
+- remote
+- install
+- subscription
+- refund
+- router
+- internet
+- compromised
+- screen share
+- singtel
+- starhub
+what_to_do:
+- Hang up; legitimate companies do not cold-call about viruses.
+- Never install remote-access software for someone who contacted you.
+- If you did, disconnect from the internet and call your bank.

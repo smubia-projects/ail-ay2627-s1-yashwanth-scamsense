@@ -1,0 +1,40 @@
+# verified: false — see `todo`
+verified: false
+todo: 'TODO(owner): verify this description against current SPF / ScamShield / MAS advisories (scamshield.gov.sg,
+  police.gov.sg) before presenting as authoritative. Written from general knowledge; no statistics or
+  URLs are included on purpose.'
+id: friend_family_impersonation
+name: Friend / family impersonation
+summary: A message from an 'unknown number' claims to be a relative or friend with a new phone, then asks
+  for urgent money (e.g. to pay a bill or fix a payment problem) via PayNow or transfer; sometimes via
+  a hacked real account.
+typical_flow:
+- '''Hi mum, this is my new number'''
+- Short chat to establish trust
+- Urgent request for money or to buy gift cards, with an excuse that online banking is not working
+- Account details provided belong to a stranger
+red_flags:
+- New number from a 'known' person
+- Urgent money request
+- Cannot talk on the phone or video call
+- Payee name does not match the person
+- Pressure not to tell others
+keywords:
+- new number
+- it's me
+- mum
+- dad
+- lost my phone
+- changed number
+- urgent
+- pay for me
+- bank not working
+- can you help
+- transfer
+- paynow
+- will pay you back
+- gift card
+what_to_do:
+- Call the person on their old, known number before sending anything.
+- Ask a question only the real person could answer.
+- If you hit send already, contact your bank right away.

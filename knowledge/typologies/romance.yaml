@@ -1,0 +1,44 @@
+# verified: false — see `todo`
+verified: false
+todo: 'TODO(owner): verify this description against current SPF / ScamShield / MAS advisories (scamshield.gov.sg,
+  police.gov.sg) before presenting as authoritative. Written from general knowledge; no statistics or
+  URLs are included on purpose.'
+id: romance
+name: Romance scam
+summary: A new online 'partner' builds intimacy over days or weeks, then invents emergencies (customs
+  fees, medical bills, investment opportunities) and asks for money or gifts; they refuse video calls
+  and often claim to be overseas.
+typical_flow:
+- Friendly contact via social media or dating app
+- Quickly moves to private chat and professes strong feelings
+- Excuses to avoid video calls/meeting
+- A crisis requiring money, or a shared 'investment'
+- Repeated requests with escalating urgency
+red_flags:
+- Declares love very fast
+- Never video calls or meets
+- Overseas job claims (military, oil rig, doctor)
+- Asks for money, gift cards, crypto or investments
+- Requests secrecy about the relationship
+keywords:
+- love
+- darling
+- honey
+- dear
+- lonely
+- widow
+- overseas
+- military
+- customs
+- package
+- gift
+- emergency
+- hospital
+- video call
+- trust me
+- marry
+- fly to singapore
+what_to_do:
+- Do not send money to someone you have never met.
+- Ask for a live video call; scammers avoid them.
+- Talk to a trusted friend and report to the platform and the police.

@@ -1,0 +1,43 @@
+# verified: false — see `todo`
+verified: false
+todo: 'TODO(owner): verify this description against current SPF / ScamShield / MAS advisories (scamshield.gov.sg,
+  police.gov.sg) before presenting as authoritative. Written from general knowledge; no statistics or
+  URLs are included on purpose.'
+id: fake_job
+name: Fake job / task scam
+summary: Unsolicited recruiters offer easy part-time income for liking videos, boosting products or completing
+  'tasks'. Early small payouts build trust, then victims must 'top up' larger sums to unlock earnings,
+  which never come.
+typical_flow:
+- Unsolicited WhatsApp/Telegram job offer
+- Easy tasks with a small first payout
+- Added to a group full of 'successful earners'
+- Tasks require prepayment/top-up that grows
+- Withdrawal blocked until more is paid
+red_flags:
+- Unsolicited offer with high pay for trivial work
+- Pay-to-earn or top-up/deposit requirements
+- Group chats with testimonials
+- Paid in crypto or via unfamiliar platforms
+- Pressure to complete tasks quickly
+keywords:
+- part-time
+- job
+- commission
+- tasks
+- daily income
+- top up
+- recruiter
+- HR
+- work from home
+- earn
+- platform
+- withdraw
+- like videos
+- boost
+- salary
+- USDT
+what_to_do:
+- Real employers do not make you pay to work.
+- Stop all payments; keep chat records.
+- Report to the police and the platform.

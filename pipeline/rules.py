@@ -303,13 +303,25 @@ def _hit_is_negated(text: str, start: int, end: int) -> bool:
     return bool(_WARNING_CONTEXT.search(window)) or bool(re.search(NEG + r"\b[^.\n]{0,30}$", text[max(0, start - 45): start], re.I))
 
 
+def _excerpt(text: str, start: int, end: int, pad: int = 30) -> str:
+    """Matched span plus some context, widened to whole words so it reads (and quotes) cleanly."""
+    a, b = max(0, start - pad), min(len(text), end + pad)
+    if a > 0:  # move forward to the next word start
+        while a < start and not text[a - 1].isspace():
+            a += 1
+    if b < len(text):  # move back to the previous word end
+        while b > end and not text[b].isspace():
+            b -= 1
+    return re.sub(r"\s+", " ", text[a:b]).strip()
+
+
 def check_text(msg: Message) -> list[RuleHit]:
     hits: list[RuleHit] = []
     for rule_id, sev, rx, desc in PATTERNS:
         for m in rx.finditer(msg.text):
             if rule_id in _NEGATABLE and _hit_is_negated(msg.text, m.start(), m.end()):
                 continue
-            ev = msg.text[max(0, m.start() - 15): m.end() + 15].strip().replace("\n", " ")
+            ev = _excerpt(msg.text, m.start(), m.end())
             hits.append(RuleHit(rule_id=rule_id, message_idx=msg.idx, severity=sev, description=desc, evidence=ev[:140]))
             break  # one hit per rule per message
     # links

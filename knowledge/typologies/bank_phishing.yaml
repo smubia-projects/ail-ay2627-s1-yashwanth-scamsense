@@ -1,0 +1,44 @@
+# verified: false — see `todo`
+verified: false
+todo: 'TODO(owner): verify this description against current SPF / ScamShield / MAS advisories (scamshield.gov.sg,
+  police.gov.sg) before presenting as authoritative. Written from general knowledge; no statistics or
+  URLs are included on purpose.'
+id: bank_phishing
+name: Bank / payment-app phishing
+summary: SMS, email or call pretending to be a bank or payment service warns of locked accounts, suspicious
+  transactions or expiring points, and pushes a link to a fake login page to capture credentials and OTPs.
+typical_flow:
+- Alert about a 'suspicious login', 'locked account' or 'new device'
+- Link to a look-alike banking site
+- Victim enters username, password and OTP on fake page
+- Scammer drains the account within minutes; sometimes a follow-up 'bank officer' call
+red_flags:
+- Link that is not the bank's official domain (look-alike, shortener)
+- Urgent threat of lockout
+- Request for OTP, PIN, CVV or password
+- Unexpected 'verify now' message
+- Message arrives outside the bank's official SMS sender ID or app
+keywords:
+- bank
+- account locked
+- suspicious transaction
+- verify
+- login
+- OTP
+- DBS
+- OCBC
+- UOB
+- POSB
+- Maybank
+- Citibank
+- card
+- security
+- unauthorised
+- reactivate
+- token
+- digital token
+- limit
+what_to_do:
+- Do not tap the link. Open your bank's official app or type the address yourself.
+- Never share OTP or passwords.
+- If you entered details, call your bank's official hotline immediately to freeze your accounts.
