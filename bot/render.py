@@ -18,7 +18,7 @@ STAGE_EMOJI = {Stage.FIRST_CONTACT: "👋", Stage.CLAIMED_AUTHORITY: "🎭", Sta
 GENERIC_NEXT = [
     "Don't send money, codes (OTP) or passwords, and don't install anything they ask for.",
     "Stop replying. Verify by contacting the organisation yourself using a number or app you already trust.",
-    "Keep the messages as evidence. If you're unsure, call the National Anti-Scam Helpline at 1799.",
+    "Keep the messages as evidence. If you're unsure, call the ScamShield Helpline at 1799.",
 ]
 
 
@@ -130,7 +130,7 @@ def render_family_warning(r: Report) -> str:
     lines += ["", "Please remember:",
               "• Police, banks and government agencies will never ask you to transfer money, share your OTP or Singpass, or install apps.",
               "• Don't click links in unexpected messages. Call the organisation on a number you already trust.",
-              "• If you're unsure, call the National Anti-Scam Helpline: 1799.",
+              "• If you're unsure, call the ScamShield Helpline: 1799.",
               "", "(This is a general warning - it contains none of the original messages.)"]
     return "\n".join(lines)
 
