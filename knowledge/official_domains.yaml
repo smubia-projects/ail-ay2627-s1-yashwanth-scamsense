@@ -1,0 +1,112 @@
+# Official domains used by the deterministic lookalike check (pipeline/rules.py).
+#
+# verified: false
+# TODO(owner): verify every entry against the organisation's own website / a current ScamShield or
+# police advisory before relying on it in a demo. Entries are from general knowledge; they are
+# intentionally limited to well-known domains. A domain NOT in this list is never proof of a scam —
+# this list only powers "looks like X but isn't X" checks.
+#
+# domains : registrable domains the organisation really uses (subdomains are also treated as official)
+# tokens  : brand words used to spot brand names inside someone else's domain / in message text
+verified: false
+entities:
+  - name: Singapore Government
+    tokens: [gov.sg, govsg, singpass, myinfo, corppass]
+    domains: [gov.sg]
+  - name: Singpass
+    tokens: [singpass]
+    domains: [singpass.gov.sg]
+  - name: ICA
+    tokens: [ica]
+    domains: [ica.gov.sg]
+  - name: IRAS
+    tokens: [iras]
+    domains: [iras.gov.sg]
+  - name: CPF Board
+    tokens: [cpf]
+    domains: [cpf.gov.sg]
+  - name: Singapore Police Force
+    tokens: [spf, police]
+    domains: [police.gov.sg, spf.gov.sg]
+  - name: MAS
+    tokens: [mas]
+    domains: [mas.gov.sg]
+  - name: MOM
+    tokens: [mom]
+    domains: [mom.gov.sg]
+  - name: HDB
+    tokens: [hdb]
+    domains: [hdb.gov.sg]
+  - name: ScamShield
+    tokens: [scamshield]
+    domains: [scamshield.gov.sg]
+  - name: DBS
+    tokens: [dbs, paylah]
+    domains: [dbs.com, dbs.com.sg]
+  - name: POSB
+    tokens: [posb]
+    domains: [posb.com.sg, dbs.com.sg]
+  - name: OCBC
+    tokens: [ocbc]
+    domains: [ocbc.com, ocbc.com.sg]
+  - name: UOB
+    tokens: [uob]
+    domains: [uob.com.sg, uobgroup.com]
+  - name: Standard Chartered
+    tokens: [standardchartered, scbank]
+    domains: [sc.com, standardchartered.com]
+  - name: Maybank
+    tokens: [maybank, maybank2u]
+    domains: [maybank.com.sg, maybank2u.com.sg, maybank.com]
+  - name: HSBC
+    tokens: [hsbc]
+    domains: [hsbc.com.sg, hsbc.com]
+  - name: Citibank
+    tokens: [citibank]
+    domains: [citibank.com.sg, citi.com]
+  - name: GXS Bank
+    tokens: [gxs]
+    domains: [gxs.com.sg]
+  - name: Trust Bank
+    tokens: [trustbank]
+    domains: [trustbank.sg]
+  - name: SingPost
+    tokens: [singpost, speedpost]
+    domains: [singpost.com]
+  - name: Ninja Van
+    tokens: [ninjavan]
+    domains: [ninjavan.co]
+  - name: DHL
+    tokens: [dhl]
+    domains: [dhl.com]
+  - name: Lazada
+    tokens: [lazada]
+    domains: [lazada.sg, lazada.com]
+  - name: Shopee
+    tokens: [shopee]
+    domains: [shopee.sg, shopee.com]
+  - name: Carousell
+    tokens: [carousell]
+    domains: [carousell.sg, carousell.com]
+  - name: Grab
+    tokens: [grab]
+    domains: [grab.com]
+  - name: Singtel
+    tokens: [singtel]
+    domains: [singtel.com]
+  - name: StarHub
+    tokens: [starhub]
+    domains: [starhub.com]
+  - name: M1
+    tokens: []
+    domains: [m1.com.sg]
+  - name: Apple
+    tokens: [apple, icloud]
+    domains: [apple.com, icloud.com]
+  - name: PayPal
+    tokens: [paypal]
+    domains: [paypal.com]
+
+url_shorteners: [bit.ly, tinyurl.com, t.co, goo.gl, is.gd, cutt.ly, rb.gy, shorturl.at, ow.ly, tiny.cc, s.id, bit.do, rebrand.ly, buff.ly, t.ly, v.gd, shorturl.asia, qrco.de]
+# Low-severity signal only: TLDs very commonly seen on throw-away scam domains.
+risky_tlds: [xyz, top, icu, vip, click, cyou, buzz, rest, sbs, cfd, cc, tk, ml, ga, cf, gq, monster]
