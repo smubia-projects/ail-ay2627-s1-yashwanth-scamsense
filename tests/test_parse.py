@@ -36,3 +36,8 @@ def test_urls_not_treated_as_speakers():
 def test_merge_forwards_and_paste():
     msgs, inferred = merge_sources([("Alice", "hi"), (None, "Bob: yo\nAlice: sup")])
     assert [m.sender for m in msgs] == ["Alice", "Bob", "Alice"] and [m.idx for m in msgs] == [0, 1, 2]
+
+
+def test_label_with_parenthetical_note():
+    msgs, inferred = parse_conversation("CEO Mr Lee (new number): Hi I need a favour\nExecutive Assistant: Yes it is genuine\nCEO Mr Lee (new number): Please hurry")
+    assert not inferred and [m.sender for m in msgs] == ["CEO Mr Lee (new number)", "Executive Assistant", "CEO Mr Lee (new number)"]

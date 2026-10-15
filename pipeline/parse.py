@@ -29,7 +29,7 @@ def _plausible_name(name: str) -> bool:
     n = name.strip().lower().rstrip(".")
     if not n or n in _NOT_NAMES:
         return False
-    if len(n.split()) > 4:
+    if len(n.split()) > 6:
         return False
     if re.search(r"https?|www\.|\.com|\d{5,}", n):
         return False

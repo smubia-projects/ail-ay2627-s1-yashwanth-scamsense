@@ -88,7 +88,8 @@ HOW_TO = (
     "Best results:\n"
     "• <b>Forward</b> the messages here (I keep each sender's name), or\n"
     "• Paste as <code>Name: message</code> lines, or a WhatsApp chat export.\n"
-    "• Include <i>everyone</i> who contacted you — the whole chain matters.\n\n"
+    "• Include <i>everyone</i> who contacted you — the whole chain matters.\n"
+    "• Screenshots work too if enabled: add the sender's name as the photo caption.\n\n"
     "You can send several messages. Tap <b>Analyse</b> when you're done."
 )
 
@@ -123,6 +124,9 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
     c = _c(context)
     msg = update.effective_message
     chat_id = update.effective_chat.id
+    if getattr(msg, "photo", None):
+        await _on_photo(update, context)
+        return
     text = msg.text or msg.caption
     if not text:
         await _send(update, "I can only read <b>text</b> for now. Please type or paste the key lines of the conversation.")
@@ -137,6 +141,42 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
         return
     s.collecting = True
     s.items.append((_forward_name(msg), text[: c.s.max_input_chars]))
+    await _update_status(update, context)
+
+
+async def _on_photo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Screenshot input (stretch): local OCR only. The image never leaves this server and is not stored."""
+    from pipeline import ocr
+    c = _c(context)
+    msg = update.effective_message
+    if not ocr.available():
+        await _send(update, "I can't read screenshots on this server yet. Please type or paste the key lines of the conversation "
+                            "(or forward the original messages).")
+        return
+    ok, wait = c.msg_limit.check(_uid(update))
+    if not ok:
+        await _send(update, t("limit.rate", mins=max(1, round(wait / 60))))
+        return
+    s = c.sessions.get(update.effective_chat.id)
+    if len(s.items) >= c.s.max_messages:
+        await _send(update, t("limit.too_long", max=c.s.max_input_chars), reply_markup=keyboards.collecting(len(s.items)))
+        return
+    try:
+        tg_file = await msg.photo[-1].get_file()
+        data = bytes(await tg_file.download_as_bytearray())
+        text = await ocr.ocr_image(data)
+    except Exception as e:  # noqa: BLE001
+        log.error("ocr failed: %s", type(e).__name__)
+        await _send(update, "I couldn't read that image. Please type or paste the text instead.")
+        return
+    if len(text.strip()) < 8:
+        await _send(update, "I couldn't find readable text in that image. A clearer, cropped screenshot helps — or paste the text.")
+        return
+    caption = (msg.caption or "").strip()[:40] or None  # the user's caption is used as the sender label
+    s.collecting = True
+    s.items.append((caption, text[: c.s.max_input_chars]))
+    await _send(update, "🖼 Read the screenshot <b>locally</b> (the image is not stored or sent to any AI). "
+                        "Tip: add the sender's name as the photo caption so I know who said what.")
     await _update_status(update, context)
 
 

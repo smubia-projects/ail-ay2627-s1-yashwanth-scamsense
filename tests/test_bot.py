@@ -185,3 +185,31 @@ async def test_practice_flow_through_buttons():
     # resubmitting does not double-count
     await handlers.on_button(upd, ctx)
     assert st["done"] == 1
+
+
+async def test_photo_without_ocr_is_politely_declined(monkeypatch):
+    from pipeline import ocr
+    monkeypatch.setattr(ocr, "available", lambda: False)
+    ctx, c = fake_context()
+    upd, sent = fake_update(text=None)
+    upd.effective_message.photo = [object()]
+    await handlers.on_message(upd, ctx)
+    assert "screenshots" in sent[0][0] and c.sessions.get(100).items == []
+
+
+async def test_photo_with_ocr_adds_item_using_caption_as_sender(monkeypatch):
+    from pipeline import ocr
+    monkeypatch.setattr(ocr, "available", lambda: True)
+
+    async def fake_ocr(data):
+        return "Transfer your savings to a safe account now"
+
+    monkeypatch.setattr(ocr, "ocr_image", fake_ocr)
+    ctx, c = fake_context()
+    upd, sent = fake_update(text=None)
+    f = SimpleNamespace(download_as_bytearray=AsyncMock(return_value=bytearray(b"img")))
+    upd.effective_message.photo = [SimpleNamespace(get_file=AsyncMock(return_value=f))]
+    upd.effective_message.caption = "Officer Lim"
+    await handlers.on_message(upd, ctx)
+    assert c.sessions.get(100).items == [("Officer Lim", "Transfer your savings to a safe account now")]
+    assert any("locally" in x[0] for x in sent)

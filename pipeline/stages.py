@@ -12,7 +12,7 @@ async def reason(messages: list[Message], annotations: list[MessageAnnotation], 
                  candidates: list[Typology], llm: LLMClient) -> ReasoningResult:
     nonce = prompts.new_nonce()
     res = await llm.structured(ReasoningResult, prompts.REASON_SYSTEM,
-                               prompts.reason_user(messages, annotations, hits, candidates, nonce), max_tokens=2200)
+                               prompts.reason_user(messages, annotations, hits, candidates, nonce), max_tokens=4000)
     return normalise_stages(res, len(messages))
 
 

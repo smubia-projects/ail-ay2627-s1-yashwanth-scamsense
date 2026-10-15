@@ -23,7 +23,7 @@ class LLMClient(ABC):
     name: str = "base"
 
     @abstractmethod
-    async def complete_json(self, system: str, user: str, *, max_tokens: int = 1800) -> str:
+    async def complete_json(self, system: str, user: str, *, max_tokens: int = 3000) -> str:
         """Return the raw text of a JSON-object completion."""
 
     async def classify_injection(self, text: str) -> float | None:
@@ -31,7 +31,7 @@ class LLMClient(ABC):
         return None
 
     async def structured(self, schema: type[T], system: str, user: str, *, retries: int = 1,
-                         max_tokens: int = 1800) -> T:
+                         max_tokens: int = 3000) -> T:
         """Call -> parse -> validate; one retry on transport error OR invalid output."""
         last: Exception | None = None
         for attempt in range(retries + 1):

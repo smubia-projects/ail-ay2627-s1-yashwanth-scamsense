@@ -1,12 +1,12 @@
 # ScamSense evaluation results
 
-_Generated 2026-10-15 19:11 UTC · split: **all** · model: `n/a` · LLM arms run: **NO (deterministic layer only)**_
+_Generated 2026-10-15 19:18 UTC · split: **all** · model: `n/a` · LLM arms run: **NO (deterministic layer only)**_
 
 > ℹ️ No LLM arm was run for this file (no API key available). Only the deterministic rules layer was measured. Run `python -m eval.run_eval` with `GROQ_API_KEY` set to regenerate this file with the full pipeline, the plain-LLM baseline and the Prompt Guard ablation.
 
 ## Test set
 
-79 cases: 4 abuse requests, 13 prompt-injection scams, 20 genuine / benign messages, 26 multi-party scams, 16 single-message scams.  
+79 cases: 4 abuse requests, 13 prompt-injection scams, 20 genuine / benign messages, 27 multi-party scams, 15 single-message scams.  
 Split: **dev** = 16 (cases the developer looked at while tuning), **test** = 63 (held out; never used to tune prompts or rules).  
 **All cases are synthetic** (reconstructed from commonly reported public scam patterns or written to resemble genuine notices); none are real victim conversations. Synthetic scams written by the same developer who wrote the detector are easier than real-world traffic, so treat these numbers as an upper-ish bound, not field accuracy. Sample sizes are small; 95% Wilson intervals are shown.
 
@@ -33,8 +33,8 @@ Definitions: **caught** = verdict *Likely scam* or *Suspicious*. **False-safe** 
 
 | Group | Cases | Caught | Strict *Likely scam* | False-safe |
 |---|---|---|---|---|
-| Multi-party (≥2 senders or unlabeled multi-turn) | 26 | 92% (24/26, 95% CI 76-98%) | 77% (20/26, 95% CI 58-89%) | 8% (2/26, 95% CI 2-24%) |
-| Single-message | 16 | 94% (15/16, 95% CI 72-99%) | 50% (8/16, 95% CI 28-72%) | 6% (1/16, 95% CI 1-28%) |
+| Multi-party (≥2 senders or unlabeled multi-turn) | 27 | 93% (25/27, 95% CI 77-98%) | 78% (21/27, 95% CI 59-89%) | 7% (2/27, 95% CI 2-23%) |
+| Single-message | 15 | 93% (14/15, 95% CI 70-99%) | 47% (7/15, 95% CI 25-70%) | 7% (1/15, 95% CI 1-30%) |
 
 ## Breakdown by scam category (non-injection scams, main arm)
 
