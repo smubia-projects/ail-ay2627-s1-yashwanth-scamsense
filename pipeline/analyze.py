@@ -123,7 +123,7 @@ async def analyze(messages: list[Message], llm: LLMClient | None, *, speakers_in
                          typology=candidates[0] if candidates else None)
 
     # 8. grounding + calibration + sanitising
-    v, conf, vnotes, vlog = verdict.calibrate(reasoning, hits, injection=injection, inferred_speakers=speakers_inferred)
+    v, conf, vnotes, vlog = verdict.calibrate(reasoning, hits, injection=injection, inferred_speakers=speakers_inferred and len(llm_msgs) > 1)
     notes.extend(vnotes)
 
     reason, replaced = verdict.sanitise_text(_restore(reasoning.reason, back), t(f"fallback_reason.{v.value}"))
