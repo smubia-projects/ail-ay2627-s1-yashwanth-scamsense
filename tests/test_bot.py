@@ -164,3 +164,24 @@ def test_map_renders_png():
     r = asyncio.run(analyze(from_forwards(SCAM_LINES), HeuristicMockLLM(), settings=Settings(use_prompt_guard=False)))
     png = render_map(r)
     assert png[:8] == b"\x89PNG\r\n\x1a\n" and len(png) > 5000
+
+
+async def test_practice_flow_through_buttons():
+    ctx, c = fake_context()
+    upd, sent = fake_update()
+    upd.callback_query = SimpleNamespace(data="prc", answer=AsyncMock(), edit_message_text=AsyncMock())
+    await handlers.on_button(upd, ctx)
+    assert "Practice" in sent[0][0]
+    st = c.sessions.get(100).practice
+    # toggle first option, then submit
+    upd.callback_query.data = "p:t:0"
+    await handlers.on_button(upd, ctx)
+    assert len(st["sel"]) == 1
+    upd.callback_query.data = "p:s"
+    await handlers.on_button(upd, ctx)
+    assert st["done"] == 1 and st["submitted"]
+    shown = upd.callback_query.edit_message_text.call_args[0][0]
+    assert "Points" in shown
+    # resubmitting does not double-count
+    await handlers.on_button(upd, ctx)
+    assert st["done"] == 1

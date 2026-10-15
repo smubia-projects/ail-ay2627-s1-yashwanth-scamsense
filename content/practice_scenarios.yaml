@@ -1,0 +1,197 @@
+# Practice-mode scenarios. AUTHORED CONTENT — never generated live, no roleplay with a fake scammer.
+# Players tap the statements that are real red flags, then submit. Score = correct taps minus wrong taps (min 0).
+# `genuine: true` scenarios have few/no red flags on purpose, so people learn not to panic at every message.
+# TODO(owner): review wording against current police / ScamShield advisories (typologies are verified: false).
+scenarios:
+  - id: p01_police_chain
+    title: "A courier, then a 'police officer', then a 'prosecutor'"
+    typology_id: gov_official_impersonation
+    multiparty: true
+    messages:
+      - {sender: "Courier", text: "This is a courier company. A parcel with your name had 5 passports in it and was caught at customs. I'll transfer you to the police."}
+      - {sender: "Officer Lim", text: "I'm Inspector Lim, SPF. You're linked to a money laundering case. Don't tell anyone, it's confidential. Move your savings to a safe account for checking."}
+      - {sender: "Prosecutor Tan", text: "I'm the prosecutor. Officer Lim is right. Do it now or a warrant will be issued."}
+    options:
+      - {id: a, label: "A parcel you never sent suddenly 'linked' to a crime", correct: true}
+      - {id: b, label: "Being passed from one 'official' to a more senior one", correct: true}
+      - {id: c, label: "Told to keep it secret from family and bank", correct: true}
+      - {id: d, label: "Instruction to move money to a 'safe account'", correct: true}
+      - {id: e, label: "The messages are written in correct English", correct: false}
+      - {id: f, label: "Three different people are involved, so it must be real", correct: false}
+    explanation: "Police never ask you to transfer money, never ask for secrecy, and never pass you between 'officers' on a call. Each new voice here exists to make the story feel more official — the classic multi-party pattern."
+  - id: p02_bank_sms_link
+    title: "A bank text with a link"
+    typology_id: bank_phishing
+    multiparty: false
+    messages:
+      - {sender: "DBS-ALERT", text: "Your DBS account is locked due to unusual activity. Verify within 2 hours or it will be closed: https://dbs-secure-login.top/verify"}
+    options:
+      - {id: a, label: "The link's domain is not dbs.com.sg", correct: true}
+      - {id: b, label: "A 2-hour deadline with a threat to close the account", correct: true}
+      - {id: c, label: "Asks you to log in through a link in the message", correct: true}
+      - {id: d, label: "It mentions a bank you actually use", correct: false}
+      - {id: e, label: "It is a short message", correct: false}
+    explanation: "Scammers pick banks you really use. The giveaway is the look-alike domain and the pressure. Open your bank's app yourself instead of tapping links."
+  - id: p03_new_number_mum
+    title: "'Mum, this is my new number'"
+    typology_id: friend_family_impersonation
+    multiparty: false
+    messages:
+      - {sender: "Unknown number", text: "Hi mum, my phone fell in water so this is my new number. My banking app is locked, can you PayNow $2,800 to my friend for me? I'll pay you back tonight. Please don't call, I'm in a meeting."}
+    options:
+      - {id: a, label: "A 'new number' from someone you can't verify", correct: true}
+      - {id: b, label: "Urgent money request with an excuse for why they can't use their own bank", correct: true}
+      - {id: c, label: "Asks you not to call", correct: true}
+      - {id: d, label: "It says 'mum'", correct: false}
+      - {id: e, label: "The amount is not very large", correct: false}
+    explanation: "Call your child on the OLD number, or ask a question only they could answer, before sending anything. Scammers avoid calls because voices give them away."
+  - id: p04_job_tasks
+    title: "A part-time job with a friendly group"
+    typology_id: fake_job
+    multiparty: true
+    messages:
+      - {sender: "Recruiter Jane", text: "We're hiring! Earn $300 a day liking videos. No experience needed. Add our mentor on Telegram."}
+      - {sender: "Mentor Alex", text: "Finish 3 tasks, get $30 now! For the premium set you need to top up $500, then you get it all back with profit."}
+      - {sender: "Member Lily", text: "I'm in the group too, I withdrew $2,000 yesterday. It's real! Just top up."}
+    options:
+      - {id: a, label: "Unsolicited offer with high pay for trivial work", correct: true}
+      - {id: b, label: "You must pay ('top up') to earn", correct: true}
+      - {id: c, label: "A 'member' vouches for it", correct: true}
+      - {id: d, label: "Moved to Telegram", correct: true}
+      - {id: e, label: "The recruiter is polite", correct: false}
+    explanation: "Real employers never ask you to pay to work. The 'member' testimonial is the second voice of the same operation — extra people make the story feel social proven."
+  - id: p05_parcel_fee
+    title: "A parcel fee text"
+    typology_id: parcel_delivery
+    multiparty: false
+    messages:
+      - {sender: "SingPost-Notice", text: "Your parcel is on hold. Pay a $1.99 redelivery fee at https://singpost-redelivery.xyz/pay within 24 hours or it will be returned."}
+    options:
+      - {id: a, label: "You weren't expecting a parcel", correct: true}
+      - {id: b, label: "The link is not singpost.com", correct: true}
+      - {id: c, label: "Small fee + card details = card drained later", correct: true}
+      - {id: d, label: "The fee is only $1.99", correct: false}
+      - {id: e, label: "It names a real delivery company", correct: false}
+    explanation: "The tiny fee lowers your guard; the real aim is your card details and OTP. Track parcels only in the courier's own app or website."
+  - id: p06_romance_customs
+    title: "A new love, a parcel and a lawyer"
+    typology_id: romance
+    multiparty: true
+    messages:
+      - {sender: "Sarah", text: "My love, I sent you a gift parcel from the UK. I can't wait to meet you. Don't tell your family, it's our surprise."}
+      - {sender: "Customs Officer", text: "Singapore customs here. A parcel in your name is held. Pay a clearance fee of $1,800 to release it."}
+      - {sender: "Lawyer Mr Hall", text: "I'm Sarah's lawyer. Pay by bank transfer or gift cards. Time is running out."}
+    options:
+      - {id: a, label: "Strong feelings from someone you've never met", correct: true}
+      - {id: b, label: "Asked to keep it secret from family", correct: true}
+      - {id: c, label: "'Customs' demanding a fee over chat", correct: true}
+      - {id: d, label: "A 'lawyer' appears to back up the story", correct: true}
+      - {id: e, label: "Accepts gift cards as payment", correct: true}
+      - {id: f, label: "She speaks fluent English", correct: false}
+    explanation: "Customs never collect fees by chat or gift card. The customs officer and lawyer are accomplices who make the parcel story look official."
+  - id: p07_investment_group
+    title: "A 'guaranteed' investment tip"
+    typology_id: investment
+    multiparty: false
+    messages:
+      - {sender: "Daniel (gym group)", text: "I made 40% last month with a forex mentor, guaranteed profits. Deposit $2,000 on this platform and I'll guide you: https://smart-fx-trade.top"}
+    options:
+      - {id: a, label: "'Guaranteed' high returns", correct: true}
+      - {id: b, label: "Pressure to deposit quickly on an unfamiliar platform", correct: true}
+      - {id: c, label: "A friend's account could be hacked or faked", correct: true}
+      - {id: d, label: "It mentions forex", correct: false}
+      - {id: e, label: "The message is short", correct: false}
+    explanation: "No legitimate investment guarantees profit. Check if a firm is regulated by MAS, and call your friend to confirm it was really them."
+  - id: p08_marketplace_buyer
+    title: "A buyer who wants to 'protect' payment"
+    typology_id: ecommerce_marketplace
+    multiparty: false
+    messages:
+      - {sender: "Buyer", text: "I'll take the PS5, no need to bargain. I've paid through Carousell Protect. To receive the money verify your bank card here: https://carousell-protect-pay.xyz/receive"}
+    options:
+      - {id: a, label: "Eager buyer with no bargaining", correct: true}
+      - {id: b, label: "You must enter card details to RECEIVE money", correct: true}
+      - {id: c, label: "Link is not the platform's real domain", correct: true}
+      - {id: d, label: "The buyer says please", correct: false}
+      - {id: e, label: "They want the item you listed", correct: false}
+    explanation: "You never need to enter card details or OTP to receive a payment. Stay in the platform's own chat and payment flow."
+  - id: p09_tech_support
+    title: "A virus warning call"
+    typology_id: tech_support
+    multiparty: false
+    messages:
+      - {sender: "Microsoft Support", text: "Your computer has a virus and hackers are in your bank account. Install AnyDesk now and give me the 9-digit code so I can fix it before money is stolen."}
+    options:
+      - {id: a, label: "Unsolicited contact about your device", correct: true}
+      - {id: b, label: "Asks you to install remote-control software", correct: true}
+      - {id: c, label: "Fear + urgency", correct: true}
+      - {id: d, label: "The company name is well known", correct: false}
+    explanation: "Real tech companies don't cold-call about viruses. A remote-access code lets the scammer see your screen and move your money."
+  - id: p10_loan
+    title: "Instant loan, no checks"
+    typology_id: loan
+    multiparty: false
+    messages:
+      - {sender: "Agent Kelvin", text: "Need cash? Approved up to $30,000, no credit check. Send a photo of your NRIC and Singpass login. Pay a $800 processing fee first and cash is released today."}
+    options:
+      - {id: a, label: "Upfront 'processing fee' before any loan", correct: true}
+      - {id: b, label: "Asks for your Singpass login", correct: true}
+      - {id: c, label: "'Approved' without any checks", correct: true}
+      - {id: d, label: "The amount is large", correct: false}
+      - {id: e, label: "It was sent by an agent with a name", correct: false}
+    explanation: "Licensed lenders don't charge fees before disbursing and never need your Singpass password. Giving it away can make you a money mule."
+  - id: p11_genuine_otp
+    title: "A bank notice"
+    typology_id: bank_phishing
+    multiparty: false
+    genuine: true
+    messages:
+      - {sender: "DBS", text: "Your OTP is [OTP] for the transaction at SHOPEE. Do not share this OTP with anyone, including DBS staff. If you did not request this, call the number on the back of your card."}
+    options:
+      - {id: a, label: "It contains an OTP", correct: false}
+      - {id: b, label: "It asks you to click a link", correct: false}
+      - {id: c, label: "It asks you to call a number it gives you", correct: false}
+      - {id: d, label: "It asks you to read the OTP out to someone", correct: false}
+    explanation: "This one has no red flags: it tells you NOT to share the OTP, has no link, and points you to the number on your card. Still, you only trust it if you were actually making that purchase — if not, call your bank using the number on your card."
+  - id: p12_genuine_split_bill
+    title: "A friend asks for money"
+    typology_id: friend_family_impersonation
+    multiparty: false
+    genuine: true
+    messages:
+      - {sender: "Priya (saved contact)", text: "Dinner was $84 so $21 each! PayNow me when you can. Thanks for tonight, was fun."}
+    options:
+      - {id: a, label: "It asks for money", correct: false}
+      - {id: b, label: "It has a deadline or threat", correct: false}
+      - {id: c, label: "It comes from a number you don't recognise", correct: false}
+      - {id: d, label: "It tells you to keep it secret", correct: false}
+    explanation: "A known contact, an expected bill, no pressure, no secrecy. Money requests alone aren't a red flag — an unexpected, urgent request from a NEW number is. If in doubt, call them."
+  - id: p13_telco_refund
+    title: "A refund that went wrong"
+    typology_id: tech_support
+    multiparty: true
+    messages:
+      - {sender: "Technician", text: "Hello from your telco. We overcharged your broadband, a refund of $450 is ready. Install QuickSupport so I can process it."}
+      - {sender: "Technician", text: "Oops, I refunded $4,500 by mistake! Please buy Google Play gift cards for the extra $4,050 and send me the codes."}
+      - {sender: "Supervisor Lim", text: "I'm his supervisor. Please help or he loses his job. We won't tell anyone."}
+    options:
+      - {id: a, label: "Asks you to install remote-access software", correct: true}
+      - {id: b, label: "'Accidental' over-refund you must pay back", correct: true}
+      - {id: c, label: "Payment by gift cards", correct: true}
+      - {id: d, label: "A supervisor appears and pleads, adding emotional pressure", correct: true}
+      - {id: e, label: "They apologised", correct: false}
+    explanation: "The 'mistaken refund' is staged on the scammer's screen. The supervisor adds sympathy and secrecy. Nobody legitimate takes payment in gift cards."
+  - id: p14_ceo_gift_cards
+    title: "The boss on a new number"
+    typology_id: friend_family_impersonation
+    multiparty: true
+    messages:
+      - {sender: "CEO Mr Lee (new number)", text: "I'm in a meeting and can't talk. Need a favour urgently, keep this between us. Please buy 5 x $200 Apple gift cards and send me the codes."}
+      - {sender: "Executive Assistant", text: "Hi, I'm Mr Lee's assistant. It's genuine, he's really busy. Please do it today."}
+    options:
+      - {id: a, label: "Authority figure on a new number", correct: true}
+      - {id: b, label: "Gift cards requested", correct: true}
+      - {id: c, label: "Secrecy and 'can't talk' excuse", correct: true}
+      - {id: d, label: "A second person confirms it is genuine", correct: true}
+      - {id: e, label: "It mentions a meeting", correct: false}
+    explanation: "The 'assistant' only exists to vouch. Verify by calling your boss on their known number or asking in person."
