@@ -1,6 +1,6 @@
 # ScamSense evaluation results
 
-_Generated 2026-10-15 19:18 UTC · split: **all** · model: `n/a` · LLM arms run: **NO (deterministic layer only)**_
+_Generated 2026-10-15 19:19 UTC · split: **all** · model: `n/a` · LLM arms run: **NO (deterministic layer only)**_
 
 > ℹ️ No LLM arm was run for this file (no API key available). Only the deterministic rules layer was measured. Run `python -m eval.run_eval` with `GROQ_API_KEY` set to regenerate this file with the full pipeline, the plain-LLM baseline and the Prompt Guard ablation.
 

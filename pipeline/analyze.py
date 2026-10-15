@@ -23,6 +23,7 @@ from pipeline.schemas import InputKind, Message, Report, Verdict
 from strings import t
 
 log = logging.getLogger("scamsense.pipeline")
+STAGE_TIMEOUT_S = 40  # hard cap per LLM stage (covers rate-limit back-off); on timeout we degrade to Can't tell
 
 
 def _pseudonyms(messages: list[Message]) -> dict[str, str]:
@@ -91,7 +92,8 @@ async def analyze(messages: list[Message], llm: LLMClient | None, *, speakers_in
                 return guard.GuardResult(False, None, "none")
             return await guard.prompt_guard("\n".join(m.text for m in llm_msgs), llm, s)
 
-        ex, gres = await asyncio.gather(extract_mod.extract(llm_msgs, llm, segment=segment), _guard())
+        ex, gres = await asyncio.wait_for(
+            asyncio.gather(extract_mod.extract(llm_msgs, llm, segment=segment), _guard()), STAGE_TIMEOUT_S)
     except (LLMError, Exception) as e:  # noqa: BLE001 - must never crash
         log.warning("extraction failed: %s", type(e).__name__)
         return _degraded(red_msgs, hits, counts, notes, t0, speakers_inferred, injection)
@@ -114,7 +116,7 @@ async def analyze(messages: list[Message], llm: LLMClient | None, *, speakers_in
     ranked = retrieve.retrieve(llm_msgs, annotations, hits, k=3)
     candidates = [t_ for t_, _ in ranked]
     try:
-        reasoning = await stages.reason(llm_msgs, annotations, hits, candidates, llm)
+        reasoning = await asyncio.wait_for(stages.reason(llm_msgs, annotations, hits, candidates, llm), STAGE_TIMEOUT_S)
     except Exception as e:  # noqa: BLE001
         log.warning("reasoning failed: %s", type(e).__name__)
         return _degraded(red_msgs, hits, counts, notes, t0, speakers_inferred, injection, annotations=annotations,

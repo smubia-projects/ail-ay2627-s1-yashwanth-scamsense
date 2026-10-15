@@ -5,10 +5,63 @@ enforced by the type system and re-checked on the way out (see verdict.py).
 """
 from __future__ import annotations
 
+import re
 from enum import Enum
 from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
+
+
+def _norm_token(v):
+    """'Claims Authority' / 'claimed-authority' / ' URGENCY ' -> snake_case."""
+    if not isinstance(v, str):
+        return v
+    return re.sub(r"[\s\-]+", "_", v.strip().lower())
+
+
+def _norm_verdict(v):
+    """Tolerate case / apostrophe / underscore variants of the THREE allowed verdicts only.
+    Anything else (e.g. 'Safe', 'Legitimate') is left untouched so pydantic rejects it - the never-safe rule."""
+    if not isinstance(v, str):
+        return v
+    k = re.sub(r"[^a-z]", "", v.lower())
+    return {"likelyscam": "Likely scam", "suspicious": "Suspicious", "canttell": "Can't tell",
+            "cannottell": "Can't tell"}.get(k, v)
+
+
+def _lenient_items(model):
+    """before-validator factory: keep only list items that validate against `model` (one malformed item must
+    not invalidate the whole model output)."""
+    def _f(v):
+        if not isinstance(v, list):
+            return []
+        keep = []
+        for item in v:
+            try:
+                model.model_validate(item)
+                keep.append(item)
+            except Exception:  # noqa: BLE001
+                continue
+        return keep
+    return _f
+
+
+_CONF_WORDS = {"very high": 0.95, "high": 0.85, "medium": 0.6, "moderate": 0.6, "low": 0.3, "very low": 0.15}
+
+
+def _to_conf(v):
+    if isinstance(v, str):
+        w = v.strip().lower().rstrip("%")
+        if w in _CONF_WORDS:
+            return _CONF_WORDS[w]
+        v = w
+    try:
+        f = float(v)
+    except (TypeError, ValueError):
+        return 0.0
+    if 1.0 < f <= 100.0:  # model answered in percent
+        f /= 100.0
+    return max(0.0, min(1.0, f))
 
 
 class Verdict(str, Enum):
@@ -96,7 +149,8 @@ class MessageAnnotation(BaseModel):
         if not isinstance(v, list):
             return []
         valid = {t.value for t in Tactic}
-        return [t for t in v if isinstance(t, str) and t in valid]
+        norm = [_norm_token(t) for t in v]
+        return [t for t in norm if isinstance(t, str) and t in valid]
 
     @field_validator("payment_method", mode="before")
     @classmethod
@@ -104,6 +158,7 @@ class MessageAnnotation(BaseModel):
         valid = {p.value for p in PaymentMethod}
         if v is None:
             return "none"
+        v = _norm_token(v)
         return v if v in valid else "other"
 
 
@@ -113,9 +168,12 @@ class ExtractionResult(BaseModel):
     speakers_inferred: bool = False
     messages: list[MessageAnnotation] = Field(default_factory=list)
 
+    _lenient_msgs = field_validator("messages", mode="before")(_lenient_items(MessageAnnotation))
+
     @field_validator("input_kind", mode="before")
     @classmethod
     def _coerce_kind(cls, v):
+        v = _norm_token(v)
         return v if v in {k.value for k in InputKind} else "conversation"
 
 
@@ -145,13 +203,15 @@ class StageDetection(BaseModel):
     confidence: float = Field(0.0, ge=0.0, le=1.0)
     note: str = ""
 
+    @field_validator("stage", mode="before")
+    @classmethod
+    def _norm_stage(cls, v):
+        return _norm_token(v)
+
     @field_validator("confidence", mode="before")
     @classmethod
     def _clamp(cls, v):
-        try:
-            return max(0.0, min(1.0, float(v)))
-        except (TypeError, ValueError):
-            return 0.0
+        return _to_conf(v)
 
 
 class CrossPartySignal(BaseModel):
@@ -159,6 +219,15 @@ class CrossPartySignal(BaseModel):
     kind: CrossPartyKind
     message_idxs: list[int] = Field(default_factory=list)
     description: str = ""
+
+    @field_validator("kind", mode="before")
+    @classmethod
+    def _norm_kind(cls, v):
+        if not isinstance(v, str):
+            return v
+        k = re.sub(r"[^a-z]", "", v.lower())
+        return {"vouching": "vouching", "handoff": "handoff", "repeatedtactic": "repeated_tactic",
+                "coordinatedpressure": "coordinated_pressure"}.get(k, _norm_token(v))
 
 
 class EvidenceItem(BaseModel):
@@ -178,20 +247,27 @@ class ReasoningResult(BaseModel):
     evidence: list[EvidenceItem] = Field(default_factory=list)
     typology_id: str | None = None
 
+    _lenient_stages = field_validator("stages", mode="before")(_lenient_items(StageDetection))
+    _lenient_cross = field_validator("cross_party", mode="before")(_lenient_items(CrossPartySignal))
+    _lenient_evidence = field_validator("evidence", mode="before")(_lenient_items(EvidenceItem))
+
     @field_validator("confidence", mode="before")
     @classmethod
     def _clamp(cls, v):
-        try:
-            return max(0.0, min(1.0, float(v)))
-        except (TypeError, ValueError):
-            return 0.0
+        return _to_conf(v)
+
+    @field_validator("typology_id", mode="before")
+    @classmethod
+    def _null_typology(cls, v):
+        return None if not isinstance(v, str) or v.strip().lower() in {"", "none", "null", "n/a"} else v.strip()
 
     @field_validator("verdict", mode="before")
     @classmethod
     def _verdict_must_be_allowed(cls, v):
-        # Anything outside the 3-value enum (e.g. "Safe", "Legitimate") is rejected by pydantic
-        # -> counts as invalid JSON -> retry -> "Can't tell". This is the never-safe rule.
-        return v
+        # Case/apostrophe variants of the 3 allowed values are normalised. Anything else (e.g. "Safe",
+        # "Legitimate") stays as-is and is rejected by the enum -> invalid output -> retry -> "Can't tell".
+        # This is the never-safe rule.
+        return _norm_verdict(v)
 
 
 # ---------------------------------------------------------------- final report
