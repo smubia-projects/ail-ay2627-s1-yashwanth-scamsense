@@ -18,7 +18,7 @@
     <div class="logo-shield">🛡️</div>
     <h1 class="logo">Scam<span>Sense</span></h1>
     <h2 class="subtitle">INBOX DEFENDER</h2>
-    <p class="tag">Your phone is blowing up. Some are friends. Some are <b>scammers working as a team</b>.<br>Can you tell which is which — before they empty your savings?</p>
+    <p class="tag">One organised scam ring. Four voices. A few <b>real</b> people mixed in.<br>Type your own questions, spot the cracks, and decide who to trust — before they empty your savings.</p>
     <div class="title-btns">
       <button class="big-btn pulse" id="btn-play">▶ PLAY</button>
       <button class="big-btn ghost" id="btn-how">How to play</button>
@@ -35,7 +35,7 @@
 <section id="screen-levels" class="screen">
   <div class="levels-head">
     <button class="chip-btn" id="levels-back">← Title</button>
-    <h2>Choose your level</h2>
+    <h2>Choose a case</h2>
     <div class="head-right"><span id="total-stars">⭐ 0</span><button class="chip-btn" id="snd-levels">🔊</button></div>
   </div>
   <div id="level-grid"></div>
@@ -62,20 +62,24 @@
             <div class="empty-head">📨 Waiting for messages…</div>
           </header>
           <div class="messages" id="messages"><div class="empty-chat"><div>🔔</div><p>Your inbox is quiet…<br>for now.</p></div></div>
-          <div class="tray" id="tray"></div>
+          <form class="composer" id="composer" autocomplete="off">
+            <div class="comp-top"><span>⌨️ YOUR REPLY</span><span id="comp-left"></span><button type="button" id="btn-hint" class="hint-btn">💡 Hint (−20)</button></div>
+            <div class="comp-row"><input id="typed" maxlength="280" placeholder="Type what you'd say…" autocomplete="off"><button class="send-btn" id="btn-send" title="Send">➤</button></div>
+          </form>
           <div class="stamp" id="stamp"></div>
           <div class="casefile" id="casefile"></div>
         </section>
       </div>
     </div>
     <aside class="side">
+      <div class="card life"><h3>🧾 Your life</h3><ul id="life-list"></ul></div>
       <div class="card mission"><h3>🎯 Mission</h3><p id="mission"></p></div>
       <div class="card scan">
         <h3>🛡️ ScamSense Scanner</h3>
         <p>Not sure? Run the <b>real ScamSense AI</b> over this storyline (all linked chats together).</p>
         <button class="big-btn small" id="btn-scan">Scan this storyline <span id="scan-left">(3)</span></button>
       </div>
-      <div class="card flags"><h3>🔍 Red flags found <span id="flag-count">0</span></h3><ul id="flag-list"><li class="muted">Tap suspicious words in scam messages…</li></ul></div>
+      <div class="card flags"><h3>🗒️ Case notes <span id="flag-count">0</span></h3><ul id="flag-list"><li class="muted">Tap suspicious words in scam messages…</li></ul></div>
     </aside>
   </div>
 </section>
@@ -86,6 +90,7 @@
     <div id="result-banner"></div>
     <div id="result-stars"></div>
     <div id="result-stats"></div>
+    <div id="result-debrief" class="debrief"></div>
     <div id="result-cases"></div>
     <div class="result-btns">
       <button class="big-btn ghost" id="res-menu">☰ Levels</button>

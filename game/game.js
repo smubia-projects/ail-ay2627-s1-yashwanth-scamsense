@@ -1,4 +1,6 @@
-/* ScamSense: Inbox Defender — game engine. Vanilla JS, no dependencies. Content lives in levels.js (authored). */
+/* ScamSense: Inbox Defender — game engine. Vanilla JS, no dependencies. Authored content lives in levels.js.
+ * The player TYPES. Typed text is classified into an INTENT (LLM via /api/probe when available, regex otherwise);
+ * every reply from a scammer or a genuine sender is AUTHORED. No timers, no multiple choice. */
 (() => {
 "use strict";
 const $ = (s, r = document) => r.querySelector(s);
@@ -8,8 +10,8 @@ const rnd = (a, b) => a + Math.random() * (b - a);
 
 /* ------------------------------------------------------------ persistence (never required) */
 const Store = {
-  load() { try { return JSON.parse(localStorage.getItem("scamsense_game") || "{}"); } catch { return {}; } },
-  save(o) { try { localStorage.setItem("scamsense_game", JSON.stringify(o)); } catch { /* ignore */ } },
+  load() { try { return JSON.parse(localStorage.getItem("scamsense_game2") || "{}"); } catch { return {}; } },
+  save(o) { try { localStorage.setItem("scamsense_game2", JSON.stringify(o)); } catch { /* ignore */ } },
 };
 const save = Store.load();
 save.stars = save.stars || {};
@@ -32,7 +34,9 @@ const Sfx = {
   },
   ping() { this.tone(880, .09, "triangle", .13); this.tone(1320, .14, "triangle", .11, .09); },
   tick() { this.tone(520, .05, "square", .05); },
+  send() { this.tone(660, .06, "triangle", .08); },
   good() { [523, 659, 784, 1047].forEach((f, i) => this.tone(f, .14, "triangle", .12, i * .07)); },
+  clue() { [784, 988, 1319].forEach((f, i) => this.tone(f, .12, "sine", .12, i * .06)); },
   bad() { this.tone(180, .35, "sawtooth", .16); this.tone(120, .4, "sawtooth", .14, .12); },
   stamp() { this.tone(90, .25, "square", .2); this.tone(60, .3, "sine", .25, .05); },
   win() { [523, 659, 784, 1047, 1319, 1568].forEach((f, i) => this.tone(f, .2, "triangle", .13, i * .09)); },
@@ -93,6 +97,7 @@ function bubbleHTML(msg, chatId, mi) {
     return p.t.split(/(\s+)/).map(w => (/^\s*$/.test(w) ? esc(w) : `<span class="w">${esc(w)}</span>`)).join("");
   }).join("");
 }
+const fill = (str, vars) => String(str).replace(/\{(\w+)\}/g, (_, k) => (vars[k] ?? ""));
 
 /* ------------------------------------------------------------ game state */
 let G = null;
@@ -104,21 +109,30 @@ const alive = c => G && G.alive && !c.halted;
 function later(fn, ms) { const id = setTimeout(() => { G && G.timeouts.delete(id); fn(); }, ms); if (G) G.timeouts.add(id); return id; }
 function wait(ms) { return new Promise(res => later(res, ms / spd())); }
 
+function collectGos(def) {
+  const out = [];
+  const scan = v => {
+    if (Array.isArray(v)) v.forEach(scan);
+    else if (v && typeof v === "object") { if (v.go) out.push(v.go); Object.values(v).forEach(scan); }
+  };
+  scan(def.script);
+  return [...new Set(out)];
+}
+
 function newGame(idx) {
   endGame();
   const L = LEVELS[idx];
-  G = { idx, L, money: L.savings, lives: 3, score: 0, scans: 3, alive: true, active: null, chats: {}, order: [], found: 0,
-        timeouts: new Set(), clock: 9 * 60 + 41, done: false, nodes: {}, mistakes: 0, seq: 0, foundSet: new Set() };
+  G = { idx, L, money: L.savings, lives: 3, score: 0, scans: 3, alive: true, active: null, chats: {}, order: [], found: 0, clues: 0,
+        timeouts: new Set(), clock: 9 * 60 + 41, done: false, finished: false, nodes: {}, seq: 0, foundSet: new Set(), facts: {}, contra: new Set(),
+        minQ: L.id === 1 ? 1 : 2 };
   for (const def of L.chats) G.chats[def.id] = { def, id: def.id, msgs: [], unread: 0, started: false, halted: false, finished: false,
-    verdict: null, typing: false, choice: null, cancelled: false, found: 0, correct: null };
-  // parent links (who hands off to whom)
-  for (const c of Object.values(G.chats)) c.children = c.def.script.filter(s => s && s.go).map(s => s.go);
+    verdict: null, typing: false, cancelled: false, found: 0, correct: null, open: null, busy: false, evidence: [], children: collectGos(def) };
 }
-function endGame() { if (G) { G.alive = false; G.timeouts.forEach(clearTimeout); G.timeouts.clear(); for (const c of Object.values(G.chats)) clearTimeout(c.tmo); } }
+function endGame() { if (G) { G.alive = false; G.timeouts.forEach(clearTimeout); G.timeouts.clear(); } }
 
 /* ------------------------------------------------------------ HUD */
 function hud() {
-  $("#hud-emoji").textContent = G.L.emoji; $("#hud-name").textContent = `Level ${G.L.id}: ${G.L.name}`;
+  $("#hud-emoji").textContent = G.L.emoji; $("#hud-name").textContent = `Case ${G.L.id}: ${G.L.name}`;
   $("#hud-lives").textContent = "❤️".repeat(G.lives) + "🖤".repeat(3 - G.lives);
   $("#hud-score").textContent = G.score; $("#scan-left").textContent = `(${G.scans})`; $("#btn-scan").disabled = G.scans <= 0;
   $("#btn-speed").textContent = SPEEDS.find(s => s[0] === save.speed)?.[1] || "Normal";
@@ -162,22 +176,26 @@ function renderContact(chat) {
     n = document.createElement("div"); n.className = "contact"; G.nodes[chat.id] = n; $("#contacts").prepend(n);
     n.addEventListener("click", () => selectChat(chat.id));
   }
-  const last = chat.msgs[chat.msgs.length - 1];
+  const last = chat.msgs.filter(m => m.from !== "sys").slice(-1)[0];
   const prev = chat.typing ? "typing…" : last ? (last.from === "me" ? "You: " : "") + last.plain : "";
   let side = "";
   if (chat.verdict) side = `<span class="verdict-mark">${chat.correct ? "✅" : "❌"}</span>`;
-  else if (chat.choice) side = `<span class="reply-needed">REPLY!</span>`;
   else if (chat.unread) side = `<span class="badge-un">${chat.unread}</span>`;
   n.classList.toggle("active", G.active === chat.id);
   n.innerHTML = `<div class="avatar">${chat.def.avatar}</div><div class="c-main"><div class="c-name">${esc(chat.def.name)}</div>
     <div class="c-prev ${chat.typing ? "typing" : ""}">${esc(prev.slice(0, 60))}</div></div><div class="c-side">${side}</div>`;
 }
 
+function canJudge(chat) { return !chat.open || chat.open.over || chat.open.n >= G.minQ; }
 function renderHead(chat) {
   const h = $("#chat-head");
   if (!chat) { h.innerHTML = `<div class="empty-head">📨 Waiting for messages…</div>`; return; }
-  const btns = chat.verdict ? `<span class="pill ${chat.correct ? "good" : "bad"}" style="margin-left:auto">${chat.correct ? "✅ You got it" : "❌ You missed it"}</span>`
-    : `<div class="verdict-btns"><button class="vbtn scam" data-v="scam">🚩 Scam!</button><button class="vbtn real" data-v="real">✅ Real</button></div>`;
+  let btns;
+  if (chat.verdict) btns = `<span class="pill ${chat.correct ? "good" : "bad"}" style="margin-left:auto">${chat.correct ? "✅ You got it" : "❌ You missed it"}</span>`;
+  else if (!canJudge(chat)) {
+    const need = G.minQ - (chat.open ? chat.open.n : 0);
+    btns = `<span class="pill lock" style="margin-left:auto" title="Investigate before you accuse">🔒 Ask ${need} more question${need === 1 ? "" : "s"} before you decide</span>`;
+  } else btns = `<div class="verdict-btns"><button class="vbtn scam" data-v="scam">🚩 Scam!</button><button class="vbtn real" data-v="real">✅ Real</button></div>`;
   h.innerHTML = `<div class="avatar">${chat.def.avatar}</div><div class="who"><b>${esc(chat.def.name)}</b><small>${esc(chat.def.sub)}</small></div>${btns}`;
   $$(".vbtn", h).forEach(b => b.addEventListener("click", () => verdict(chat, b.dataset.v)));
 }
@@ -191,16 +209,15 @@ function selectChat(id) {
   syncTyping(); box.scrollTop = box.scrollHeight;
   $("#casefile").classList.remove("show");
   if (chat.verdict) showCasefile(chat);
-  syncTray();
+  syncComposer();
 }
 
 function makeBubble(chat, m, i, instant) {
   if (m.from === "sys") { const d = document.createElement("div"); d.className = "sys"; d.textContent = m.plain; return d; }
   const d = document.createElement("div"); d.className = `bubble ${m.from}` + (instant ? " instant" : "");
   d.innerHTML = bubbleHTML(m, chat.id, i) + `<time>${m.time}</time>`;
-  // restore found / missed state
   $$(".f", d).forEach(f => {
-    if (G.foundSet.has(f.dataset.key)) { f.classList.add("found"); }
+    if (G.foundSet.has(f.dataset.key)) f.classList.add("found");
     else if (chat.verdict && chat.def.truth === "scam") f.classList.add("missed");
   });
   const labels = $$(".f.found", d).map(f => f.dataset.label);
@@ -220,7 +237,7 @@ function syncTyping() {
 function addMsg(chat, from, text) {
   const { parts: p, plain } = parseMarkup(text);
   const m = { from, parts: p, plain, time: clockStr(), seq: G.seq++ }; chat.msgs.push(m);
-  if (from === "them") Sfx.ping(); else Sfx.tick();
+  if (from === "them") Sfx.ping(); else Sfx.send();
   if (G.active === chat.id) {
     $$(".typing-dots").forEach(n => n.remove());
     $(".empty-chat") && $(".empty-chat").remove();
@@ -238,7 +255,7 @@ function addSys(chat, text) {
   if (G.active === chat.id) $("#messages").appendChild(makeBubble(chat, m, 0, false));
 }
 
-/* ------------------------------------------------------------ scripted conversation engine */
+/* ------------------------------------------------------------ scripted pitch + the open (typed) conversation */
 function startChat(chat) {
   if (!G || !G.alive || chat.started || chat.cancelled) return;
   chat.started = true; G.order.push(chat.id);
@@ -251,81 +268,157 @@ function startChat(chat) {
 async function typingThen(chat, text) {
   chat.typing = true; renderContact(chat); if (G.active === chat.id) syncTyping();
   const plain = parseMarkup(text).plain;
-  await wait(Math.min(2200, 650 + plain.length * 16));
+  await wait(Math.min(2400, 650 + plain.length * 16));
   chat.typing = false;
   if (!alive(chat)) { renderContact(chat); if (G && G.active === chat.id) syncTyping(); return; }
   addMsg(chat, "them", text);
-  await wait(450);
+  await wait(350);
 }
 
 async function runScript(chat) {
   for (const step of chat.def.script) {
     if (!alive(chat)) return;
     if (typeof step === "string") await typingThen(chat, step);
-    else if (step.me) { await wait(500); if (!alive(chat)) return; addMsg(chat, "me", step.me); }
     else if (step.w) await wait(step.w);
     else if (step.sys) addSys(chat, step.sys);
     else if (step.go) { const c = G.chats[step.go]; if (c && alive(chat)) startChat(c); }
-    else if (step.c) {
-      const opt = await askChoice(chat, step);
-      if (!alive(chat) && !opt) return;
-      await applyOption(chat, opt);
-      if (opt.end) { chat.finished = true; cancelChildren(chat, "good"); checkDone(); return; }
-    }
+    else if (step.open) await runOpen(chat, step.open);
   }
   chat.finished = true; checkDone();
 }
 
-function askChoice(chat, step) {
-  return new Promise(resolve => {
-    const total = step.timer ? step.timer * (spd() < 1 ? 1.4 : 1) * 1000 : 0;
-    chat.choice = { step, resolve, total, deadline: total ? Date.now() + total : 0 };
-    if (total) chat.tmo = setTimeout(() => pick(chat, step.def || 0, true), total);
-    renderContact(chat); if (G.active === chat.id) syncTray();
-    if (G.active !== chat.id && !total) toast(`💬 ${chat.def.name} needs your reply!`, "info");
-  });
+function mergeSpec(chat, spec) {
+  const st = STYLES[chat.def.style || "business"] || STYLES.business;
+  const strip = o => Object.fromEntries(Object.entries(o || {}).filter(([, v]) => v));
+  return { budget: spec.budget || 7, vars: { ...(st.vars || {}), ...(spec.vars || {}) }, replies: { ...(st.replies || {}), ...(spec.replies || {}) },
+           tells: strip({ ...(st.tells || {}), ...(spec.tells || {}) }), clears: strip({ ...(st.clears || {}), ...(spec.clears || {}) }),
+           loss: spec.loss || {}, events: spec.events || {}, fallback: spec.fallback || st.fallback || ["Please answer my question."], ultimatum: spec.ultimatum || [] };
 }
 
-function pick(chat, index, auto = false) {
-  const ch = chat.choice; if (!ch || !G.alive) return;
-  clearTimeout(chat.tmo); chat.choice = null; syncTray(); renderContact(chat);
-  const opt = ch.step.c[index];
-  if (auto) toast("⏱️ Time's up! You froze and replied on instinct…", "bad");
-  ch.resolve(opt);
+function runOpen(chat, rawSpec) {
+  const m = mergeSpec(chat, rawSpec);
+  chat.open = { m, left: m.budget, n: 0, over: false, seen: new Set(), counts: {}, tells: new Set(), clears: new Set(), contras: 0 };
+  renderHead(chat); syncComposer();
+  if (!G.tipShown) { G.tipShown = true; toast("⌨️ TYPE like you would in real life. Ask questions. Limited questions per chat!", "info"); }
+  return new Promise(res => { chat.open.end = res; });
+}
+function endOpen(chat) {
+  const o = chat.open; if (!o || o.over) return;
+  o.over = true; chat.finished = true; renderHead(chat); syncComposer(); o.end && o.end(); checkDone();
 }
 
-async function applyOption(chat, opt) {
-  const label = opt.t.replace(/\s*[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE0F}]+\s*$/u, "");
-  addMsg(chat, "me", label);
-  await wait(450);
-  if (!G.alive) return;
-  if (opt.pts) addScore(opt.pts);
-  if (opt.money) changeMoney(opt.money);
-  if (opt.life) loseLife();
-  if (opt.ok) { Sfx.good(); flash("green"); const [x, y] = center($("#appwin")); confetti(x, y - 80, 26, .7); }
-  toast(opt.say, opt.ok ? "good" : "bad");
-  if (!opt.ok) G.mistakes++;
-  checkFail();
-  for (const msg of opt.then || []) { if (!alive(chat)) return; await typingThen(chat, msg); }
+/* ---- classification: the REAL LLM (via the local server) understands what you typed; regex is the offline fallback */
+let serverLLM = false;
+fetch("/api/info").then(r => r.json()).then(j => { serverLLM = !j.demo; }).catch(() => { serverLLM = false; });
+function kwIntent(text) { for (const id of INTENT_ORDER) if (INTENTS[id].keys.test(text)) return id; return null; }
+async function classify(text) {
+  if (serverLLM) {
+    try {
+      const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), 9000);
+      const r = await fetch("/api/probe", { method: "POST", headers: { "Content-Type": "application/json" }, signal: ctl.signal,
+        body: JSON.stringify({ text, intents: INTENT_ORDER.map(id => ({ id, desc: INTENTS[id].desc })) }) });
+      clearTimeout(t); const j = await r.json();
+      if (j && !j.fallback && !j.error) return j.intent && j.intent !== "none" ? j.intent : null;
+    } catch { /* fall through to keywords */ }
+  }
+  return kwIntent(text);
 }
 
-/* tray */
-function syncTray() {
-  const tray = $("#tray"), chat = G.chats[G.active];
-  if (!chat || !chat.choice) { tray.classList.remove("show"); tray.innerHTML = ""; return; }
-  const ch = chat.choice;
-  tray.innerHTML = `<div class="tray-title">💬 YOUR REPLY${ch.total ? ` <div class="timerbar"><i></i></div>` : ""}</div>` +
-    ch.step.c.map((o, i) => `<button class="opt" data-i="${i}">${esc(o.t)}</button>`).join("");
-  tray.classList.add("show");
-  $$(".opt", tray).forEach(b => b.addEventListener("click", () => pick(chat, +b.dataset.i)));
-  if (ch.total) {
-    const bar = $(".timerbar i", tray), remain = Math.max(0, ch.deadline - Date.now());
-    bar.style.transform = `scaleX(${remain / ch.total})`;
-    requestAnimationFrame(() => { bar.style.transition = `transform ${remain}ms linear`; bar.style.transform = "scaleX(0)"; });
+/* ---- composer */
+function syncComposer() {
+  const chat = G && G.chats[G.active], c = $("#composer");
+  const on = !!(chat && chat.open && !chat.open.over && !chat.verdict);
+  c.classList.toggle("show", on);
+  if (!on) return;
+  const q = chat.open.left;
+  $("#comp-left").textContent = `❓ ${q} question${q === 1 ? "" : "s"} left`;
+  $("#typed").disabled = chat.busy; $("#btn-send").disabled = chat.busy;
+  $("#typed").placeholder = chat.busy ? "…" : "Type what you'd say: ask a question, or answer them…";
+  if (!chat.busy && document.activeElement !== $("#typed")) $("#typed").focus({ preventScroll: true });
+}
+$("#composer").addEventListener("submit", e => { e.preventDefault(); sendTyped(); });
+async function sendTyped() {
+  if (!G || !G.alive) return;
+  const chat = G.chats[G.active], inp = $("#typed"), text = inp.value.trim();
+  if (!chat || !chat.open || chat.open.over || chat.busy || chat.verdict || !text) return;
+  inp.value = ""; await handleTyped(chat, text.slice(0, 280));
+}
+
+async function handleTyped(chat, text) {
+  const o = chat.open; chat.busy = true; o.n++; o.left--;
+  addMsg(chat, "me", text); renderHead(chat); syncComposer();
+  chat.typing = true; renderContact(chat); if (G.active === chat.id) syncTyping();
+  const intent = await classify(text);
+  chat.typing = false;
+  if (!alive(chat)) { chat.busy = false; syncComposer(); return; }
+  await respond(chat, intent);
+  if (!alive(chat)) { chat.busy = false; return; }
+  const ev = o.m.events[o.n];
+  if (ev && !o.over) for (const s of ev) { if (typeof s === "string") await typingThen(chat, s); else if (s.go && G.chats[s.go]) startChat(G.chats[s.go]); }
+  if (o.left <= 0 && !o.over && alive(chat)) { for (const u of o.m.ultimatum) await typingThen(chat, u); endOpen(chat); }
+  chat.busy = false; renderHead(chat); syncComposer();
+}
+
+async function respond(chat, intent) {
+  const o = chat.open, m = o.m, key = intent || "_none";
+  // falling for it: agreeing to pay / share / install
+  if (intent && intent.startsWith("comply_") && chat.def.truth === "scam") {
+    const loss = m.loss[intent] || { money: -1500, life: 1, say: "You fell for it. -$1,500." };
+    await typingThen(chat, fill((m.replies[intent] || ["Thank you. Processing now…"])[0], m.vars));
+    if (!alive(chat)) return;
+    changeMoney(loss.money); if (loss.life) loseLife(); toast(loss.say, "bad"); Sfx.bad();
+    await typingThen(chat, "…");
+    o.m.ultimatum = []; endOpen(chat); checkFail(); return;
+  }
+  let list = (intent && m.replies[intent]) || m.replies._all || null;
+  if (!list) list = m.fallback;
+  const k = o.counts[key] = (o.counts[key] || 0) + 1;
+  let item = list[Math.min(k - 1, list.length - 1)];
+  if (k > 1 && list.length === 1 && intent) item = { m: `I already answered that. ${fill(m.fallback[0], m.vars)}` };
+  const reply = typeof item === "string" ? { m: item } : item;
+  await typingThen(chat, fill(reply.m, m.vars));
+  if (!alive(chat)) return;
+  if (reply.go && G.chats[reply.go]) startChat(G.chats[reply.go]);
+  if (intent && !o.seen.has(intent)) {
+    o.seen.add(intent);
+    if (m.tells[intent]) { o.tells.add(intent); addFinding(chat, "tell", m.tells[intent]); }
+    else if (m.clears[intent]) { o.clears.add(intent); addFinding(chat, "clear", m.clears[intent]); }
+    else addScore(5);
+  }
+  if (reply.fact) checkFact(chat, reply.fact[0], reply.fact[1]);
+}
+
+function addFinding(chat, kind, label) {
+  chat.evidence.push({ kind, label }); G.clues++;
+  addScore(kind === "contra" ? 40 : 15); Sfx.clue();
+  const ico = { tell: "🔎", clear: "✅", contra: "⚡" }[kind], word = { tell: "Warning sign", clear: "Good sign", contra: "Contradiction!" }[kind];
+  toast(`${ico} ${word}: ${label}`, kind === "clear" ? "good" : "info");
+  const ul = $("#flag-list"); if (ul.querySelector(".muted")) ul.innerHTML = "";
+  ul.insertAdjacentHTML("afterbegin", `<li class="k-${kind}"><b>${ico} ${esc(chat.def.name)}</b><br>${esc(label)}</li>`);
+  $("#flag-count").textContent = G.found + G.clues;
+  const [x, y] = center($("#appwin")); confetti(x, y - 40, kind === "contra" ? 60 : 24, .7);
+  if (kind === "contra") { shake($("#appwin")); flash("green"); }
+}
+function checkFact(chat, k, v) {
+  const key = chat.def.group + ":" + k, list = G.facts[key] = G.facts[key] || [];
+  const other = list.find(f => f.v !== v);
+  list.push({ v, who: chat.def.name });
+  if (other && !G.contra.has(key)) {
+    G.contra.add(key); chat.open.contras++;
+    addFinding(chat, "contra", `${other.who} said "${other.v}" but ${chat.def.name} said "${v}"`);
   }
 }
 
-/* ------------------------------------------------------------ red flags */
+$("#btn-hint").onclick = () => {
+  const chat = G && G.chats[G.active]; if (!chat || !chat.open || chat.open.over) return;
+  const m = chat.open.m;
+  const useful = Object.keys(m.tells).concat(Object.keys(m.clears)).filter(i => !chat.open.seen.has(i) && INTENTS[i] && INTENTS[i].hint);
+  addScore(-20);
+  const picks = useful.slice(0, 4).map(i => `<li>${esc(INTENTS[i].hint)}</li>`).join("") || "<li>You've probed the main angles here. Decide!</li>";
+  modal(`<h2>💡 Detective's hint</h2><p>Think about:</p><ul>${picks}</ul><p style="opacity:.7;font-size:13px">(−20 score. Real organisations welcome checking; scammers resist it.)</p><button class="big-btn small" onclick="document.getElementById('modal').classList.remove('show')">Got it</button>`);
+};
+
+/* ------------------------------------------------------------ red flags in message text */
 $("#messages").addEventListener("click", e => {
   if (!G || !G.alive) return;
   const t = e.target.closest(".w, .f"); if (!t || !t.closest(".bubble.them")) return;
@@ -339,8 +432,8 @@ $("#messages").addEventListener("click", e => {
     wrap.insertAdjacentHTML("beforeend", `<span class="flag-chip">🚩 ${esc(t.dataset.label)}</span>`);
     addScore(10); Sfx.good(); confetti(e.clientX, e.clientY, 22, .6); floatText("🚩 Red flag!", "gold", e.clientX - 30, e.clientY - 30);
     const ul = $("#flag-list"); if (ul.querySelector(".muted")) ul.innerHTML = "";
-    ul.insertAdjacentHTML("afterbegin", `<li><b>${esc(chat.def.name)}</b><br>${esc(t.dataset.label)}</li>`);
-    $("#flag-count").textContent = G.found;
+    ul.insertAdjacentHTML("afterbegin", `<li class="k-flag"><b>🚩 ${esc(chat.def.name)}</b><br>${esc(t.dataset.label)}</li>`);
+    $("#flag-count").textContent = G.found + G.clues;
   } else {
     t.classList.remove("wrong"); void t.offsetWidth; t.classList.add("wrong");
     addScore(-2); Sfx.tick(); floatText("meh…", "bad", e.clientX - 10, e.clientY - 20);
@@ -348,61 +441,63 @@ $("#messages").addEventListener("click", e => {
 });
 
 /* ------------------------------------------------------------ verdicts */
-function cancelChildren(chat, why) {
+function cancelChildren(chat, why, clues) {
   const cancelled = [];
   const walk = c => { for (const id of c.children) { const k = G.chats[id]; if (k && !k.started && !k.cancelled) { k.cancelled = true; cancelled.push(k); walk(k); } } };
   walk(chat);
   const direct = cancelled.filter(k => chat.children.includes(k.id));
-  if (direct.length && why !== "silent") {
+  if (direct.length && why === "good" && clues >= 2) {
     const bonus = 50 * direct.length; addScore(bonus);
-    toast(`🏆 Early bird! You stopped the chain before ${direct.map(k => k.def.name).join(" & ")} even texted you! +${bonus}`, "good");
+    toast(`🏆 Early bird! You exposed it before ${direct.map(k => k.def.name).join(" & ")} even joined in! +${bonus}`, "good");
     const [x, y] = center($("#appwin")); confetti(x, y - 60, 60);
   }
   return cancelled;
 }
+function cluesOf(chat) { const o = chat.open; return o ? o.tells.size + o.clears.size + o.contras : 0; }
 
 function verdict(chat, v) {
-  if (chat.verdict || !G.alive) return;
-  clearTimeout(chat.tmo); chat.choice = null; chat.typing = false; chat.halted = true;
+  if (chat.verdict || !G.alive || !canJudge(chat)) return;
+  chat.halted = true; chat.typing = false;
   const truth = chat.def.truth === "scam" ? "scam" : "real";
   chat.verdict = v; chat.correct = v === truth;
+  const clues = cluesOf(chat);
   const [cx, cy] = center($("#chat-head"));
   if (chat.correct) {
-    addScore(100); Sfx.stamp(); setTimeout(() => Sfx.good(), 250);
+    const base = clues >= 2 ? 100 : 40;
+    addScore(base); Sfx.stamp(); setTimeout(() => Sfx.good(), 250);
     stamp(truth === "scam" ? "SCAM BLOCKED" : "VERIFIED REAL", "good"); confetti(cx, cy + 120, 70);
-    if (truth === "scam") cancelChildren(chat, "good");
+    if (clues >= 1) { const bonus = Math.min(100, 20 * clues); addScore(bonus); toast(`🔎 Detective bonus +${bonus} for ${clues} solid clue${clues === 1 ? "" : "s"}`, "good"); }
+    else toast("Right call, but a gut feeling. Asking the right questions makes you sure.", "info");
+    if (truth === "scam") cancelChildren(chat, "good", clues);
   } else if (truth === "real") {
     loseLife(); addScore(-50); Sfx.bad(); flash("red"); stamp("THAT WAS REAL!", "badc");
-    toast("Oops — you accused someone genuine. Trust −1 💔", "bad"); cancelChildren(chat, "silent");
+    toast("Oops — you accused someone genuine. Trust −1 💔", "bad"); cancelChildren(chat, "silent", clues);
   } else {
     changeMoney(-1000); loseLife(); stamp("IT WAS A SCAM!", "badc");
-    toast("You trusted a scammer. −$1,000 and −1 trust", "bad"); cancelChildren(chat, "silent");
+    toast("You trusted a scammer. −$1,000 and −1 trust", "bad"); cancelChildren(chat, "silent", clues);
   }
-  syncTray(); renderHead(chat); renderContact(chat);
-  // reveal the flags the player missed
+  syncComposer(); renderHead(chat); renderContact(chat);
   $$("#messages .bubble.them .f:not(.found)").forEach(f => truth === "scam" && f.classList.add("missed"));
   later(() => showCasefile(chat), 1300);
   checkFail(); checkDone();
 }
 
-function stamp(text, cls) {
-  const s = $("#stamp"); s.textContent = text; s.className = "stamp " + cls; void s.offsetWidth; s.classList.add("show");
-}
+function stamp(text, cls) { const s = $("#stamp"); s.textContent = text; s.className = "stamp " + cls; void s.offsetWidth; s.classList.add("show"); }
 function totalFlags(chat) { return chat.msgs.reduce((n, m) => n + m.parts.filter(p => p.label).length, 0); }
 function showCasefile(chat) {
-  const c = $("#casefile"), truth = chat.def.truth;
+  const c = $("#casefile"), truth = chat.def.truth, clues = cluesOf(chat);
   c.innerHTML = `<button class="close">×</button><h4>${truth === "scam" ? "🕵️ Case file: SCAM" : "📘 Case file: genuine"} — ${esc(chat.def.name)}</h4>
     <p>${esc(chat.def.explain)}</p>
     <div class="row"><span class="pill">${esc(nameOfTypology(chat.def.typology))}</span>
-    ${truth === "scam" ? `<span class="pill ${chat.found >= totalFlags(chat) ? "good" : ""}">🚩 ${chat.found}/${totalFlags(chat)} red flags found</span>` : ""}</div>`;
+    ${truth === "scam" ? `<span class="pill ${chat.found >= totalFlags(chat) ? "good" : ""}">🚩 ${chat.found}/${totalFlags(chat)} red flags</span>` : ""}
+    <span class="pill ${clues >= 2 ? "good" : ""}">🔎 ${clues} clue${clues === 1 ? "" : "s"} from questioning</span></div>`;
   c.classList.add("show"); $(".close", c).onclick = () => c.classList.remove("show");
 }
 
 /* ------------------------------------------------------------ level lifecycle */
 function checkDone() {
   if (!G || !G.alive || G.done) return;
-  const all = Object.values(G.chats);
-  const ready = all.every(c => (c.started && c.verdict) || c.cancelled);
+  const ready = Object.values(G.chats).every(c => (c.started && c.verdict) || c.cancelled || (c.def.optional && !c.started));
   if (ready) { G.done = true; later(() => endLevel(true), 1800); }
 }
 
@@ -413,12 +508,21 @@ function startLevel(idx) {
   $("#appwin").className = "appwin " + L.theme;
   $("#app-title").textContent = L.theme === "telegram" ? "Telegram Desktop" : "WhatsApp Web";
   $("#contacts").innerHTML = ""; $("#messages").innerHTML = `<div class="empty-chat"><div>🔔</div><p>Your inbox is quiet…<br>for now.</p></div>`;
-  $("#tray").classList.remove("show"); $("#casefile").classList.remove("show"); $("#stamp").className = "stamp";
-  $("#mission").textContent = L.mission; $("#flag-list").innerHTML = `<li class="muted">Tap suspicious words in scam messages…</li>`; $("#flag-count").textContent = "0";
+  $("#composer").classList.remove("show"); $("#casefile").classList.remove("show"); $("#stamp").className = "stamp";
+  $("#mission").textContent = L.mission;
+  $("#life-list").innerHTML = L.life.map(x => `<li>${esc(x)}</li>`).join("");
+  $("#flag-list").innerHTML = `<li class="muted">Tap suspicious words, and note what your questions reveal…</li>`; $("#flag-count").textContent = "0";
   renderHead(null); hud(); animateMoney();
   show("game");
-  toast(`${L.emoji} ${L.name} — ${L.blurb}`, "info");
-  for (const c of Object.values(G.chats)) if (c.def.start != null) later(() => startChat(c), c.def.start / spd() + 900);
+  const diffTxt = { easy: "EASY", medium: "MEDIUM", hard: "HARD", expert: "EXPERT" }[L.diff] || "";
+  modal(`<div class="brief"><div class="brief-em">${L.emoji}</div><h2>Case ${L.id}: ${esc(L.name)} <span class="diff ${L.diff}">${diffTxt}</span></h2>
+    <p>${esc(L.briefing)}</p><h3>🧾 Your life (the facts you can check claims against)</h3><ul>${L.life.map(x => `<li>${esc(x)}</li>`).join("")}</ul>
+    <p class="brief-goal">🎯 <b>Goal:</b> for each chat decide 🚩 Scam or ✅ Real, <b>without losing your savings or accusing real people</b>. You can't decide until you've asked questions. <b>Type your own.</b></p>
+    <button class="big-btn small" id="brief-go">Start the case ▶</button></div>`, true);
+  $("#brief-go").onclick = () => {
+    $("#modal").classList.remove("show");
+    for (const c of Object.values(G.chats)) if (c.def.start != null) later(() => startChat(c), c.def.start / spd());
+  };
 }
 
 function starsFor(ok) {
@@ -430,40 +534,42 @@ function starsFor(ok) {
 
 function endLevel(ok) {
   if (!G || G.finished) return; G.finished = true; G.done = true;
-  $("#toasts").innerHTML = "";
+  $("#toasts").innerHTML = ""; $("#modal").classList.remove("show");
   const stars = starsFor(ok);
   const prev = save.stars[G.L.id] || 0; if (stars > prev) save.stars[G.L.id] = stars; Store.save(save);
-  const lvl = G.idx, L = G.L, snap = { money: G.money, lives: G.lives, score: G.score, found: G.found };
+  const lvl = G.idx, L = G.L, snap = { money: G.money, lives: G.lives, score: G.score, found: G.found, clues: G.clues };
   const chats = Object.values(G.chats).filter(c => c.started);
   endGame(); shownMoney = snap.money;
-  $("#result-banner").textContent = ok ? (stars === 3 ? "🏆 FLAWLESS!" : "LEVEL CLEARED!") : "💥 GAME OVER";
+  $("#result-banner").textContent = ok ? (stars === 3 ? "🏆 CASE CRACKED!" : "CASE CLOSED") : "💥 CASE LOST";
   $("#result-stars").innerHTML = [0, 1, 2].map(i => `<span style="animation-delay:${.4 + i * .35}s;opacity:${i < stars ? 1 : .22}">${i < stars ? "⭐" : "☆"}</span>`).join("");
   $("#result-stats").innerHTML = `<div><small>SAVINGS LEFT</small><b>$${snap.money.toLocaleString()}</b></div><div><small>TRUST</small><b>${"❤️".repeat(snap.lives) || "💔"}</b></div>
-    <div><small>SCORE</small><b>${snap.score}</b></div><div><small>RED FLAGS</small><b>🚩 ${snap.found}</b></div>`;
+    <div><small>SCORE</small><b>${snap.score}</b></div><div><small>CLUES</small><b>🔎 ${snap.clues} · 🚩 ${snap.found}</b></div>`;
+  $("#result-debrief").innerHTML = `<h3>🕵️ How the operation worked</h3><p>${esc(L.debrief)}</p>`;
   $("#result-cases").innerHTML = chats.map((c, i) => `<div class="case" style="animation-delay:${i * .08}s"><h4>${c.def.avatar} ${esc(c.def.name)}
     <span class="pill ${c.def.truth === "scam" ? "bad" : "good"}">${c.def.truth === "scam" ? "SCAM" : "REAL"}</span>
     <span class="pill ${c.verdict ? (c.correct ? "good" : "bad") : ""}">${c.verdict ? (c.correct ? "✅ you got it" : "❌ you missed it") : "⏭ not judged"}</span></h4>
-    <p>${esc(c.def.explain)}</p><span class="pill">${esc(nameOfTypology(c.def.typology))}</span></div>`).join("");
+    <p>${esc(c.def.explain)}</p><span class="pill">${esc(nameOfTypology(c.def.typology))}</span> <span class="pill">🔎 ${cluesOf(c)} clues</span></div>`).join("");
   $("#res-next").style.display = ok && lvl < LEVELS.length - 1 ? "" : "none";
   $("#res-next").onclick = () => startLevel(lvl + 1); $("#res-retry").onclick = () => startLevel(lvl);
   $("#res-menu").onclick = () => { renderLevels(); show("levels"); };
   show("result");
   if (ok) { Sfx.win(); [0.25, 0.5, 0.75].forEach((f, i) => setTimeout(() => confetti(innerWidth * f, innerHeight * .35, 90, 1.3), i * 350)); }
   else Sfx.lose();
-  if (ok && lvl === LEVELS.length - 1) setTimeout(() => toast("🎉 You finished the game — now go warn someone you love!", "good"), 1500);
+  if (ok && lvl === LEVELS.length - 1) setTimeout(() => toast("🎉 You finished every case. Now go warn someone you love!", "good"), 1500);
 }
 
 /* ------------------------------------------------------------ level select */
 function unlocked(i) { return i === 0 || (save.stars[LEVELS[i - 1].id] || 0) > 0 || location.hash.includes("unlock"); }
 function renderLevels() {
   const g = $("#level-grid"); g.innerHTML = ""; let total = 0;
+  const diffName = { easy: "EASY", medium: "MEDIUM", hard: "HARD", expert: "EXPERT" };
   LEVELS.forEach((L, i) => {
     const st = save.stars[L.id] || 0; total += st; const open = unlocked(i);
     const d = document.createElement("div"); d.className = "lvl" + (open ? "" : " locked");
     d.style.setProperty("--a", L.colors[0]); d.style.setProperty("--b", L.colors[1]); d.style.animationDelay = i * .07 + "s";
     d.innerHTML = `<span class="num">${L.id}</span><span class="em">${L.emoji}</span><h3>${esc(L.name)}</h3><p>${esc(L.blurb)}</p>
-      <div class="stars">${[0, 1, 2].map(k => k < st ? "⭐" : "☆").join("")}</div><span class="badge">${L.chats.length} chats${L.timed ? " · ⏱️ timed" : ""}</span>`;
-    if (open) d.onclick = () => startLevel(i); else d.title = "Clear the previous level to unlock";
+      <div class="stars">${[0, 1, 2].map(k => k < st ? "⭐" : "☆").join("")}</div><span class="badge">${diffName[L.diff]} · ${L.chats.length} chats</span>`;
+    if (open) d.onclick = () => startLevel(i); else d.title = "Crack the previous case to unlock";
     g.appendChild(d);
   });
   $("#total-stars").textContent = `⭐ ${total} / ${LEVELS.length * 3}`;
@@ -494,21 +600,21 @@ async function scan() {
     ${(res.signals || []).map(s => `<p>🔗 <b>${esc(s)}</b></p>`).join("")}
     ${res.typology ? `<p>📚 Closest known scam type: <b>${esc(res.typology)}</b></p>` : ""}
     ${res.demo ? `<p style="color:#b26a00">⚠️ DEMO MODE: offline keyword stand-in, not a real AI model.</p>` : ""}
-    <p style="font-size:13px;opacity:.7">ScamSense is an aid, not a guarantee — you make the final call.</p>
+    <p style="font-size:13px;opacity:.7">The Scanner reads the chats as one storyline. It's an aid, not a guarantee — you make the final call.</p>
     <button class="big-btn small" onclick="document.getElementById('modal').classList.remove('show')">Got it</button>`);
   Sfx.good();
 }
 
 /* ------------------------------------------------------------ modal / wiring */
-function modal(html) { $("#modal-card").innerHTML = html; $("#modal").classList.add("show"); }
-$("#modal").addEventListener("click", e => { if (e.target.id === "modal") $("#modal").classList.remove("show"); });
+function modal(html, lock = false) { $("#modal-card").innerHTML = html; $("#modal").dataset.lock = lock ? "1" : ""; $("#modal").classList.add("show"); }
+$("#modal").addEventListener("click", e => { if (e.target.id === "modal" && !$("#modal").dataset.lock) $("#modal").classList.remove("show"); });
 function howTo() {
   modal(`<h2>How to play 🎮</h2><ol>
-    <li><b>Messages pop up</b> — some from friends, some from scammers. Often several people text you <i>at once</i>, and scammers <b>pass you to each other</b>.</li>
-    <li><b>Reply</b> when asked. Wrong choices cost <b>💸 savings</b> or <b>❤️ trust</b>. Hard levels have <b>⏱️ timers</b>.</li>
-    <li><b>Tap suspicious words</b> inside messages to find <b>🚩 red flags</b> (+10). Wrong taps cost a little.</li>
-    <li>Judge each chat: <b>🚩 Scam!</b> or <b>✅ Real</b>. Stop a scam chain early for an <b>Early-bird bonus</b>. Don't accuse real friends!</li>
-    <li>Stuck? Use the <b>🛡️ ScamSense Scanner</b> — it runs the real analyser on the whole storyline (3 per level).</li></ol>
+    <li>Each <b>case</b> is one organised scam operation: its members hand you to each other and back each other up. A few <b>real</b> contacts are mixed in, and some real ones sound as pushy as the scammers.</li>
+    <li><b>You TYPE.</b> Ask who they are, whether you can check them, what they know, whether you can video call… Use <b>🧾 Your life</b> to spot claims that don't fit.</li>
+    <li>You can't judge a chat until you've asked questions. <b>Clues</b> (🔎 warning signs, ✅ good signs, ⚡ contradictions between members) earn points and bonuses.</li>
+    <li>Careful: saying "ok, sending it" to a scammer <b>costs real savings</b>. Accusing a genuine sender costs <b>trust</b>.</li>
+    <li>Tap suspicious words for 🚩 red flags. Stuck? <b>💡 Hint</b> (−20) or the <b>🛡️ ScamSense Scanner</b> (real AI, 3 per case).</li></ol>
     <button class="big-btn small" onclick="document.getElementById('modal').classList.remove('show')">Let's go!</button>`);
 }
 function setSound(on) { save.sound = on; Store.save(save); $$("#snd-levels,#snd-game").forEach(b => b.textContent = on ? "🔊" : "🔇"); }
@@ -519,11 +625,7 @@ $("#game-menu").onclick = () => { endGame(); G = null; renderLevels(); show("lev
 $("#btn-scan").onclick = scan;
 $("#btn-speed").onclick = () => { const i = SPEEDS.findIndex(s => s[0] === save.speed); save.speed = SPEEDS[(i + 1) % SPEEDS.length][0]; Store.save(save); if (G) hud(); };
 ["#snd-levels", "#snd-game"].forEach(s => $(s).onclick = () => setSound(!save.sound));
-addEventListener("keydown", e => {
-  if (!G || !G.alive) return; const chat = G.chats[G.active]; if (!chat || !chat.choice) return;
-  const i = parseInt(e.key, 10) - 1; if (i >= 0 && i < chat.choice.step.c.length) pick(chat, i);
-});
 setSound(save.sound);
-window.__game = { start: i => { renderLevels(); startLevel(i); }, state: () => G }; // handy for demos/tests
+window.__game = { start: i => { renderLevels(); startLevel(i); }, state: () => G, classify, kwIntent, begin: () => $("#brief-go") && $("#brief-go").click() };
 const q = new URLSearchParams(location.search).get("level"); if (q) window.__game.start(+q - 1);
 })();

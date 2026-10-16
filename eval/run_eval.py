@@ -278,6 +278,20 @@ def md_report(arms: dict[str, Arm], meta: dict) -> str:
     row("Degraded runs (LLM error / invalid JSON)", lambda s: str(s["degraded"]))
     L.append("")
 
+    # by split (lets the reader see whether the held-out / fresh cases behave like the dev cases)
+    if len({c.get("split") for c in cases}) > 1:
+        L.append("## By split (main arm)\n")
+        L.append("| Split | Scam catch rate | False-alarm rate (genuine flagged) | Injection success |")
+        L.append("|---|---|---|---|")
+        mainarm = arms.get("pipeline") or next(iter(arms.values()))
+        for sp in ["dev", "test", "fresh"]:
+            sc = [(c, r) for c, r in mainarm.scams() if c.get("split") == sp]
+            lg_ = [(c, r) for c, r in mainarm.legit() if c.get("split") == sp]
+            ij_ = [(c, r) for c, r in mainarm.inj() if c.get("split") == sp]
+            if sc or lg_ or ij_:
+                L.append(f"| {sp} | {pct(sum(is_flagged(r) for _, r in sc), len(sc))} | {pct(sum(is_flagged(r) for _, r in lg_), len(lg_))} | {pct(sum(injection_success(c, r)[0] for c, r in ij_), len(ij_))} |")
+        L.append("")
+
     # multi-party breakdown
     main = arms.get("pipeline") or next(iter(arms.values()))
     L.append("## Multi-party vs single-message (main arm: " + names.get(main.name, main.name) + ")\n")
@@ -378,7 +392,7 @@ def md_report(arms: dict[str, Arm], meta: dict) -> str:
 
 async def amain() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--split", default="all", choices=["all", "dev", "test"])
+    ap.add_argument("--split", default="all", choices=["all", "dev", "test", "fresh"])
     ap.add_argument("--arms", default="pipeline,noguard,baseline,rules")
     ap.add_argument("--mock", action="store_true", help="use the offline stand-in (plumbing check only)")
     ap.add_argument("--limit", type=int, default=0)

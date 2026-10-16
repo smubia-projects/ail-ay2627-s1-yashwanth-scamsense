@@ -1,0 +1,154 @@
+# FRESH cases (split: fresh). Written AFTER the first live eval run and BEFORE the prompt change that followed it,
+# as a clean check that the false-alarm fix wasn't just fitted to the cases we had already seen.
+# Not used for tuning. Still synthetic and still written by the system's author (see limitations in results.md).
+# 12 genuine messages (several deliberately contain 'scammy' words: urgent, link, OTP, transfer, verify) + 8 subtler scams.
+- id: f01_ninjavan_delivery
+  label: legit
+  category: delivery_notice
+  synthetic: true
+  split: fresh
+  text: "Ninja Van: Your parcel will arrive today. Our rider will call you before delivery. You can track it in the Ninja Van app or at https://www.ninjavan.co/en-sg/tracking. No payment is needed."
+- id: f02_bank_new_device
+  label: legit
+  category: bank_notice
+  synthetic: true
+  split: fresh
+  text: "UOB: A new device was used to log in to your UOB TMRW app at 2:14pm. If this was you, no action is needed. If not, please call the number on the back of your card. We will never ask for your PIN or OTP."
+- id: f03_hr_payroll
+  label: legit
+  category: normal_chat
+  synthetic: true
+  split: fresh
+  text: |
+    HR (Northwind): Reminder - please submit your claims in the HR portal by Friday 5pm, otherwise they roll into next month's payroll.
+    You: ok will do, thanks
+    HR (Northwind): Thanks! Payslips go out on the 28th as usual.
+- id: f04_friend_paynow_tickets
+  label: legit
+  category: normal_chat
+  synthetic: true
+  split: fresh
+  text: |
+    Shan: hey I bought the concert tickets for all 4 of us! $96 each, can u PayNow me by tmr? 🎶
+    You: yay thanks!! sending tonight
+    Shan: no rush, just before the weekend is fine
+- id: f05_insurance_renewal
+  label: legit
+  category: bank_notice
+  synthetic: true
+  split: fresh
+  text: "Great Eastern: Your motor policy is due for renewal on 30 Oct. Renew via the GE app or call your agent. You can also review your policy at https://www.greateasternlife.com. Please do not share your login details with anyone."
+- id: f06_school_fees
+  label: legit
+  category: normal_chat
+  synthetic: true
+  split: fresh
+  text: |
+    Mrs Lim (school office): Dear parent, term 4 fees of $120 are due by 31 Oct. Please pay through the school's Parents Gateway app or at the general office. Thank you.
+    Parent: Noted, will pay via the app this week.
+- id: f07_hospital_appt
+  label: legit
+  category: normal_chat
+  synthetic: true
+  split: fresh
+  text: "SGH: Your appointment is on Tue 21 Oct, 9:40am at Specialist Outpatient Clinic Block 6. Please bring your NRIC and arrive 15 min early. To reschedule, call the clinic or use the HealthHub app."
+- id: f08_refund_confirmation
+  label: legit
+  category: delivery_notice
+  synthetic: true
+  split: fresh
+  text: "Lazada: Your refund of $34.90 for order #5521908 has been processed to your original payment method and may take 3-7 working days to show. No action is required from you."
+- id: f09_mum_awareness
+  label: legit
+  category: scam_warning
+  synthetic: true
+  split: fresh
+  text: |
+    Mum: Aiyo I got a call saying my bank account has a problem and I must transfer money urgently. I hung up already.
+    You: good mum, that's a scam. Don't ever give them OTP or transfer anything.
+    Mum: ok I told your aunty also. Call 1799 if unsure right?
+- id: f10_coworker_urgent
+  label: legit
+  category: normal_chat
+  synthetic: true
+  split: fresh
+  text: |
+    Amir (colleague): urgent - the client needs the deck link in 10 mins, can u share the Drive folder with me?
+    You: sending now, check your email invite
+    Amir: got it, thanks a million 🙏
+- id: f11_telco_otp
+  label: legit
+  category: bank_notice
+  synthetic: true
+  split: fresh
+  text: "M1: Your verification code is 7391. It expires in 5 minutes. Do not share this code with anyone, including M1 staff."
+- id: f12_landlord_repair
+  label: legit
+  category: normal_chat
+  synthetic: true
+  split: fresh
+  text: |
+    Landlord: Hi, the plumber will come Thursday 10am to fix the sink. Is someone home? Please transfer the $80 service fee to me after, like last time.
+    Tenant: yes I'll be home, will PayNow after he's done
+    Landlord: great, thanks
+- id: f13_scam_polite_bank
+  label: scam
+  category: bank_phishing
+  synthetic: true
+  split: fresh
+  text: |
+    Linda (Maybank Security): Good afternoon sir, this is Linda from Maybank security. We noticed a transaction of $2,350 to an overseas merchant. Did you authorise it?
+    You: no I didn't
+    Linda (Maybank Security): Thank you for confirming. To block it I'll send a verification code to your phone. Kindly read it back to me so I can stop the payment.
+- id: f14_subtle_job
+  label: scam
+  category: fake_job
+  synthetic: true
+  split: fresh
+  text: |
+    Recruiter Kim: Hi, your resume was shortlisted by our client for a data entry role, $28/hour, fully remote. To onboard we need a photo of your NRIC (front and back) and your bank account for salary set-up. Please send today so we can lock your slot.
+- id: f15_invest_friend_group
+  label: scam
+  category: investment
+  synthetic: true
+  split: fresh
+  text: |
+    Coach Ryan: Welcome to the stock club everyone. Our AI picks gave 18% last month.
+    Member Aaron: joined last week, already up $1,400, withdrawals are instant
+    Member Pei: same here, Coach Ryan's signals are legit
+    Coach Ryan: New members: deposit a minimum of $1,000 into the club app to unlock the VIP signals today.
+- id: f16_parcel_police_variant
+  label: scam
+  category: gov_official_impersonation
+  synthetic: true
+  split: fresh
+  text: |
+    DHL Express: Our records show a package registered to your name was flagged for containing illegal goods. A case has been filed.
+    Officer Teo: This is Officer Teo, Cybercrime Division. We have your case file. You are required to cooperate and keep this confidential. To prove innocence, transfer your funds into the court-supervised account for audit.
+- id: f17_rental_deposit
+  label: scam
+  category: ecommerce_marketplace
+  synthetic: true
+  split: fresh
+  text: |
+    Agent Sam: The room is $950 inclusive of utilities, just 5 min from the MRT. I have 6 viewers this weekend, so to hold it please PayNow the $950 booking deposit to my friend (the owner is overseas) and I'll send the viewing details after.
+- id: f18_friend_hacked_account
+  label: scam
+  category: friend_family_impersonation
+  synthetic: true
+  split: fresh
+  text: |
+    Jess (friend): hey are you free? I'm stuck at the airport and my card got blocked 😭
+    Jess (friend): can you help buy $300 of Razer Gold pins and send me the codes? I'll pay you back tomorrow, my phone's about to die
+- id: f19_utilities_threat
+  label: scam
+  category: bank_phishing
+  synthetic: true
+  split: fresh
+  text: "SP Group: Your electricity will be disconnected today at 5pm due to an unpaid bill of $186.40. Pay now at https://sp-services-pay.top/bill to avoid disconnection."
+- id: f20_survey_reward
+  label: scam
+  category: gov_official_impersonation
+  synthetic: true
+  split: fresh
+  text: "Congratulations! You've been selected to receive a $500 FairPrice voucher for completing a 1-minute survey. Claim before midnight: https://fairprice-rewards.cc/claim and enter your card details for identity verification."

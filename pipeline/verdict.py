@@ -156,7 +156,8 @@ def fallback_evidence(annotations: list[MessageAnnotation], hits: list[RuleHit],
             cands.append(EvidenceItem(message_idx=a.idx, quote=a.quote, why=why))
     for c in ground_evidence(cands, messages):
         key = (c.message_idx, _NORM(c.quote))
-        if key not in seen and len(out) < limit:
+        overlap = any(c.message_idx == e.message_idx and (_NORM(c.quote) in _NORM(e.quote) or _NORM(e.quote) in _NORM(c.quote)) for e in out)
+        if key not in seen and not overlap and len(out) < limit:
             seen.add(key)
             out.append(c)
     return sorted(out, key=lambda e: e.message_idx)
