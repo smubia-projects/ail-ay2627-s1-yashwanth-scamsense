@@ -11,7 +11,7 @@ Non-obvious decisions made while building ScamSense, with the reason. Items mark
 | **No bank hotline numbers** | `content/*.md` | Deliberately omitted: the checklists say "use the number on the back of your card / official app". Adding a list of numbers would be a maintenance and trust liability. |
 | **Typology files** | `knowledge/typologies/*.yaml` | All `verified: false`. Written from general knowledge; compare with current SPF/ScamShield advisories. No URLs or statistics included on purpose. |
 | **Official domains list** | `knowledge/official_domains.yaml` | `verified: false`. Confirm each domain on the organisation's own site. A domain missing from the list is never treated as proof of a scam by itself. |
-| **Groq model IDs / Prompt Guard output format** | `config.py`, `llm/groq_client.py` | Model IDs checked against Groq's model page on 2026-10-16 (`openai/gpt-oss-120b`, `llama-3.3-70b-versatile`, `meta-llama/llama-prompt-guard-2-86m`). I could not run them (no API key in my environment): **the LLM path and the Prompt Guard response parsing have been tested only against mocks.** Run `python -m eval.run_eval` once with a key. |
+| **Groq model IDs / Prompt Guard** | `config.py`, `llm/groq_client.py` | Verified live on 2026-10-16: `openai/gpt-oss-120b` works in JSON mode; `meta-llama/llama-prompt-guard-2-86m` returns a bare float string (parser OK). First full eval run completed (see `eval/results.md`). |
 
 ## Product / pipeline
 

@@ -6,3 +6,4 @@ __pycache__/
 *.log
 eval/raw/
 eval/results_mock.md
+eval/raw_eval_log.txt
