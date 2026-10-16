@@ -101,6 +101,8 @@ python -m bot.app                                    # run the Telegram bot (lon
 python -m eval.run_eval                              # full evaluation → eval/results.md
 ```
 
+**No Telegram account or bot token needed to try it:** `python -m sim.server` opens a Telegram-style chat in your browser that drives the *real* bot handlers (forwards, buttons, Analyse, map, practice). It uses Groq if `GROQ_API_KEY` is set, otherwise the bannered offline stand-in.
+
 No key yet? `DEMO_MODE=true python -m bot.app` runs the bot with an **offline keyword stand-in** (clearly bannered "DEMO MODE", *not* an AI) so you can click through the UI.
 
 **Models** (all configurable): `openai/gpt-oss-120b` primary, `llama-3.3-70b-versatile` automatic fallback, `meta-llama/llama-prompt-guard-2-86m` for injection scoring — all on Groq. The `llm/` layer is a 3-method interface; swapping providers means writing one class (or setting `LLM_BASE_URL` for any OpenAI-compatible endpoint).
