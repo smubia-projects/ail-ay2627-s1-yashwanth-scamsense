@@ -55,3 +55,10 @@ Non-obvious decisions made while building ScamSense, with the reason. Items mark
 ## Stretch
 
 28. **Screenshots (OCR)** — see `pipeline/ocr.py` and the README: local Tesseract OCR → redaction → same pipeline. Optional `USE_VISION=true` is *not implemented* (it would send the raw image to the provider); the code and docs only describe it as a future option, so there is no hidden path that uploads images.
+
+## Game (`game/`, served by `sim/server.py`)
+
+29. **Inbox Defender is an addition for demos/education, separate from the bot.** Vanilla JS, no build step, no dependencies; levels are authored data in `game/levels.js` (never generated live, like practice mode). It reuses the same typology ids as `knowledge/typologies/` (checked by `tests/test_game_levels.py`).
+30. **The Scanner power-up calls the real pipeline** (`POST /api/scan` → `analyze()`), so the game demonstrates the actual product. It sends only fictional in-game text. Limited to 3 per level client-side and 40 per 10 min server-side. If no key is configured it falls back to the bannered offline stand-in.
+31. **Scenario text mimics real scam patterns but all names, numbers and sites are fictional.** Game hotlines/advice are not repeated in the game; the game links nothing to real organisations.
+32. **Progress is stored in browser `localStorage` only (try/catch, optional)**; nothing is sent to the server except Scanner requests.

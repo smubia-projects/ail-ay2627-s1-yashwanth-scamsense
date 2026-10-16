@@ -20,9 +20,13 @@ from types import SimpleNamespace
 
 from bot import handlers
 from config import get_settings
+from bot.ratelimit import RateLimiter
 from llm.mock import HeuristicMockLLM
 
 INDEX = Path(__file__).with_name("index.html")
+GAME_DIR = Path(__file__).resolve().parent.parent / "game"
+GAME_FILES = {"index.html": "text/html; charset=utf-8", "style.css": "text/css; charset=utf-8",
+              "game.js": "application/javascript; charset=utf-8", "levels.js": "application/javascript; charset=utf-8"}
 CHAT_ID, USER_ID = 1, 1
 
 
@@ -134,6 +138,18 @@ class Sim:
     async def press(self, data: str, mid: int) -> None:
         await handlers.on_button(self._update(callback=(data, mid)), self.ctx)
 
+    async def scan(self, msgs: list[dict]) -> dict:
+        """Run the REAL ScamSense pipeline over a game storyline (used by the game's Scanner power-up)."""
+        from pipeline.analyze import analyze
+        from pipeline.parse import from_forwards
+        from pipeline.retrieve import load_typologies
+        c = self.ctx.application.bot_data["ctx"]
+        pairs = [(str(m.get("sender", ""))[:40], str(m.get("text", ""))[:1500]) for m in msgs[:60]]
+        r = await analyze(from_forwards(pairs), c.llm, settings=c.s)
+        return {"verdict": r.verdict.value, "confidence": r.confidence, "reason": r.reason, "refused": r.refused,
+                "signals": [x.description for x in r.cross_party if x.description][:3], "degraded": r.degraded,
+                "typology": r.typology.name if r.typology else None, "demo": self.demo}
+
     def reset(self) -> None:
         self.ctx.application.bot_data["ctx"].sessions.drop(CHAT_ID)
         self.state = FakeBotState()
@@ -147,6 +163,7 @@ def make_server(port: int) -> tuple[ThreadingHTTPServer, Sim]:
     loop = asyncio.new_event_loop()
     threading.Thread(target=loop.run_forever, daemon=True).start()
     sim = Sim()
+    scan_limit = RateLimiter(40, 600)
 
     def run(coro):
         return asyncio.run_coroutine_threadsafe(coro, loop).result(timeout=120)
@@ -167,10 +184,21 @@ def make_server(port: int) -> tuple[ThreadingHTTPServer, Sim]:
             return {"demo": sim.demo, "messages": [m for m in sim.state.msgs if not m["deleted"]]}
 
         def do_GET(self):
-            if self.path.split("?")[0] in ("/", "/index.html"):
-                body = INDEX.read_bytes()
+            path = self.path.split("?")[0]
+            if path in ("/", "/index.html", "/sim") or path.startswith("/game/"):
+                if path in ("/", "/index.html"):
+                    f, ctype = GAME_DIR / "index.html", GAME_FILES["index.html"]
+                elif path == "/sim":
+                    f, ctype = INDEX, "text/html; charset=utf-8"
+                else:
+                    name = path[len("/game/"):]
+                    if name not in GAME_FILES or name == "index.html":
+                        return self.send_error(404)
+                    f, ctype = GAME_DIR / name, GAME_FILES[name]
+                body = f.read_bytes()
                 self.send_response(200)
-                self.send_header("Content-Type", "text/html; charset=utf-8")
+                self.send_header("Content-Type", ctype)
+                self.send_header("Cache-Control", "no-store")
                 self.send_header("Content-Length", str(len(body)))
                 self.end_headers()
                 self.wfile.write(body)
@@ -187,6 +215,10 @@ def make_server(port: int) -> tuple[ThreadingHTTPServer, Sim]:
                     run(sim.user_text(str(data.get("text", ""))[:20000], (data.get("forward_from") or "").strip()[:40] or None))
                 elif self.path == "/api/press":
                     run(sim.press(str(data.get("data", "")), int(data.get("msg_id", 0))))
+                elif self.path == "/api/scan":
+                    if not scan_limit.check(0)[0]:
+                        return self._json({"error": "rate_limited"}, 429)
+                    return self._json(run(sim.scan(list(data.get("messages", [])))))
                 elif self.path == "/api/reset":
                     sim.reset()
                 else:

@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ScamSense · Inbox Defender</title>
+<link rel="stylesheet" href="/game/style.css">
+</head>
+<body>
+<div id="bg"><i></i><i></i><i></i><i></i><i></i></div>
+<canvas id="fx"></canvas>
+<div id="floaters"></div>
+<div id="toasts"></div>
+
+<!-- ================= TITLE ================= -->
+<section id="screen-title" class="screen active">
+  <div class="title-wrap">
+    <div class="logo-shield">🛡️</div>
+    <h1 class="logo">Scam<span>Sense</span></h1>
+    <h2 class="subtitle">INBOX DEFENDER</h2>
+    <p class="tag">Your phone is blowing up. Some are friends. Some are <b>scammers working as a team</b>.<br>Can you tell which is which — before they empty your savings?</p>
+    <div class="title-btns">
+      <button class="big-btn pulse" id="btn-play">▶ PLAY</button>
+      <button class="big-btn ghost" id="btn-how">How to play</button>
+    </div>
+    <div class="title-foot">Fictional scenarios based on commonly reported scam patterns · An aid for learning, not a guarantee</div>
+  </div>
+  <div class="phone-float p1">📩<b>DBS-ALERT</b><em>Your account is locked!</em></div>
+  <div class="phone-float p2">👮<b>Inspector Lim</b><em>Do not tell anyone…</em></div>
+  <div class="phone-float p3">💕<b>Sarah</b><em>I sent you a gift!</em></div>
+  <div class="phone-float p4">🧔<b>CEO (new number)</b><em>Buy gift cards now</em></div>
+</section>
+
+<!-- ================= LEVELS ================= -->
+<section id="screen-levels" class="screen">
+  <div class="levels-head">
+    <button class="chip-btn" id="levels-back">← Title</button>
+    <h2>Choose your level</h2>
+    <div class="head-right"><span id="total-stars">⭐ 0</span><button class="chip-btn" id="snd-levels">🔊</button></div>
+  </div>
+  <div id="level-grid"></div>
+</section>
+
+<!-- ================= GAME ================= -->
+<section id="screen-game" class="screen">
+  <div class="hud">
+    <button class="chip-btn" id="game-menu">☰ Levels</button>
+    <div class="hud-level"><span id="hud-emoji"></span> <b id="hud-name"></b></div>
+    <div class="hud-stat money"><small>SAVINGS</small><b id="hud-money">$0</b></div>
+    <div class="hud-stat"><small>TRUST</small><b id="hud-lives">❤️❤️❤️</b></div>
+    <div class="hud-stat"><small>SCORE</small><b id="hud-score">0</b></div>
+    <div class="hud-stat"><small>SPEED</small><button class="chip-btn" id="btn-speed">Normal</button></div>
+    <button class="chip-btn" id="snd-game">🔊</button>
+  </div>
+  <div class="stage">
+    <div class="appwin" id="appwin">
+      <div class="titlebar"><span class="dots"><i></i><i></i><i></i></span><span id="app-title">Messages</span><span class="sim-tag">simulated</span></div>
+      <div class="appbody">
+        <aside class="contacts" id="contacts"></aside>
+        <section class="chat">
+          <header class="chat-head" id="chat-head">
+            <div class="empty-head">📨 Waiting for messages…</div>
+          </header>
+          <div class="messages" id="messages"><div class="empty-chat"><div>🔔</div><p>Your inbox is quiet…<br>for now.</p></div></div>
+          <div class="tray" id="tray"></div>
+          <div class="stamp" id="stamp"></div>
+          <div class="casefile" id="casefile"></div>
+        </section>
+      </div>
+    </div>
+    <aside class="side">
+      <div class="card mission"><h3>🎯 Mission</h3><p id="mission"></p></div>
+      <div class="card scan">
+        <h3>🛡️ ScamSense Scanner</h3>
+        <p>Not sure? Run the <b>real ScamSense AI</b> over this storyline (all linked chats together).</p>
+        <button class="big-btn small" id="btn-scan">Scan this storyline <span id="scan-left">(3)</span></button>
+      </div>
+      <div class="card flags"><h3>🔍 Red flags found <span id="flag-count">0</span></h3><ul id="flag-list"><li class="muted">Tap suspicious words in scam messages…</li></ul></div>
+    </aside>
+  </div>
+</section>
+
+<!-- ================= RESULT ================= -->
+<section id="screen-result" class="screen">
+  <div class="result-wrap">
+    <div id="result-banner"></div>
+    <div id="result-stars"></div>
+    <div id="result-stats"></div>
+    <div id="result-cases"></div>
+    <div class="result-btns">
+      <button class="big-btn ghost" id="res-menu">☰ Levels</button>
+      <button class="big-btn ghost" id="res-retry">↻ Replay</button>
+      <button class="big-btn pulse" id="res-next">Next level ▶</button>
+    </div>
+  </div>
+</section>
+
+<!-- ================= MODAL ================= -->
+<div id="modal" class="modal"><div class="modal-card" id="modal-card"></div></div>
+
+<script src="/game/levels.js"></script>
+<script src="/game/game.js"></script>
+</body>
+</html>

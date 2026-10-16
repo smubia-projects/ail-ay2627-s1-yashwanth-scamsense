@@ -114,7 +114,9 @@ python -m bot.app                                    # run the Telegram bot (lon
 python -m eval.run_eval                              # full evaluation → eval/results.md
 ```
 
-**No Telegram account or bot token needed to try it:** `python -m sim.server` opens a Telegram-style chat in your browser that drives the *real* bot handlers (forwards, buttons, Analyse, map, practice). It uses Groq if `GROQ_API_KEY` is set, otherwise the bannered offline stand-in.
+**🎮 Play the game (no Telegram, no token): `python -m sim.server`** opens **ScamSense: Inbox Defender**, a colourful desktop game with 6 levels. Several people text you at once, scammers hand you off to each other, you reply under time pressure, tap red flags and judge each chat, and a **Scanner power-up runs the real ScamSense pipeline** on the storyline. All scenarios are authored (not generated live). Progress is saved in your browser; add `#unlock` to the URL to unlock every level. The plain bot-style chat simulator is at `/sim`.
+
+Related: **No Telegram account or bot token needed to try it either:** `python -m sim.server` opens a Telegram-style chat in your browser that drives the *real* bot handlers (forwards, buttons, Analyse, map, practice). It uses Groq if `GROQ_API_KEY` is set, otherwise the bannered offline stand-in.
 
 No key yet? `DEMO_MODE=true python -m bot.app` runs the bot with an **offline keyword stand-in** (clearly bannered "DEMO MODE", *not* an AI) so you can click through the UI.
 
