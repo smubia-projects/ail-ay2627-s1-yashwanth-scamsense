@@ -75,7 +75,7 @@ flowchart TD
 | **Emergency advice drifting** | Emergency and recovery checklists are static files, no LLM | `content/emergency.md`, `content/recovery.md` |
 | **Over-trust** | Every result carries "aid, not a guarantee"; "Can't tell" explicitly says it is *not* "safe" | `strings.py` |
 
-`pytest` → **170 tests**, no network or API key needed.
+`pytest` → **169 tests**, no network or API key needed.
 
 ## Evaluation
 
@@ -108,7 +108,7 @@ What the numbers do and don't say:
 git clone … && cd scamsense
 python -m venv .venv && . .venv/bin/activate        # Windows: .venv\Scripts\activate
 pip install -r requirements-dev.txt
-pytest                                               # 170 tests, offline
+pytest                                               # 169 tests, offline
 
 cp .env.example .env                                 # add GROQ_API_KEY and TELEGRAM_BOT_TOKEN
 python cli.py examples/gov_impersonation.txt         # analyse a file end-to-end (add --mock to run without a key)
@@ -143,7 +143,7 @@ llm/        base interface · Groq client · mock/scripted clients (tests, demo)
 knowledge/  typologies/*.yaml (10 scam types, verified:false) · official_domains.yaml
 content/    emergency.md · recovery.md · privacy.md · welcome.md · practice_scenarios.yaml   (fixed, authored)
 eval/       cases/*.yaml (79) · run_eval.py · results.md
-tests/      170 tests: redaction, rules, parsing, schemas/never-safe, pipeline safety, injection, abuse, bot flow, practice
+tests/      169 tests: redaction, rules, parsing, schemas/never-safe, pipeline safety, injection, abuse, bot flow, practice
 DECISIONS.md   every non-obvious decision + items the owner must verify
 ```
 

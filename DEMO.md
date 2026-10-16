@@ -1,6 +1,6 @@
 # 3-minute demo script
 
-**Fun option (no Telegram needed): `python -m sim.server` and play _Inbox Defender_ — start with level 2 "Handoff Hotel" (a courier hands you to a fake police officer, then a fake prosecutor), use the Scanner button to show the real analyser, then finish on level 6 "Chaos Day".**
+**Fun option (no Telegram needed): `python -m sim.server` and play _Inbox Defender_, a typed detective game. Start with case 1 "The Missed Parcel": type "who are you?", "can I verify this on the official site?", "can we video call?" to the ring members as they hand you from a fake SingPost text to a fake courier, a fake police officer and a fake prosecutor. Show the 🔎 clues, the ⚡ contradiction when two "officials" quote different case numbers, and the 🛡️ Scanner (real AI) button. Finish on case 6 "The Syndicate".**
 
 **Setup:** bot running with a real `GROQ_API_KEY` (not DEMO_MODE). Have Telegram open on a phone or desktop. Have the three chats below ready to forward/paste.
 
