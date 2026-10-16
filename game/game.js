@@ -124,7 +124,7 @@ function newGame(idx) {
   const L = LEVELS[idx];
   G = { idx, L, money: L.savings, lives: 3, score: 0, scans: 3, alive: true, active: null, chats: {}, order: [], found: 0, clues: 0,
         timeouts: new Set(), clock: 9 * 60 + 41, done: false, finished: false, nodes: {}, seq: 0, foundSet: new Set(), facts: {}, contra: new Set(),
-        minQ: L.id === 1 ? 1 : 2 };
+        minQ: L.id === 1 ? 1 : (L.id <= 3 ? 2 : 3) };
   for (const def of L.chats) G.chats[def.id] = { def, id: def.id, msgs: [], unread: 0, started: false, halted: false, finished: false,
     verdict: null, typing: false, cancelled: false, found: 0, correct: null, open: null, busy: false, evidence: [], children: collectGos(def) };
 }
@@ -441,17 +441,15 @@ $("#messages").addEventListener("click", e => {
 });
 
 /* ------------------------------------------------------------ verdicts */
-function cancelChildren(chat, why, clues) {
-  const cancelled = [];
-  const walk = c => { for (const id of c.children) { const k = G.chats[id]; if (k && !k.started && !k.cancelled) { k.cancelled = true; cancelled.push(k); walk(k); } } };
-  walk(chat);
-  const direct = cancelled.filter(k => chat.children.includes(k.id));
-  if (direct.length && why === "good" && clues >= 2) {
-    const bonus = 50 * direct.length; addScore(bonus);
-    toast(`🏆 Early bird! You exposed it before ${direct.map(k => k.def.name).join(" & ")} even joined in! +${bonus}`, "good");
-    const [x, y] = center($("#appwin")); confetti(x, y - 60, 60);
-  }
-  return cancelled;
+function spawnChildren(chat) {
+  // The ring does not stop when you expose one member: scammers use other numbers. The next members contact you anyway,
+  // so you must cross-examine every voice. (Optional contacts only appear if you trigger them, e.g. by calling a saved number.)
+  const kids = chat.children.map(id => G.chats[id]).filter(k => k && !k.started && !k.def.optional);
+  kids.forEach((k, i) => later(() => {
+    if (!G || !G.alive || k.started) return;
+    toast(`📩 They're not giving up: ${k.def.name} is now texting you`, "info");
+    startChat(k);
+  }, 2500 / spd() + i * 1500));
 }
 function cluesOf(chat) { const o = chat.open; return o ? o.tells.size + o.clears.size + o.contras : 0; }
 
@@ -468,13 +466,13 @@ function verdict(chat, v) {
     stamp(truth === "scam" ? "SCAM BLOCKED" : "VERIFIED REAL", "good"); confetti(cx, cy + 120, 70);
     if (clues >= 1) { const bonus = Math.min(100, 20 * clues); addScore(bonus); toast(`🔎 Detective bonus +${bonus} for ${clues} solid clue${clues === 1 ? "" : "s"}`, "good"); }
     else toast("Right call, but a gut feeling. Asking the right questions makes you sure.", "info");
-    if (truth === "scam") cancelChildren(chat, "good", clues);
+    if (truth === "scam") spawnChildren(chat);
   } else if (truth === "real") {
     loseLife(); addScore(-50); Sfx.bad(); flash("red"); stamp("THAT WAS REAL!", "badc");
-    toast("Oops — you accused someone genuine. Trust −1 💔", "bad"); cancelChildren(chat, "silent", clues);
+    toast("Oops — you accused someone genuine. Trust −1 💔", "bad"); spawnChildren(chat);
   } else {
     changeMoney(-1000); loseLife(); stamp("IT WAS A SCAM!", "badc");
-    toast("You trusted a scammer. −$1,000 and −1 trust", "bad"); cancelChildren(chat, "silent", clues);
+    toast("You trusted a scammer. −$1,000 and −1 trust", "bad"); spawnChildren(chat);
   }
   syncComposer(); renderHead(chat); renderContact(chat);
   $$("#messages .bubble.them .f:not(.found)").forEach(f => truth === "scam" && f.classList.add("missed"));
@@ -527,7 +525,9 @@ function startLevel(idx) {
 
 function starsFor(ok) {
   if (!ok) return 0;
-  if (G.lives === 3 && G.money >= .9 * G.L.savings) return 3;
+  const chats = Object.values(G.chats).filter(c => c.started);
+  const wellInvestigated = chats.length > 0 && chats.filter(c => c.verdict && cluesOf(c) >= 2).length >= Math.ceil(.75 * chats.length);
+  if (G.lives === 3 && G.money >= .9 * G.L.savings && wellInvestigated) return 3;   // flawless AND thorough
   if (G.lives >= 2 && G.money >= .5 * G.L.savings) return 2;
   return 1;
 }
@@ -613,7 +613,7 @@ function howTo() {
     <li>Each <b>case</b> is one organised scam operation: its members hand you to each other and back each other up. A few <b>real</b> contacts are mixed in, and some real ones sound as pushy as the scammers.</li>
     <li><b>You TYPE.</b> Ask who they are, whether you can check them, what they know, whether you can video call… Use <b>🧾 Your life</b> to spot claims that don't fit.</li>
     <li>You can't judge a chat until you've asked questions. <b>Clues</b> (🔎 warning signs, ✅ good signs, ⚡ contradictions between members) earn points and bonuses.</li>
-    <li>Careful: saying "ok, sending it" to a scammer <b>costs real savings</b>. Accusing a genuine sender costs <b>trust</b>.</li>
+    <li>Careful: saying "ok, sending it" to a scammer <b>costs real savings</b>. Accusing a genuine sender costs <b>trust</b>. Exposing one ring member doesn't stop the ring: <b>the next voice will contact you</b>. 3 stars need a thorough investigation of most chats, not just survival.</li>
     <li>Tap suspicious words for 🚩 red flags. Stuck? <b>💡 Hint</b> (−20) or the <b>🛡️ ScamSense Scanner</b> (real AI, 3 per case).</li></ol>
     <button class="big-btn small" onclick="document.getElementById('modal').classList.remove('show')">Let's go!</button>`);
 }
