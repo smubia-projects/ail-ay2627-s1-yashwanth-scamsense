@@ -75,7 +75,7 @@ flowchart TD
 | **Emergency advice drifting** | Emergency and recovery checklists are static files, no LLM | `content/emergency.md`, `content/recovery.md` |
 | **Over-trust** | Every result carries "aid, not a guarantee"; "Can't tell" explicitly says it is *not* "safe" | `strings.py` |
 
-`pytest` → **169 tests**, no network or API key needed.
+`pytest` → **189 tests**, no network or API key needed.
 
 ## Evaluation
 
@@ -108,7 +108,7 @@ What the numbers do and don't say:
 git clone … && cd scamsense
 python -m venv .venv && . .venv/bin/activate        # Windows: .venv\Scripts\activate
 pip install -r requirements-dev.txt
-pytest                                               # 169 tests, offline
+pytest                                               # 189 tests, offline
 
 cp .env.example .env                                 # add GROQ_API_KEY and TELEGRAM_BOT_TOKEN
 python cli.py examples/gov_impersonation.txt         # analyse a file end-to-end (add --mock to run without a key)
@@ -116,7 +116,7 @@ python -m bot.app                                    # run the Telegram bot (lon
 python -m eval.run_eval                              # full evaluation → eval/results.md
 ```
 
-**🎮 Play the game (no Telegram, no token): `python -m sim.server`** opens **ScamSense: Inbox Defender**, a colourful desktop detective game with 6 cases (easy → expert). Each case is **one organised scam operation**: a ring whose members hand you from one to the next, back each other up and reuse details, with **real contacts mixed in** (some of them as pushy as the scammers). Nothing is multiple choice and there are no timers: **you type your own questions** ("who are you?", "can I call you back on the official number?", "can we video call?", "what's the amount?"). A **"Your life" card** gives facts to check claims against, and some scammers know real details about you and pass the easy checks. Typed text is understood by the **real LLM** (43/44 = 98% on a 44-phrase check; 80% for the offline regex fallback), but **every reply is authored**; the AI never writes scam dialogue. Clues (🔎 tells, ✅ good signs, ⚡ contradictions between ring members) earn points; saying "ok, sending it" to a scammer costs savings; accusing a genuine sender costs trust; you can't judge a chat before asking questions, and exposing one ring member never stops the ring: the next voice contacts you anyway. A **Scanner power-up** runs the real ScamSense pipeline on the whole storyline. Progress is saved in your browser (add `#unlock` to the URL to open every case). The plain bot-style chat simulator is at `/sim`.
+**🎮 Play the game (no Telegram, no token): `python -m sim.server`** opens **ScamSense: Inbox Defender**, a colourful desktop detective game with 6 cases (easy → expert). Each case is **one organised scam operation**: a ring whose members hand you from one to the next, back each other up and reuse details, with **real contacts mixed in** (some of them as pushy as the scammers). Nothing is multiple choice and there are no timers: **you type your own questions** ("who are you?", "can I call you back on the official number?", "can we video call?", "what's the amount?"). A **"Your life" card** gives facts to check claims against, and some scammers know real details about you and pass the easy checks. The characters are **voiced by the real LLM in character**, using fixed authored personas (who they are, what they know, what they want, facts they must state consistently). Each case has a **realism level**: at the higher levels the scammers are courteous, specific and subtle, answer most checks smoothly, and only slip when you press the *same* angle twice; the genuine contacts sound like busy humans. In code (not the LLM) each turn decides whether a character may slip, so clues are grounded. Guardrails: the server only voices the authored cast (it never takes persona text from the browser), player text is PII-redacted, attempts to make a character write a scam message or break character get an in-character shrug, only authored links/numbers can appear, and any LLM failure falls back to authored scripted replies (what you get offline). Understanding of what you typed was 43/44 = 98% on a 44-phrase check (80% for the regex fallback). Clues (🔎 tells, ✅ good signs, ⚡ contradictions between ring members) earn points; saying "ok, sending it" to a scammer costs savings; accusing a genuine sender costs trust; you can't judge a chat before asking questions, and exposing one ring member never stops the ring: the next voice contacts you anyway. A **Scanner power-up** runs the real ScamSense pipeline on the whole storyline. Progress is saved in your browser (add `#unlock` to the URL to open every case). The plain bot-style chat simulator is at `/sim`.
 
 Related: **No Telegram account or bot token needed to try it either:** `python -m sim.server` opens a Telegram-style chat in your browser that drives the *real* bot handlers (forwards, buttons, Analyse, map, practice). It uses Groq if `GROQ_API_KEY` is set, otherwise the bannered offline stand-in.
 
@@ -143,7 +143,7 @@ llm/        base interface · Groq client · mock/scripted clients (tests, demo)
 knowledge/  typologies/*.yaml (10 scam types, verified:false) · official_domains.yaml
 content/    emergency.md · recovery.md · privacy.md · welcome.md · practice_scenarios.yaml   (fixed, authored)
 eval/       cases/*.yaml (79) · run_eval.py · results.md
-tests/      169 tests: redaction, rules, parsing, schemas/never-safe, pipeline safety, injection, abuse, bot flow, practice
+tests/      189 tests: redaction, rules, parsing, schemas/never-safe, pipeline safety, injection, abuse, bot flow, practice
 DECISIONS.md   every non-obvious decision + items the owner must verify
 ```
 

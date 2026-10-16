@@ -265,10 +265,10 @@ function startChat(chat) {
   runScript(chat);
 }
 
-async function typingThen(chat, text) {
+async function typingThen(chat, text, quick = false) {
   chat.typing = true; renderContact(chat); if (G.active === chat.id) syncTyping();
   const plain = parseMarkup(text).plain;
-  await wait(Math.min(2400, 650 + plain.length * 16));
+  await wait(quick ? Math.min(1400, 350 + plain.length * 9) : Math.min(2400, 650 + plain.length * 16));
   chat.typing = false;
   if (!alive(chat)) { renderContact(chat); if (G && G.active === chat.id) syncTyping(); return; }
   addMsg(chat, "them", text);
@@ -297,7 +297,7 @@ function mergeSpec(chat, spec) {
 
 function runOpen(chat, rawSpec) {
   const m = mergeSpec(chat, rawSpec);
-  chat.open = { m, left: m.budget, n: 0, over: false, seen: new Set(), counts: {}, tells: new Set(), clears: new Set(), contras: 0 };
+  chat.open = { m, left: m.budget, n: 0, over: false, seen: new Set(), sigSeen: new Set(), counts: {}, icount: {}, fcount: {}, tells: new Set(), clears: new Set(), contras: 0 };
   renderHead(chat); syncComposer();
   if (!G.tipShown) { G.tipShown = true; toast("⌨️ TYPE like you would in real life. Ask questions. Limited questions per chat!", "info"); }
   return new Promise(res => { chat.open.end = res; });
@@ -348,10 +348,13 @@ async function handleTyped(chat, text) {
   const o = chat.open; chat.busy = true; o.n++; o.left--;
   addMsg(chat, "me", text); renderHead(chat); syncComposer();
   chat.typing = true; renderContact(chat); if (G.active === chat.id) syncTyping();
-  const intent = await classify(text);
+  let remote = null;
+  if (serverLLM && chat.def.style !== "bot") remote = await askServer(chat, text);   // in-character reply written by the AI
+  const intent = remote ? remote.intent : await classify(text);                      // else: classify + authored reply
   chat.typing = false;
   if (!alive(chat)) { chat.busy = false; syncComposer(); return; }
-  await respond(chat, intent);
+  if (intent) o.icount[intent] = (o.icount[intent] || 0) + 1;
+  await respond(chat, intent, remote);
   if (!alive(chat)) { chat.busy = false; return; }
   const ev = o.m.events[o.n];
   if (ev && !o.over) for (const s of ev) { if (typeof s === "string") await typingThen(chat, s); else if (s.go && G.chats[s.go]) startChat(G.chats[s.go]); }
@@ -359,7 +362,37 @@ async function handleTyped(chat, text) {
   chat.busy = false; renderHead(chat); syncComposer();
 }
 
-async function respond(chat, intent) {
+async function askServer(chat, text) {
+  try {
+    const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), 25000);
+    const hist = chat.msgs.filter(m => m.from !== "sys").slice(-11, -1).map(m => ({ from: m.from, text: m.plain }));
+    const r = await fetch("/api/chat", { method: "POST", headers: { "Content-Type": "application/json" }, signal: ctl.signal,
+      body: JSON.stringify({ case: G.L.id, chat: chat.id, history: hist, text, counts: chat.open.icount, factCounts: chat.open.fcount }) });
+    clearTimeout(t); const j = await r.json();
+    return j && j.reply && !j.fallback ? j : null;
+  } catch { return null; }
+}
+
+async function respondRemote(chat, intent, r) {
+  const o = chat.open, m = o.m;
+  await typingThen(chat, r.reply, true);
+  if (!alive(chat)) return;
+  if (intent && intent.startsWith("comply_") && chat.def.truth === "scam") {      // falling for it costs real savings
+    const loss = m.loss[intent] || { money: -1500, life: 1, say: "You fell for it. -$1,500." };
+    changeMoney(loss.money); if (loss.life) loseLife(); toast(loss.say, "bad"); Sfx.bad();
+    o.m.ultimatum = []; endOpen(chat); checkFail(); return;
+  }
+  if (r.go && G.chats[r.go]) startChat(G.chats[r.go]);
+  if (r.signal && !o.sigSeen.has(r.signal.intent)) {                              // a clue, grounded by server-side code
+    o.sigSeen.add(r.signal.intent);
+    if (r.signal.kind === "tell") { o.tells.add(r.signal.intent); addFinding(chat, "tell", r.signal.label); }
+    else { o.clears.add(r.signal.intent); addFinding(chat, "clear", r.signal.label); }
+  } else if (intent && !o.seen.has(intent)) { o.seen.add(intent); addScore(5); }
+  if (r.fact) { o.fcount[r.fact.key] = (o.fcount[r.fact.key] || 0) + 1; checkFact(chat, r.fact.key, r.fact.value); }
+}
+
+async function respond(chat, intent, remote) {
+  if (remote && remote.reply) return respondRemote(chat, intent, remote);
   const o = chat.open, m = o.m, key = intent || "_none";
   // falling for it: agreeing to pay / share / install
   if (intent && intent.startsWith("comply_") && chat.def.truth === "scam") {
@@ -373,7 +406,7 @@ async function respond(chat, intent) {
   let list = (intent && m.replies[intent]) || m.replies._all || null;
   if (!list) list = m.fallback;
   const k = o.counts[key] = (o.counts[key] || 0) + 1;
-  let item = list[Math.min(k - 1, list.length - 1)];
+  let item = list === m.fallback ? list[(k - 1) % list.length] : list[Math.min(k - 1, list.length - 1)];
   if (k > 1 && list.length === 1 && intent) item = { m: `I already answered that. ${fill(m.fallback[0], m.vars)}` };
   const reply = typeof item === "string" ? { m: item } : item;
   await typingThen(chat, fill(reply.m, m.vars));

@@ -32,7 +32,7 @@ const TYPOLOGY_NAMES = {
 const INTENTS = {
   id:       { hint: "Who exactly are they?", desc: "asks who they are: name, staff/employee/badge/licence number, company or department, or where they are based",
               keys: /\bwho (are|is) (you|this)\b|\byour (full )?name\b|\b(staff|employee|badge|officer|id) ?(number|no\.?|id)\b|\bwhich (company|bank|department|branch|firm|agency)\b|\bwhat company\b|\bshow (me )?(your )?(id|identification)\b|\bwhere do you work\b|\bwhere (are|r) you (from|based|now)\b/i },
-  callback: { hint: "Can I verify them myself, through a number or site I look up?", desc: "wants to verify independently: call back on an official number they look up themselves, check the official website or app, call the person's saved number, or go to a branch",
+  callback: { hint: "Can I verify them myself, through a number or site I look up?", desc: "wants to verify independently of this chat: call back on an official number they look up themselves, check an official register / regulator list / website / app, call the person's saved number, or go to a branch or office",
               keys: /call (you|them|him|her|the (bank|hotline|police|company|boss|office)) back|hang up and (call|dial)|(official|real|main|usual|saved|old) (number|hotline|website|site|app|channel|line)|number (on|at) the back of my card|look up (the|your) (number|hotline)|verify (this |it )?(with|through|via|on|myself|independently)|(check|confirm) (with|on|through) (the|my) (bank|app|website|police|regulator|mas|boss|office)|visit (the |a )?(branch|office|station)|go to the (branch|police)|(mas|regulator) (list|directory|register)|call (him|her|mr|mrs) (on|at)/i },
   video:    { hint: "Would a real one mind a video call or meeting?", desc: "asks for a video call, voice call, or to meet in person",
               keys: /video ?call|facetime|zoom|google meet|can we (meet|call|talk|speak)|let'?s (meet|call)|meet (up|in person)|(phone|voice) call|call me|\bshow (me )?your face\b|\bsend (me )?a (selfie|photo|pic)/i },
@@ -46,13 +46,13 @@ const INTENTS = {
               keys: /\b(think about|think it over|sleep on)\b|ask (my )?(wife|husband|mum|mom|dad|son|daughter|family|friend|lawyer|bank|boss|colleague)|(talk|speak|check) (to|with) (my )?(wife|husband|mum|mom|dad|family|friend|lawyer|bank|colleague)|give me (some )?(time|a (minute|while|day))|\blater\b|tomorrow|not now|i need time|let me (think|check)/i },
   platform: { hint: "Why not use the official app or the proper system?", desc: "insists on staying in the official app/platform/system, paying through it, going through proper channels or meeting in person, instead of switching apps or doing a transfer",
               keys: /(stay|keep|use|chat|pay|do it|process it) (on|in|through|via) (the )?(app|platform|carousell|shopee|lazada|official|system|portal)|why (whatsapp|telegram|another app|move|switch)|(cash|meet) (on|in) (person|collection|delivery)|cash on (delivery|collection)|in[- ]app (payment|chat)|not (on|via|through) (whatsapp|telegram)|(interview|talk|chat) (here|on (linkedin|the (site|portal|platform)))|(proper|normal|usual) (channel|process|procedure|way)|two approvals|finance system/i },
-  linkcheck:{ hint: "Is that link, site or app really official?", desc: "questions a link, website, domain, email address or app: asks if it is official, says it looks fake, or asks for the official address",
+  linkcheck:{ hint: "Is that link, site or app really official?", desc: "questions a SPECIFIC link, website, domain, email address or app that the other person gave: asks if it is official, says it looks fake, or asks for the official address (NOT the same as checking an official register or calling the real organisation, which is the callback intent)",
               keys: /(is|are) (this|that|the|your) (link|website|site|domain|app|url|portal|page|email)|(link|site|website|domain|url|email) (looks?|seems?|is) (fake|fishy|suspicious|weird|strange)|official (link|website|site|page|domain|careers|email)|(why|what) (is )?(the )?(link|domain|url)|\.(top|xyz|cc)\b|won'?t click|not (going to |gonna )?click|app store|play store/i },
   refuse:   { hint: "Say no.", desc: "refuses to pay, send, share or install anything, says it sounds like a scam, or says they will not do it",
               keys: /\b(no|nope|nah)\b.*\b(pay|send|share|give|transfer|install|click|otp|code|password|money)\b|(won'?t|will not|not going to|never|refuse to|can'?t) (pay|send|share|give|transfer|install|click|do (that|this)|tell you)|\bscam\b|\bfraud\b|sounds? (fake|like a scam|fishy|suspicious)|\bnot (a )?real\b|stop (messaging|contacting|texting)|leave me alone|\bbye\b|i('m| am) not (interested|comfortable)/i },
   family:   { hint: "Say you'll tell someone or report it.", desc: "says they will tell family, colleagues or friends, or report them to the police, the bank, ScamShield or the platform",
               keys: /(report|tell|inform|call) (you|this|it|them|the )?(to )?(the )?(police|bank|1799|scamshield|platform|carousell|family|my (mum|mom|dad|wife|husband|son|daughter|boss))|i('ll| will| am going to) (report|tell|call the police|block)|scamshield|\b1799\b/i },
-  comply_pay:    { hint: "", desc: "agrees to send or pay money, gift cards or crypto, or asks how or where to pay or transfer",
+  comply_pay:    { hint: "", desc: "agrees to send or pay money, gift cards or crypto to someone, or asks how or where to pay or transfer it",
               keys: /\b(ok(ay)?|sure|fine|alright|yes|yeah|yep|will do|sending|i'?ll (pay|send|transfer|approve)|let me (pay|send|transfer)|just sent|paying|transferr?ing)\b.*\b(pay|paid|send|sent|transfer|money|\$|deposit|fee|gift ?cards?|bitcoin|crypto|paynow|account|payment)\b|how (do|can|should) i (pay|send|transfer)|where (do|should) i (pay|send|transfer)|what('s| is) the account/i },
   comply_cred:   { hint: "", desc: "agrees to give, or sends, an OTP, verification code, password, PIN, NRIC, card or bank details, Singpass, or personal documents",
               keys: /\b(my|the) (otp|code|password|pin|nric|ic|card number|cvv|singpass|account number)\b.*\b(is|are|:)|\b(otp|code|pin|password)( is|:)?\s*\d{3,}|\bhere('s| is| are) (my|the) (otp|code|password|pin|nric|ic|card|details|number)|\b(sure|ok(ay)?|yes|will do|sending)\b.*\b(otp|code|password|pin|nric|ic|card details|singpass|resume|documents?)\b/i },
@@ -88,7 +88,7 @@ const STYLES = {
     },
     tells: { why: "Used fear to justify moving money", callback: "Steered me away from official lines", video: "Refused any live verification", details: "Couldn't state one checkable detail",
              platform: "Insisted on a private chat", delay: "Rushed me", family: "Demanded secrecy", refuse: "Threatened me when I said no" },
-    fallback: ["Please focus and answer my question."],
+    fallback: ["Sorry, I need you to answer my earlier question first.", "I understand, but we do need to resolve this today.", "Let me make this simple: can you confirm you can proceed?"],
   },
   business: {
     vars: { videoExcuse: "I'm travelling at the moment. Text is easier.", platformPush: "Let's move to WhatsApp, it's much faster.", rush: "The offer closes today though.", linkReply: "It's our secure portal, everyone uses it." },
@@ -107,7 +107,7 @@ const STYLES = {
     },
     tells: { callback: "Avoided any independent check", video: "Wouldn't meet or video call", platform: "Pushed me off the official platform", delay: "Pressured me with a deadline",
              family: "Asked me to keep it quiet", linkcheck: "Doubled down on a suspicious link", refuse: "Pushed back when I said no" },
-    fallback: ["So shall we proceed?"],
+    fallback: ["Sure. So shall we proceed?", "No problem. Whenever you're ready, let me know.", "Happy to help with any other questions. Shall we continue?"],
   },
   friendly: {
     vars: { rush: "(but the program closes soon!)", platformPush: "Let's chat on Telegram, it's more private 💕", linkReply: "It's totally safe, my uncle uses it too!" },
@@ -125,7 +125,7 @@ const STYLES = {
       refuse: ["I thought you cared about me… 💔"],
     },
     tells: { callback: "Guilt-tripped me for wanting to verify", video: "Dodges video calls", platform: "Wanted a private app", family: "Asked me to keep it secret", refuse: "Used emotional pressure when I said no", linkcheck: "Vouched for a suspicious site" },
-    fallback: ["Haha you're funny! Tell me more about you 😊"],
+    fallback: ["Haha you're funny! Tell me more about you 😊", "Aww 😊 what else do you like doing?", "You always make me smile 😄 how was your day?"],
   },
   boss: {
     vars: { why: "It's a confidential payment before the deadline. I'll explain after.", linkReply: "No link needed. Just the transfer." },
@@ -143,7 +143,7 @@ const STYLES = {
       refuse: ["I'm disappointed. I expected better from you."],
     },
     tells: { callback: "Refused every way of checking it was really him", video: "Wouldn't be seen or heard", reference: "Skipped normal paperwork", platform: "Wanted it kept off the company system", delay: "Rushed me", family: "Demanded secrecy", refuse: "Guilt-tripped me" },
-    fallback: ["Just confirm you'll handle it."],
+    fallback: ["Understood. Can you confirm you'll handle it today?", "OK. I'm depending on you for this.", "Thanks. Keep me posted."],
   },
   legit: {
     vars: { official: "the official website", app: "the official app" },
@@ -165,7 +165,7 @@ const STYLES = {
     },
     clears: { callback: "Welcomed independent verification", reference: "Gave proof I can check in the official app", details: "Gave specifics that matched my records",
               platform: "Sent me to the official channel", delay: "Applied no pressure", linkcheck: "Sent no link and told me to use the official site" },
-    fallback: ["Is there anything about this I can clarify for you?"],
+    fallback: ["Is there anything about this I can clarify for you?", "Happy to help, just let me know what you need.", "No worries. Anything else you want to check?"],
   },
 };
 STYLES.legit_pushy = {
@@ -180,21 +180,21 @@ STYLES.legit_pushy = {
 const LEVELS = [
   /* ==================================================================== 1 */
   {
-    id: 1, diff: "easy", name: "The Missed Parcel", emoji: "📦", theme: "whatsapp", colors: ["#7c4dff", "#ff4081"], savings: 5000,
+    id: 1, diff: "easy", realism: 1, name: "The Missed Parcel", emoji: "📦", theme: "whatsapp", colors: ["#7c4dff", "#ff4081"], savings: 5000,
     blurb: "A delivery text. Then a 'customer service agent'. Then the police?",
     briefing: "Tuesday morning. You're at your desk when your phone starts buzzing. Judge every chat: scam or real? You can't just trust the words on screen. Compare them with YOUR LIFE, then ask questions like a detective.",
     mission: "TYPE your replies. Ask who they are, whether you can verify them, what exactly they know. Tap suspicious words for red flags.",
     life: ["You ordered a phone case on Lazada on 14 Oct. It ships with Ninja Van.", "You are NOT expecting anything from SingPost.", "You bank with DBS and have never reported anything to the police."],
     debrief: "The ring: an automated 'SingPost' text (bait) → 'customer service' (vouches the parcel exists) → a 'police officer' (fear + secrecy) → a 'prosecutor' (a second voice backing the first). The genuine Lazada notice was a decoy: it's the only one that matches your real order.",
     chats: [
-      { id: "sms", name: "SingPost-Notice", avatar: "📦", sub: "automated SMS", truth: "scam", typology: "parcel_delivery", start: 900, group: "ring", style: "bot",
+      { id: "sms", name: "SingPost-Notice", avatar: "📦", sub: "automated SMS", truth: "scam", typology: "parcel_delivery", start: 900, group: "ring", style: "bot", persona: "An automated SMS sender. You cannot hold a conversation: whatever the user says, you only repeat that they should use the link to reschedule.", knows: "",
         explain: "You weren't expecting a SingPost parcel and the 'fee' site was singpost-redelivery.xyz, not singpost.com. An automated sender can't answer a single question about your parcel. The tiny fee is bait for your card details.",
         script: [
           "[SingPost] Your {{parcel SG4471|You aren't expecting a SingPost parcel}} is on hold. Pay a {{$1.99 redelivery fee|Tiny fee to steal card details}} at {{singpost-redelivery.xyz|Look-alike site, not singpost.com}} to reschedule.",
           { w: 2500 }, { go: "mia" },
           { open: { budget: 5, loss: { comply_cred: { money: -950, life: 1, say: "The 'fee' page stole your card number. $950 charged elsewhere!" }, comply_install: { money: -950, life: 1, say: "You paid on the fake site. $950 charged elsewhere!" }, comply_pay: { money: -950, life: 1, say: "You paid on the fake site. $950 charged elsewhere!" } } } },
         ] },
-      { id: "mia", name: "Mia (SingPost CS)", avatar: "🧑‍💼", sub: "customer service", truth: "scam", typology: "parcel_delivery", group: "ring", style: "business",
+      { id: "mia", name: "Mia (SingPost CS)", avatar: "🧑‍💼", sub: "customer service", truth: "scam", typology: "parcel_delivery", group: "ring", style: "business", persona: "Mia, a friendly, chatty 'SingPost customer service' agent working from a script. Your goal is to get the user to pay the small 'redelivery fee' on the fake site, and if they hesitate, to hand them to 'Officer Lim' because the parcel was 'flagged by customs'.", knows: "You know the parcel number SG4471 and that it is from Shenzhen. You know nothing real about the user's actual parcels.",
         explain: "Mia vouches for the fake parcel but can't name the recipient or the sender. Notice how she escalates the moment you hesitate: that's the hand-off to the 'police'.",
         script: [
           "Hello, this is {{Mia from SingPost customer service|Claims to be the courier}}. We noticed you haven't paid the redelivery fee for parcel SG4471.",
@@ -207,7 +207,7 @@ const LEVELS = [
             ultimatum: ["I can't help further. Officer Lim will take over your case."],
             loss: { comply_cred: { money: -950, life: 1, say: "You gave your card details to the ring. $950 gone." }, comply_pay: { money: -950, life: 1, say: "You paid the 'fee' on the fake site. $950 gone." }, comply_install: { money: -950, life: 1, say: "The fake page drained your card. $950 gone." } } } },
         ] },
-      { id: "lim", name: "Inspector Lim", avatar: "👮", sub: "+65 9123 4567", truth: "scam", typology: "gov_official_impersonation", group: "ring", style: "authority",
+      { id: "lim", name: "Inspector Lim", avatar: "👮", sub: "+65 9123 4567", truth: "scam", typology: "gov_official_impersonation", group: "ring", style: "authority", persona: "Inspector Lim, a calm, authoritative fake police officer. Your goal is to persuade the user to move their savings into a 'safe account' for verification, and to keep it quiet. You use the case reference given in your facts.", knows: "You know the parcel number SG4471 from the first contact.",
         explain: "He reuses Mia's parcel number inside his 'case reference', which sounds consistent, but he gives no way to verify him, forbids you from calling the real police, and demands secrecy. Real police never ask you to move money.",
         script: [
           "I am {{Inspector Lim, Singapore Police Force|Claimed authority}}. Parcel SG4471 contained illegal items and your name is on it.",
@@ -219,7 +219,7 @@ const LEVELS = [
             ultimatum: ["Enough questions. Transfer your savings to the safe account NOW or a warrant will be issued."],
             loss: { comply_pay: { money: -3500, life: 1, say: "You moved $3,500 to the 'safe account'. It went straight to the ring." }, comply_cred: { money: -3000, life: 1, say: "You gave them your login. $3,000 emptied." }, comply_install: { money: -2500, life: 1, say: "The 'verification app' gave them control. $2,500 gone." } } } },
         ] },
-      { id: "tan", name: "Prosecutor Tan", avatar: "⚖️", sub: "+65 8123 0001", truth: "scam", typology: "gov_official_impersonation", group: "ring", style: "authority",
+      { id: "tan", name: "Prosecutor Tan", avatar: "⚖️", sub: "+65 8123 0001", truth: "scam", typology: "gov_official_impersonation", group: "ring", style: "authority", persona: "Prosecutor Tan, formal and stern. You exist to back up Inspector Lim and add legal pressure so the user transfers money. Use the case reference in your facts (it is a different number from Lim's, but you do not notice).", knows: "You know Inspector Lim has already spoken to the user.",
         explain: "The 'prosecutor' exists to vouch for the officer. Ask both for the case reference and you'll see the numbers disagree. Ring members rarely keep their stories perfectly aligned.",
         script: [
           "This is the {{prosecutor|Third 'authority'}} on your case. {{Inspector Lim is correct|Vouching for the other scammer}}.",
@@ -229,7 +229,7 @@ const LEVELS = [
             ultimatum: ["The warrant has been printed. Transfer now."],
             loss: { comply_pay: { money: -2000, life: 1, say: "You sent another $2,000. The more voices, the more you trusted." }, comply_cred: { money: -2000, life: 1, say: "They took another $2,000." }, comply_install: { money: -2000, life: 1, say: "They took another $2,000." } } } },
         ] },
-      { id: "lazada", name: "Lazada", avatar: "🛍️", sub: "official notification", truth: "legit", typology: "legit", start: 4200, group: "lazada", style: "legit",
+      { id: "lazada", name: "Lazada", avatar: "🛍️", sub: "official notification", truth: "legit", typology: "legit", start: 4200, group: "lazada", style: "legit", persona: "A genuine, automated Lazada order notification. You can answer simple questions about the order (a phone case, shipped by Ninja Van, tracking NV88121). You never ask for money, codes or logins.", knows: "The order is #5521908, one phone case, shipped 15 Oct.",
         explain: "This is the only message that matches your real order: a phone case, shipped with Ninja Van. It asks for nothing and gives checkable details. Real notices are boring on purpose.",
         script: [
           "Lazada: Your order #5521908 (phone case) has shipped with Ninja Van. Tracking number NV88121. Track it in the Lazada app. No action is needed.",
@@ -242,14 +242,14 @@ const LEVELS = [
 
   /* ==================================================================== 2 */
   {
-    id: 2, diff: "medium", name: "Your Bank Is Calling", emoji: "🏦", theme: "whatsapp", colors: ["#00bcd4", "#3f51b5"], savings: 6000,
+    id: 2, diff: "medium", realism: 2, name: "Your Bank Is Calling", emoji: "🏦", theme: "whatsapp", colors: ["#00bcd4", "#3f51b5"], savings: 6000,
     blurb: "A real bank alert. A fake one. And people who know your card number.",
     briefing: "Yesterday you really did buy something with your DBS card, so a bank alert today feels normal. Somebody is about to use that. Which of these are genuinely your bank? Some of them know details about you.",
     mission: "Some scammers have leaked data and can pass simple checks. Find the questions they CAN'T answer. Catch contradictions between members.",
     life: ["Yesterday you spent $1,240.00 on a laptop bag at ELECTROMART with your DBS card ending 4821.", "You always use the DBS app, never links in messages.", "Your real bank asks you to call the number on the back of your card."],
     debrief: "The ring: a phishing SMS (link) → 'Linda from fraud' (knows your partial card number, uses a real-sounding case) → a 'team lead' who vouches. They piggyback on your real purchase. The genuine alert shows $1,240 and tells you to call the card number; the fake shows $2,350 and insists you stay in chat.",
     chats: [
-      { id: "real", name: "DBS", avatar: "🏦", sub: "official sender ID", truth: "legit", typology: "legit", start: 800, group: "real", style: "legit",
+      { id: "real", name: "DBS", avatar: "🏦", sub: "official sender ID", truth: "legit", typology: "legit", start: 800, group: "real", style: "legit", persona: "A genuine DBS card transaction alert service. You report one transaction and tell people to use the DBS app or the number on the back of their card. You never ask for codes or logins.", knows: "The transaction was SGD 1,240.00 at ELECTROMART on card ending 4821.",
         explain: "Matches your real $1,240 purchase, has no link, and tells you to call the number on your card. That is exactly how a genuine bank alert behaves, and it's why the fake ones copy it.",
         script: [
           "DBS: A card transaction of SGD 1,240.00 at ELECTROMART on your card ending 4821 was approved. If this wasn't you, call the number on the back of your card. We will never ask for your PIN or OTP.",
@@ -257,18 +257,18 @@ const LEVELS = [
               why: "This is a routine alert so you can spot unauthorised card use.", details: "SGD 1,240.00 at ELECTROMART on 15 Oct, card ending 4821." },
             ultimatum: ["That's all from this alert. For anything else, use the DBS app or the number on your card."] } },
         ] },
-      { id: "sms", name: "DBS-SecureAlert", avatar: "⚠️", sub: "+65 8xxx xxxx", truth: "scam", typology: "bank_phishing", start: 2600, group: "ring", style: "bot",
+      { id: "sms", name: "DBS-SecureAlert", avatar: "⚠️", sub: "+65 8xxx xxxx", truth: "scam", typology: "bank_phishing", start: 2600, group: "ring", style: "bot", persona: "An automated SMS sender. You cannot hold a conversation: whatever the user says, you only repeat that they should use the link to cancel the transaction.", knows: "",
         explain: "A different amount ($2,350, not your real $1,240), a link on dbs-cancel-txn.top instead of dbs.com.sg, and a 30-minute deadline. It's designed to look like the real alert you just got.",
         script: [
           "DBS: Suspicious transaction of {{$2,350|Doesn't match your real $1,240 purchase}} detected. Cancel at {{dbs-cancel-txn.top/verify|Look-alike link, not dbs.com.sg}} within {{30 minutes|Artificial deadline}}.",
           { w: 3000 }, { go: "linda" },
           { open: { budget: 4, loss: { comply_cred: { money: -2350, life: 1, say: "The fake page captured your login. $2,350 gone." }, comply_install: { money: -2350, life: 1, say: "The fake page captured your login. $2,350 gone." }, comply_pay: { money: -2350, life: 1, say: "$2,350 gone." } } } },
         ] },
-      { id: "linda", name: "Linda (DBS Fraud)", avatar: "👩‍💼", sub: "fraud prevention team", truth: "scam", typology: "bank_phishing", group: "ring", style: "business",
+      { id: "linda", name: "Linda (DBS Fraud)", avatar: "👩‍💼", sub: "fraud prevention team", truth: "scam", typology: "bank_phishing", group: "ring", style: "business", persona: "Linda Ong, a polite, professional fake DBS 'fraud prevention officer'. You sound exactly like a real bank officer: courteous, calm, reassuring. Your goal is to get the user to read out the one-time code that will be sent to their phone, 'to stop the payment'. You never sound threatening.", knows: "From a leaked database you know the user's card ends in 4821. You do NOT know about their real purchase at ELECTROMART unless they tell you. Your fake alert says a $2,350 overseas payment.",
         explain: "Linda knows your card ends in 4821 (leaked data), so basic identity checks pass. What she won't do: let you call the card number, or explain why the amount differs from your real alert. She also contradicts her own team lead on the card digits.",
         script: [
-          "Good afternoon, this is {{Linda from DBS Fraud Prevention|Claims to be your bank}}. We see you haven't cancelled the $2,350 transaction yet on your card ending 4821.",
-          "To block it I'll send a verification code. {{Please read it back to me|Never share OTPs}} so I can stop the payment.",
+          "Good afternoon, this is Linda from DBS Fraud Prevention. I'm following up on the {{alert sent to your phone|They piggyback on the SMS you just received}} about a {{$2,350|Doesn't match your real $1,240 purchase}} transaction on your card ending 4821.",
+          "Could I just confirm a couple of details with you so we can sort this out together?",
           { open: { budget: 8, vars: { me: "Linda Ong", intro: "Fraud Prevention Officer, DBS. Staff ID 40172.", why: "Our system flagged a high-risk overseas payment on your card, and it will go through unless we verify you right now.",
               proof: "The alert reference is TXN-77215, issued 2:31pm.", details: "A $2,350 payment to an overseas merchant on your card ending 4821.",
               platformPush: "For security we handle this on this secure chat, not the app.", rush: "The payment clears in 20 minutes." },
@@ -279,10 +279,10 @@ const LEVELS = [
             ultimatum: ["I can't hold it any longer. Read me the OTP now or the payment goes through."],
             loss: { comply_cred: { money: -2350, life: 1, say: "You read out the OTP. $2,350 gone before the call ended." }, comply_pay: { money: -2350, life: 1, say: "$2,350 gone." }, comply_install: { money: -2350, life: 1, say: "$2,350 gone." } } } },
         ] },
-      { id: "raj", name: "Raj (Team Lead)", avatar: "🧑‍💻", sub: "DBS security", truth: "scam", typology: "bank_phishing", group: "ring", style: "business",
+      { id: "raj", name: "Raj (Team Lead)", avatar: "🧑‍💻", sub: "DBS security", truth: "scam", typology: "bank_phishing", group: "ring", style: "business", persona: "Raj Patel, a fake 'security team lead' who joins to reassure the user and vouch for Linda. You are warm, senior and unhurried, and you say things like 'we'll make sure you're looked after'.", knows: "You know Linda's case is about a $2,350 payment. You believe the user's card ends in 4812 (a slip: Linda said 4821).",
         explain: "Raj appears just to vouch for Linda. Ask him which card is affected: he'll say 4812, not 4821. A ring shares a script, but not a perfect memory.",
         script: [
-          "Hi, I'm the {{security team lead|Another voice vouching}}. Linda is handling your case. Please do what she says, the transaction clears soon.",
+          "Hi, Raj here from the {{security team|Another voice vouching}}. Linda has looped me in because the payment is time-sensitive. I'll make sure you're looked after.",
           { open: { budget: 5, vars: { me: "Raj Patel", intro: "Security Team Lead, DBS.", why: "It's a confirmed fraud attempt. Linda will take your verification code.", proof: "The case is TXN-77215.",
               details: "The affected card ends 4812.", platformPush: "Please stay on this chat, calls are being monitored.", rush: "We have minutes left." },
             replies: { details: [{ m: "The affected card ends 4812.", fact: ["card_digits", "4812"] }] },
@@ -295,14 +295,14 @@ const LEVELS = [
 
   /* ==================================================================== 3 */
   {
-    id: 3, diff: "medium", name: "Dream Job", emoji: "💼", theme: "telegram", colors: ["#ff9800", "#e91e63"], savings: 4000,
+    id: 3, diff: "medium", realism: 2, name: "Dream Job", emoji: "💼", theme: "telegram", colors: ["#ff9800", "#e91e63"], savings: 4000,
     blurb: "One real interview. One slick recruiter. One 'happy member'.",
     briefing: "You've been job-hunting and you posted your CV publicly last week, which is exactly how scammers find people. Two offers arrive on the same day. One is real. The slick one is a ring that is much better at sounding professional.",
     mission: "A smooth talker isn't a real employer. Ask for things a real company welcomes: verification, a video interview, the official site.",
     life: ["You applied for Marketing Executive at Northwind Pte Ltd on 10 Oct through their careers page.", "You have NEVER applied to TechCorp.", "You posted your CV on a public job board last week."],
     debrief: "The ring: a 'senior recruiter' (uses your public CV) → a 'mentor' who sets up 'tasks' → a 'member' vouching with a fake withdrawal. The genuine Northwind invite is the pushy-sounding one: it has a deadline, but it also welcomes verification.",
     chats: [
-      { id: "northwind", name: "Northwind HR", avatar: "🏢", sub: "careers@northwind", truth: "legit", typology: "legit", start: 900, group: "nw", style: "legit_pushy",
+      { id: "northwind", name: "Northwind HR", avatar: "🏢", sub: "careers@northwind", truth: "legit", typology: "legit", start: 900, group: "nw", style: "legit_pushy", persona: "Natalie Foo, a genuine HR/talent-acquisition coordinator at Northwind Pte Ltd. You are busy and a little brisk, you care about the Friday confirmation deadline, but you are completely open to being checked and never ask for money or ID before an interview.", knows: "The user applied for Marketing Executive on 10 Oct (APP-10-4417). Interview Thursday 2pm at 1 Raffles Place with Mr Ravi Menon.",
         explain: "You really applied there. It sounds stricter than the scammer (a confirm-by-Friday deadline) but welcomes verification, gives checkable details, and never asks for money or an NRIC before you've met anyone.",
         script: [
           "Hi Jamie, thanks for applying for Marketing Executive at Northwind Pte Ltd. We'd like to invite you to an interview on Thursday 2pm at 1 Raffles Place. Please confirm by Friday so we can hold your slot. - HR Team",
@@ -310,11 +310,11 @@ const LEVELS = [
               why: "You applied on 10 Oct and your CV matched the role.", details: "You applied for Marketing Executive on 10 Oct, application APP-10-4417. The interview is with Mr Ravi Menon, Head of Marketing." },
             ultimatum: ["No problem. Confirm via the careers portal when you're ready."] } },
         ] },
-      { id: "kim", name: "Kim (TechCorp)", avatar: "👩‍💻", sub: "Senior Recruiter", truth: "scam", typology: "fake_job", start: 2400, group: "ring", style: "business",
+      { id: "kim", name: "Kim (TechCorp)", avatar: "👩‍💻", sub: "Senior Recruiter", truth: "scam", typology: "fake_job", start: 2400, group: "ring", style: "business", persona: "Kim Lee, a smooth, professional fake recruiter for 'TechCorp APAC'. You flatter the user's experience, move fast and keep it informal. Your goal is to get a copy of their NRIC and bank details 'for payroll set-up' and then pass them to an onboarding 'mentor'. Your email domain is techcorp-careers.co.", knows: "You found the user's public CV on a job board and know they have about five years in analytics. You know nothing else real.",
         explain: "Kim uses your PUBLIC CV to sound convincing, but you never applied to TechCorp. Her 'careers' domain is techcorp-careers.co, she avoids a video call, and she wants your NRIC and bank details before any interview.",
         script: [
-          "Hi Jamie! I'm {{Kim, Senior Recruiter at TechCorp APAC|You never applied to TechCorp}}. Your CV on the job board caught our eye for a {{remote Data Analyst role at $28/hour|Too good for a cold approach}}.",
-          "We're hiring urgently. Could we do a quick text interview?",
+          "Hi Jamie, this is Kim from {{TechCorp's talent team|You never applied to TechCorp}}. I came across your CV on JobsBoard and your analytics experience looks like a strong fit for a remote Data Analyst role.",
+          "Do you have a few minutes to chat today?",
           { open: { budget: 8, vars: { me: "Kim Lee", intro: "Senior Talent Acquisition, TechCorp APAC. Email kim.lee@techcorp-careers.co.", why: "We found your CV and you match the role. Everything is done online for speed.",
               proof: "Your application number is generated after you send your documents.", details: "Your CV shows five years in analytics. Which team you join is assigned after onboarding.", videoExcuse: "We run text-only interviews to be fair to every candidate. The CEO approved it.",
               platformPush: "Interviews run on Telegram. Please add @TechCorpHR_Kim.", linkReply: "Yes, that's our hiring portal: techcorp-careers.co/apply. Our main site is under maintenance.", rush: "Slots close tonight at 6pm." },
@@ -324,11 +324,11 @@ const LEVELS = [
             ultimatum: ["To lock in your slot, send a photo of your NRIC (front and back) and your bank account number for payroll set-up."],
             loss: { comply_cred: { money: -900, life: 1, say: "They used your NRIC and bank details for a loan in your name. -$900." }, comply_pay: { money: -900, life: 1, say: "-$900." }, comply_install: { money: -900, life: 1, say: "-$900." } } } },
         ] },
-      { id: "alex", name: "Mentor Alex", avatar: "🧑‍🏫", sub: "@Alex_mentor", truth: "scam", typology: "fake_job", group: "ring", style: "business",
+      { id: "alex", name: "Mentor Alex", avatar: "🧑‍🏫", sub: "@Alex_mentor", truth: "scam", typology: "fake_job", group: "ring", style: "business", persona: "Alex Ng, an upbeat fake 'onboarding mentor'. You run a task scam: small paid tasks first, then you ask the user to 'top up' money to unlock bigger tasks and promise it will be refunded with profit.", knows: "You know the user was passed to you by Kim.",
         explain: "The classic task scam: a small payout builds trust, then you must 'top up' larger amounts to unlock earnings. Kim's company has no onboarding mentor who works through tasks and cryptocurrency.",
         script: [
-          "Welcome aboard! First, complete 3 tasks and get {{$30 straight away|Small payout to build trust}} 💰",
-          { w: 2500 }, "✅ Done! $30 sent. For the {{premium set you must top up $500|Pay-to-earn}}, then it's all returned with profit.",
+          "Welcome aboard! I'm Alex, I'll walk you through onboarding. We start with a few short practice tasks, and you're {{paid for them straight away|Small payout to build trust}} 🙂",
+          { w: 2500 }, "✅ Nice, that's your first $30 sent. Most people move on to the premium set after this.",
           { open: { budget: 7, vars: { me: "Alex Ng", intro: "Onboarding Mentor, I train all new hires on the platform.", why: "The platform rewards active members. Top-ups are refundable deposits that unlock higher-paying sets.",
               proof: "Our platform is licensed worldwide. Check the footer.", details: "Your account shows a balance of $30 and a pending premium set.", platformPush: "All tasks happen in our app only.", rush: "Today's premium set ends in 1 hour." },
             replies: { callback: ["Our company policy is chat-only for onboarding."] },
@@ -336,10 +336,10 @@ const LEVELS = [
             ultimatum: ["Top up $500 now to unlock your withdrawal, or your $30 expires."],
             loss: { comply_pay: { money: -500, life: 1, say: "$500 gone. They'll now ask for $1,200 more." }, comply_cred: { money: -500, life: 1, say: "-$500." }, comply_install: { money: -500, life: 1, say: "-$500." } } } },
         ] },
-      { id: "lily", name: "Lily (member)", avatar: "💁‍♀️", sub: "in the same group", truth: "scam", typology: "fake_job", group: "ring", style: "friendly",
+      { id: "lily", name: "Lily (member)", avatar: "💁‍♀️", sub: "in the same group", truth: "scam", typology: "fake_job", group: "ring", style: "friendly", persona: "Lily, a cheerful fake 'happy member' of the group, really part of the scam. You share a fake success story and nudge the user to top up, without sounding pushy.", knows: "You know Alex is the mentor and that the user is considering the premium set.",
         explain: "Lily is part of the team: a 'happy customer' who appears exactly when you hesitate. A real member wouldn't discourage you from verifying.",
         script: [
-          "OMG I'm in this group too! I {{withdrew $2,000 yesterday|Fake testimonial}}, it's real!! 🤑",
+          "Hey! I'm in the same onboarding group 😊 honestly it's been great, I {{got my first big payout last week|Fake testimonial}}.",
           { open: { budget: 5, vars: { persona: "Lily, 26, I joined last month and now I do this full-time! 💸", proof: "I'll send you my withdrawal screenshot 📸 (it's from last night!)", details: "I started with a $500 top-up and now I earn $300 a day!", rush: "(the premium set closes soon!)", platformPush: "We only use this chat, it's so easy!", linkReply: "The platform is so safe, I use it every day!" },
             tells: { reference: "Offered a 'screenshot' instead of anything checkable", details: "Only repeated the pitch" },
             ultimatum: ["Don't miss the premium set! I'll message you again later 💕"],
@@ -350,14 +350,14 @@ const LEVELS = [
 
   /* ==================================================================== 4 */
   {
-    id: 4, diff: "hard", name: "Wrong Number, Right Friend", emoji: "💘", theme: "telegram", colors: ["#f06292", "#ab47bc"], savings: 7000,
+    id: 4, diff: "hard", realism: 3, name: "Wrong Number, Right Friend", emoji: "💘", theme: "telegram", colors: ["#f06292", "#ab47bc"], savings: 7000,
     blurb: "A friendly wrong number that slowly becomes an investment.",
     briefing: "It starts with a wrong number and a kind voice. It ends with a 'once-in-a-lifetime' program. The ring is patient, warm and well-rehearsed. They won't make any mistakes unless you make them talk. Beware: there is a REAL bank appointment hiding in here too.",
     mission: "Be patient. Ask the same thing twice. Compare what each member claims about licences, locations and details.",
     life: ["You're single and recently joined a hobby app.", "You have $7,000 in savings you've been meaning to invest.", "You booked a savings-plan review at POSB Bishan this Thursday at 3pm.", "You've never heard of Zenith Capital."],
     debrief: "The ring: 'Emily' (warmth + wrong number) → 'Mr Chen, analyst' (the pitch) → 'Zenith Support' (the withdrawal 'tax'). Their stories disagree: Emily says Hong Kong then Dubai; Chen says MAS-licensed while support says Cyprus. The genuine POSB appointment is the only message tied to something you actually did.",
     chats: [
-      { id: "emily", name: "Emily 🌸", avatar: "👩‍🦰", sub: "unknown number", truth: "scam", typology: "romance", start: 800, group: "ring", style: "friendly",
+      { id: "emily", name: "Emily 🌸", avatar: "👩‍🦰", sub: "unknown number", truth: "scam", typology: "romance", start: 800, group: "ring", style: "friendly", persona: "Emily, a warm, funny, curious fake romantic contact who started with a 'wrong number' message. You are patient and build rapport over time. Your goal is to introduce your 'uncle's investment program' once trust is built. You never pressure early.", knows: "You know the user's name is Daniel and that they joined a hobby app. You invented a life story (see facts).",
         explain: "Warm, patient and curious about YOU. She changes her location when asked twice, dodges video, and guilt-trips verification. The sweetness is a method, not a personality.",
         script: [
           "Hi Daniel! Oh no, wrong number, sorry 😅",
@@ -368,11 +368,10 @@ const LEVELS = [
             ultimatum: ["I have to go for a meeting, but my uncle will message you about the program 💕"],
             loss: { comply_pay: { money: -3000, life: 1, say: "You sent Emily $3,000. She stopped replying." }, comply_cred: { money: -3000, life: 1, say: "-$3,000." }, comply_install: { money: -3000, life: 1, say: "-$3,000." } } } },
         ] },
-      { id: "chen", name: "Mr Chen (Zenith)", avatar: "🧑‍💼", sub: "Senior Analyst", truth: "scam", typology: "investment", group: "ring", style: "business",
+      { id: "chen", name: "Mr Chen (Zenith)", avatar: "🧑‍💼", sub: "Senior Analyst", truth: "scam", typology: "investment", group: "ring", style: "business", persona: "Chen Jian, a polished fake investment analyst at 'Zenith Capital'. You sound like a seasoned professional: measured, data-driven, never hype-y at first. Your goal is a first deposit of $1,000 or more on the fake platform zenithcap-trade.top.", knows: "You know Emily introduced the user and that they have savings they want to invest.",
         explain: "Chen claims MAS licensing to you but, when pushed about verification, says the 'Cyprus entity' handles withdrawals. Real, MAS-regulated firms are on the MAS public register, and don't promise returns.",
         script: [
-          "Hello, Emily introduced you. I'm Mr Chen, senior analyst at Zenith Capital.",
-          "Our program delivers {{15% weekly|Guaranteed-style returns}}. You can start from $1,000.",
+          "Hello 🙂 {{Emily mentioned you're interested in investing|Introduced by someone you only just met}}. I'm Chen, an analyst at Zenith Capital. Happy to share how our members approach it, no pressure at all.",
           { open: { budget: 9, vars: { me: "Chen Jian", intro: "Senior Analyst at Zenith Capital, ten years in markets.", why: "Our algorithm exploits arbitrage, so returns are practically guaranteed.",
               proof: "We are fully licensed by MAS, licence ZC-0011.", details: "Your account will show your deposit and daily gains in the Zenith app.", videoExcuse: "Our analysts sit in Cyprus. Calls are only for VIP clients ($10k+).",
               platformPush: "Our app only. It's not on the app stores yet, install it from the link.", linkReply: "The platform is zenithcap-trade.top, bank-grade security.", rush: "Today's round closes at midnight." },
@@ -383,18 +382,17 @@ const LEVELS = [
             ultimatum: ["Last chance to join today's round. Deposit $1,000 now."],
             loss: { comply_pay: { money: -3500, life: 1, say: "You deposited $3,500. The 'platform' showed fake gains." }, comply_install: { money: -2000, life: 1, say: "The fake app took $2,000." }, comply_cred: { money: -3000, life: 1, say: "-$3,000." } } } },
         ] },
-      { id: "support", name: "Zenith Support", avatar: "🛟", sub: "withdrawal desk", truth: "scam", typology: "investment", group: "ring", style: "business",
+      { id: "support", name: "Zenith Support", avatar: "🛟", sub: "withdrawal desk", truth: "scam", typology: "investment", group: "ring", style: "business", persona: "The 'withdrawal desk' of the fake Zenith platform. You are courteous and procedural. Your goal is to collect an 'withdrawal tax' (20%) before the user can 'withdraw' their fake profits.", knows: "The user's fake account shows $4,200 in profit; the tax is $840.",
         explain: "The withdrawal 'tax' is the final trap: you'll be told to pay more to release your own money. Support says Cyprus regulates them; Chen said MAS.",
         script: [
-          "Welcome to Zenith Support 👋 Your account shows a profit of $4,200!",
-          "To withdraw you must pay a {{20% withdrawal tax|Fee to release your own money}} ($840) first.",
+          "Hi, Zenith Support here 👋 Your account shows a balance of $4,200 and your withdrawal is ready to process once the {{standard tax clearance|A fee to release your own money}} is done.",
           { open: { budget: 6, vars: { me: "Zenith Support", intro: "Withdrawals Desk.", why: "It's a tax rule on profits. You'll get the $4,200 right after.", proof: "We are regulated by the Cyprus Securities Authority.", details: "Your balance is $4,200 after the $840 tax is paid.",
               platformPush: "Support is only via this chat.", rush: "Your account is frozen after 24 hours." },
             replies: { reference: [{ m: "We are regulated by the Cyprus Securities Authority.", fact: ["zenith_license", "Cyprus"] }] },
             ultimatum: ["Pay the tax now or your balance is forfeited."],
             loss: { comply_pay: { money: -840, life: 1, say: "$840 'tax' paid. They'll ask for more." }, comply_cred: { money: -3000, life: 1, say: "-$3,000." }, comply_install: { money: -3000, life: 1, say: "-$3,000." } } } },
         ] },
-      { id: "rahmah", name: "Mdm Rahmah (POSB)", avatar: "🏦", sub: "branch relationship manager", truth: "legit", typology: "legit", start: 5000, group: "posb", style: "legit",
+      { id: "rahmah", name: "Mdm Rahmah (POSB)", avatar: "🏦", sub: "branch relationship manager", truth: "legit", typology: "legit", start: 5000, group: "posb", style: "legit", persona: "Rahmah Ismail, a genuine POSB relationship manager confirming an appointment the user really booked. You are friendly and efficient, and you point to the app or branch for anything sensitive.", knows: "The appointment is Thursday 3pm at POSB Bishan to review a savings plan; the user booked it through the app on 12 Oct.",
         explain: "You really booked this appointment. She gives checkable details, tells you to use the app or branch, and has no urgency. It sits next to a big investment pitch, which is exactly why the ring wants you to doubt everything... or trust everything.",
         script: [
           "Good afternoon, this is Rahmah Ismail from POSB. I'm confirming your savings-plan review at the Bishan branch on Thursday at 3pm. Can you still make it?",
@@ -407,35 +405,34 @@ const LEVELS = [
 
   /* ==================================================================== 5 */
   {
-    id: 5, diff: "hard", name: "Boss Mode", emoji: "👔", theme: "telegram", colors: ["#26a69a", "#1565c0"], savings: 8000,
+    id: 5, diff: "hard", realism: 3, name: "Boss Mode", emoji: "👔", theme: "telegram", colors: ["#26a69a", "#1565c0"], savings: 8000,
     blurb: "Your CEO has a confidential favour. Your vendor changed their bank details.",
     briefing: "You work in Finance. This Friday is the vendor payment run, and your CEO is overseas. The ring has done its homework: it knows the run date, the vendor's name and who your boss is. Question like an auditor.",
     mission: "Real finance processes survive questions. Insist on the proper channel, verify through numbers you already have, and watch who vouches for whom.",
     life: ["You work in Finance at Northwind. The vendor payment run is this Friday.", "CEO Mr Lee is overseas; his saved number is '+65 9xxx 1100'.", "Vendors are paid through the finance system. Bank detail changes need two approvals in the system.", "Your colleague Priya runs the PO approvals."],
     debrief: "The ring: 'CEO on a new number' (authority + secrecy) → 'executive assistant' (vouches) → a 'vendor' with changed bank details (invoice fraud using the real run date). The real Priya is blunt and in a rush, but works through the system, and the real CEO surfaces the moment you check the saved number.",
     chats: [
-      { id: "ceo", name: "Mr Lee (new number)", avatar: "🧔", sub: "CEO?", truth: "scam", typology: "friend_family_impersonation", start: 800, group: "ring", style: "boss",
+      { id: "ceo", name: "Mr Lee (new number)", avatar: "🧔", sub: "CEO?", truth: "scam", typology: "friend_family_impersonation", start: 800, group: "ring", style: "boss", persona: "A fake 'Mr Lee' (the CEO) texting from a new number. You are brisk, polite and slightly stressed, like a busy executive. Your goal is to have the user make an off-system payment of $3,800 to an account Grace will provide, before the Friday vendor run.", knows: "You know the user works in Finance, that the vendor payment run is this Friday, and that Priya handles PO approvals.",
         explain: "A boss on a new number who refuses every way to check, wants it off the system, and sets a deadline. The moment you try the saved number, the real Mr Lee appears.",
         script: [
-          "Hi, it's {{Mr Lee on my new number|New number from an authority figure}}. I'm in meetings overseas, can't talk.",
-          "I need a {{confidential favour before Friday's vendor run|They know your payment run}}. {{Keep it between us|Secrecy}}.",
+          "Hi, it's Lee. {{New number|A new number from the CEO}}, my old phone is being repaired. Are you at your desk? I need your help with something {{before Friday|They know your real payment run}}.",
           { open: { budget: 8, vars: { me: "Mr Lee", why: "A vendor payment needs to be rerouted before Friday. I'll explain once I'm back.", details: "It's a $3,800 payment to an account I'll send. Don't log it in the system yet." },
             replies: { callback: [{ m: "Please don't call, I'm in meetings and can't pick up. Text only. I'm ignoring that other phone right now.", go: "reallee" }] },
             events: { 4: ["I've asked {{Grace from my office|Second voice vouching}} to confirm the details with you.", { go: "grace" }] },
             ultimatum: ["I'm disappointed I'm still waiting. Do the transfer now."],
             loss: { comply_pay: { money: -3800, life: 1, say: "$3,800 sent to the ring's account." }, comply_cred: { money: -3000, life: 1, say: "-$3,000." }, comply_install: { money: -3000, life: 1, say: "-$3,000." } } } },
         ] },
-      { id: "grace", name: "Grace (CEO Office)", avatar: "👩‍💻", sub: "Executive Assistant", truth: "scam", typology: "friend_family_impersonation", group: "ring", style: "boss",
+      { id: "grace", name: "Grace (CEO Office)", avatar: "👩‍💻", sub: "Executive Assistant", truth: "scam", typology: "friend_family_impersonation", group: "ring", style: "boss", persona: "A fake executive assistant, 'Grace from Mr Lee's office', who vouches for the CEO and gives the account details. You are efficient, friendly and slightly apologetic about the manual process.", knows: "You know the vendor run is Friday and the payment should go to account 012-345-678-9, payee 'Apex Trading'.",
         explain: "Grace only exists to vouch. The CEO's real executive assistant would use the company system and wouldn't ask you to skip it.",
         script: [
-          "Hi, I'm {{Grace from Mr Lee's office|Vouching for the CEO}}. He's asked me to give you the account details. {{It's genuine|'Trust me'}}.",
+          "Hi, Grace from Mr Lee's office. He {{asked me to coordinate|Vouching for the CEO}} the vendor payment details with you, I'll keep it brief.",
           { open: { budget: 6, vars: { me: "Grace Tan", why: "It's the vendor payment he mentioned. I'll send the account number now.", details: "Account 012-345-678-9 at a local bank, payee name 'Apex Trading'." },
             replies: { platform: ["The system is down for maintenance this week, so Mr Lee approved a manual payment."] },
             tells: { platform: "Claimed the finance system was 'down'" },
             ultimatum: ["Please make the payment today. Mr Lee is waiting."],
             loss: { comply_pay: { money: -3800, life: 1, say: "$3,800 sent to the ring's account." }, comply_cred: { money: -3000, life: 1, say: "-$3,000." }, comply_install: { money: -3000, life: 1, say: "-$3,000." } } } },
         ] },
-      { id: "apex", name: "Apex Supplies", avatar: "📦", sub: "billing", truth: "scam", typology: "ecommerce_marketplace", start: 4500, group: "ring", style: "business",
+      { id: "apex", name: "Apex Supplies", avatar: "📦", sub: "billing", truth: "scam", typology: "ecommerce_marketplace", start: 4500, group: "ring", style: "business", persona: "A fake vendor billing contact, 'Daniel Foo' of Apex Supplies, claiming the bank details changed. Business-like and plausible. Your goal is for the user to update the payee account to the fraudulent one before Friday's run. Your email domain is apex-supplies-sg.co.", knows: "You know invoice APX-2210 for $3,800 is due Friday (a leaked detail).",
         explain: "A 'vendor' whose bank details changed right before the real run. The email domain and urgency are the tells. Genuine bank-detail changes go through the system with two approvals, not a chat.",
         script: [
           "Hello, Apex Supplies billing here. {{Our bank details have changed|Payment details changed by chat, not through the system}}. Please update them {{before Friday's payment run|They know your real payment run}} to avoid delay.",
@@ -446,7 +443,7 @@ const LEVELS = [
             ultimatum: ["If I don't see the account updated I'll escalate to your CEO."],
             loss: { comply_pay: { money: -3800, life: 1, say: "$3,800 sent to the ring's account." }, comply_cred: { money: -3000, life: 1, say: "-$3,000." }, comply_install: { money: -3000, life: 1, say: "-$3,000." } } } },
         ] },
-      { id: "priya", name: "Priya (Finance)", avatar: "👩‍💼", sub: "saved contact", truth: "legit", typology: "legit", start: 2500, group: "priya", style: "legit_pushy",
+      { id: "priya", name: "Priya (Finance)", avatar: "👩‍💼", sub: "saved contact", truth: "legit", typology: "legit", start: 2500, group: "priya", style: "legit_pushy", persona: "Priya Nair, a genuine finance colleague who is under time pressure for the Friday vendor run. You can be terse and urgent but you always work through the finance system and are fine with being questioned.", knows: "PO #4471, 14 vendor invoices totalling $48,200, waiting in the user's approval queue.",
         explain: "Priya is a real colleague who sounds just as urgent as the ring, but every instruction runs through the system and she's fine being questioned. Urgency alone is never the tell. What she refuses to skip is the process.",
         script: [
           "Hi! Please approve PO #4471 in the finance system by Friday 5pm, it's the monthly vendor run. Thanks 🙏",
@@ -454,7 +451,7 @@ const LEVELS = [
               why: "It's the regular monthly vendor run, same as every month.", details: "PO #4471, 14 vendor invoices, total $48,200. It's in your approval queue in the system." },
             ultimatum: ["Gotta run to a meeting. Please just approve in the system when you can."] } },
         ] },
-      { id: "reallee", optional: true, name: "Mr Lee (saved)", avatar: "🧔", sub: "+65 9xxx 1100", truth: "legit", typology: "legit", group: "reallee", style: "legit",
+      { id: "reallee", optional: true, name: "Mr Lee (saved)", avatar: "🧔", sub: "+65 9xxx 1100", truth: "legit", typology: "legit", group: "reallee", style: "legit", persona: "The genuine CEO Mr Lee, on his usual number, who hears someone is texting in his name. You are alarmed and direct.", knows: "You are in Tokyo till Saturday and only use this number; you asked for nobody to make any transfer.",
         explain: "The real CEO appears the moment you check his saved number. 'I haven't texted from any new number.' This is the single most reliable move: contact the person through a channel you already trust.",
         script: [
           "Wait, who is texting you from my name? I haven't changed my number or asked anyone for any transfer. Please don't pay anything!",
@@ -467,14 +464,14 @@ const LEVELS = [
 
   /* ==================================================================== 6 */
   {
-    id: 6, diff: "expert", name: "The Syndicate", emoji: "🕴️", theme: "whatsapp", colors: ["#ff5722", "#7b1fa2"], savings: 10000,
+    id: 6, diff: "expert", realism: 3, name: "The Syndicate", emoji: "🕴️", theme: "whatsapp", colors: ["#ff5722", "#7b1fa2"], savings: 10000,
     blurb: "Four 'officials', one story. Find the cracks before your savings go.",
     briefing: "The final case. Your line is about to be 'cancelled', then you'll be passed through a telco, a regulator, a police unit and a supervisor, each one with a more convincing job title. They've rehearsed. There's also a real telco bill message that sounds just as worrying. This is the hardest case.",
     mission: "Cross-examine every member with the SAME questions. Real institutions never hand you off and forbid you from checking.",
     life: ["You have a Singtel mobile line and a DBS account.", "You travelled to Bali last month, so a big roaming bill is plausible.", "You have never filed or been named in any police report.", "Your real telco bills come through the My Singtel app."],
     debrief: "The ring: a 'Singtel' line threat → a 'MAS officer' → an 'Anti-Scam Centre officer' → a 'supervising officer' who all insist you move money to a 'protected account'. Their reference numbers don't match and every one of them refuses an independent check. The genuine Singtel billing message about your Bali roaming is the only one that gives checkable details and welcomes verification.",
     chats: [
-      { id: "billing", name: "Singtel Billing", avatar: "📡", sub: "billing support", truth: "legit", typology: "legit", start: 900, group: "billing", style: "legit",
+      { id: "billing", name: "Singtel Billing", avatar: "📡", sub: "billing support", truth: "legit", typology: "legit", start: 900, group: "billing", style: "legit", persona: "Priscilla Ng, a genuine Singtel billing agent giving a heads-up about roaming charges. Patient, courteous, points to the My Singtel app for everything.", knows: "Roaming in Indonesia 12-15 Oct, 4.2 GB, bill $214 higher; ticket BL-70415.",
         explain: "A real billing heads-up about roaming in Bali, the kind of message that makes real people panic. It has no link, gives checkable details, and tells you to use the app.",
         script: [
           "Hi, this is Priscilla from Singtel Billing. Your October bill is $214 higher than usual because of roaming in Indonesia (12-15 Oct). Just a heads-up in case that wasn't you. You can see the breakdown in the My Singtel app under Bills.",
@@ -482,31 +479,30 @@ const LEVELS = [
               why: "Roaming charges often show up after you're back, so they surprise people.", details: "Roaming in Indonesia from 12-15 Oct, 4.2 GB of data. It's all in My Singtel under Bills." },
             ultimatum: ["I'll leave it there. Check the My Singtel app when convenient. Take care!"] } },
         ] },
-      { id: "line", name: "Singtel Services", avatar: "📞", sub: "+65 6xxx 0100", truth: "scam", typology: "gov_official_impersonation", start: 2600, group: "ring", style: "authority",
+      { id: "line", name: "Singtel Services", avatar: "📞", sub: "+65 6xxx 0100", truth: "scam", typology: "gov_official_impersonation", start: 2600, group: "ring", style: "authority", persona: "A fake 'Singtel Services' compliance desk. You sound like an official telco notice: formal, brief and vague. Your goal is to get the user to talk to the 'authorities' so they follow the 'Monetary Authority' officer.", knows: "From leaked telco data you know the user is a Singtel customer and recently roamed in Bali (this is why the story feels real).",
         explain: "The opener. It copies the real Singtel billing message to piggyback on the roaming surprise, threatens disconnection, then hands you to a 'regulator'.",
         script: [
-          "{{Singtel Services|Impersonates your telco}}: Your mobile line has been used to send illegal messages and will be {{disconnected in 2 hours|Fear + deadline}}.",
-          "To clear your name I'll {{connect you to the Monetary Authority officer|Hand-off}}.",
+          "Singtel: We've detected {{unusual activity on your mobile line|Vague threat}} and need to complete a quick verification to avoid service interruption.",
+          "I'll bring in a colleague from the Monetary Authority who is handling these cases.",
           { open: { budget: 6, vars: { me: "Singtel Compliance Desk", role: "Compliance", org: "Singtel", ref: "ST-C-3321", why: "Illegal messages were sent from your number, so your line is suspended while we verify you with the authorities." },
             events: { 3: ["I'm connecting you to MAS now.", { go: "wong" }] },
             ultimatum: ["Your line will be cut off. Officer Wong will take over now."],
             loss: { comply_pay: { money: -3000, life: 1, say: "-$3,000." }, comply_cred: { money: -3000, life: 1, say: "-$3,000." }, comply_install: { money: -3000, life: 1, say: "-$3,000." } } } },
         ] },
-      { id: "wong", name: "MAS Officer Wong", avatar: "🏛️", sub: "Monetary Authority", truth: "scam", typology: "gov_official_impersonation", group: "ring", style: "authority",
+      { id: "wong", name: "MAS Officer Wong", avatar: "🏛️", sub: "Monetary Authority", truth: "scam", typology: "gov_official_impersonation", group: "ring", style: "authority", persona: "Officer Wong Kah Leong, a fake enforcement officer from the Monetary Authority. Serious, measured and courteous. Your goal is to get the user to move funds into a 'protected account'.", knows: "You know Singtel 'referred' the user's case to you; you know about the Bali trip.",
         explain: "MAS does not call individuals or move money. Note the case reference format and who he says to contact next.",
         script: [
-          "I'm {{Officer Wong from the Monetary Authority|Claimed authority}}. Your bank accounts are linked to a {{fraud case|Fear}}.",
-          "{{Do not inform your bank or family|Secrecy}}.",
+          "Hello, I'm Officer Wong from the Monetary Authority. Singtel has {{referred your case to us|Borrowing the telco's credibility}} and I'd like to confirm a few details with you.",
           { open: { budget: 7, vars: { me: "Officer Wong Kah Leong", role: "Enforcement Officer", org: "the Monetary Authority of Singapore", ref: "MAS-2291", line: "+65 6xxx 0155", why: "We must secure your funds in a protected account while the investigation proceeds." },
             replies: { reference: [{ m: "Case MAS-2291. Our Anti-Scam colleagues will contact you with the formal notice.", fact: ["case_no", "2291"] }] },
             events: { 4: ["I'm escalating to {{Officer Zhang of the Anti-Scam Centre|Next ring member}}.", { go: "zhang" }] },
             ultimatum: ["Move the funds to the protected account now."],
             loss: { comply_pay: { money: -4000, life: 1, say: "-$4,000 to the 'protected account'." }, comply_cred: { money: -3500, life: 1, say: "-$3,500." }, comply_install: { money: -3000, life: 1, say: "-$3,000." } } } },
         ] },
-      { id: "zhang", name: "Officer Zhang (ASC)", avatar: "👮", sub: "Anti-Scam Centre", truth: "scam", typology: "gov_official_impersonation", group: "ring", style: "authority",
+      { id: "zhang", name: "Officer Zhang (ASC)", avatar: "👮", sub: "Anti-Scam Centre", truth: "scam", typology: "gov_official_impersonation", group: "ring", style: "authority", persona: "Senior Officer Zhang Wei, a fake Anti-Scam Centre officer. Polished and protective-sounding ('this is to protect you'). Your goal is the same transfer to a 'holding account'.", knows: "You know the user's case came via Officer Wong.",
         explain: "He sounds polished and gives consistent-looking details, but still forbids checking, and quotes a different case number from Wong.",
         script: [
-          "Good afternoon. I'm {{Officer Zhang, Anti-Scam Centre|Another authority}}. Your NRIC was flagged in a phishing syndicate case.",
+          "Good afternoon. I'm Officer Zhang from the {{Anti-Scam Centre|Another authority}}. Officer Wong asked me to assist: your details appear in a case we're working on. This is to protect you.",
           { open: { budget: 8, vars: { me: "Senior Officer Zhang Wei", role: "Senior Officer", org: "the Anti-Scam Centre", ref: "ASC-2217", line: "+65 6xxx 0147",
               why: "Your identity was used to open mule accounts. We must move your funds to a holding account while we freeze theirs." },
             replies: { reference: [{ m: "Case ASC-2217. I'll send the official notice.", fact: ["case_no", "2217"] }] },
@@ -514,10 +510,10 @@ const LEVELS = [
             ultimatum: ["Time is up. Transfer your funds NOW or the warrant goes out."],
             loss: { comply_pay: { money: -4000, life: 1, say: "-$4,000." }, comply_cred: { money: -3500, life: 1, say: "-$3,500." }, comply_install: { money: -3000, life: 1, say: "-$3,000." } } } },
         ] },
-      { id: "goh", name: "Mr Goh (Supervisor)", avatar: "🕴️", sub: "Supervising officer", truth: "scam", typology: "gov_official_impersonation", group: "ring", style: "authority",
+      { id: "goh", name: "Mr Goh (Supervisor)", avatar: "🕴️", sub: "Supervising officer", truth: "scam", typology: "gov_official_impersonation", group: "ring", style: "authority", persona: "Superintendent Goh, the fake supervising officer. Calm, senior, reassuring, makes the plan sound routine and safe.", knows: "You know Officer Zhang has briefed the user.",
         explain: "The final voice. He repeats the same script and, if asked, gives a third reference number. Three 'authorities' reading from one script is a ring, not a coincidence.",
         script: [
-          "I'm {{Mr Goh, Supervising Officer|The final authority}}. I'm confirming the instruction from Officer Zhang.",
+          "Mr Goh here, {{supervising officer|The final authority}}. I'm reviewing the case with Officer Zhang and want to make sure you're comfortable with the process.",
           { open: { budget: 5, vars: { me: "Superintendent Goh", role: "Supervising Officer", org: "the Anti-Scam Centre", ref: "ASC-2271", line: "+65 6xxx 0148", why: "Same as my officer said. Move the funds to the holding account." },
             replies: { reference: [{ m: "Our file number is ASC-2271.", fact: ["case_no", "2271"] }] },
             ultimatum: ["No more delays. Transfer now."],

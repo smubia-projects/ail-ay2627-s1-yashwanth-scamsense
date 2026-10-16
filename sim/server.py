@@ -63,6 +63,8 @@ class Sim:
         else:
             llm, demo = HeuristicMockLLM(), True
         self.demo = demo
+        from sim import gamechat
+        self.personas = gamechat.load_personas()
         self.state = FakeBotState()
         self.ctx = SimpleNamespace(
             application=SimpleNamespace(bot_data={"ctx": handlers.Ctx(llm, s, demo)}),
@@ -185,6 +187,22 @@ class Sim:
             return {"intent": None, "fallback": True}
         return {"intent": r.intent if r.intent in ids else "none"}
 
+    async def game_chat(self, data: dict) -> dict:
+        """One in-character reply for the Inbox Defender game (see sim/gamechat.py). Falls back to authored replies on any problem."""
+        from sim import gamechat
+        if self.demo:
+            return {"fallback": True}
+        try:
+            case, chat = int(data.get("case", 0)), str(data.get("chat", ""))[:30]
+        except (TypeError, ValueError):
+            return {"fallback": True}
+        hist = [{"from": "me" if h.get("from") == "me" else "them", "text": str(h.get("text", ""))[:300]}
+                for h in list(data.get("history", []))[-10:] if isinstance(h, dict)]
+        counts = {str(k)[:30]: int(v) for k, v in dict(data.get("counts", {})).items() if isinstance(v, (int, float))}
+        fcounts = {str(k)[:30]: int(v) for k, v in dict(data.get("factCounts", {})).items() if isinstance(v, (int, float))}
+        c = self.ctx.application.bot_data["ctx"]
+        return await gamechat.reply(c.llm, self.personas, case, chat, hist, str(data.get("text", "")), counts, fcounts)
+
     def reset(self) -> None:
         self.ctx.application.bot_data["ctx"].sessions.drop(CHAT_ID)
         self.state = FakeBotState()
@@ -257,6 +275,10 @@ def make_server(port: int) -> tuple[ThreadingHTTPServer, Sim]:
                     if not scan_limit.check(0)[0]:
                         return self._json({"error": "rate_limited"}, 429)
                     return self._json(run(sim.scan(list(data.get("messages", [])))))
+                elif self.path == "/api/chat":
+                    if not probe_limit.check(1)[0]:
+                        return self._json({"fallback": True})
+                    return self._json(run(sim.game_chat(data)))
                 elif self.path == "/api/probe":
                     if not probe_limit.check(0)[0]:
                         return self._json({"intent": None, "fallback": True})

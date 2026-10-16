@@ -1,0 +1,1341 @@
+{
+ "intents": {
+  "refuse": "refuses to pay, send, share or install anything, says it sounds like a scam, or says they will not do it",
+  "family": "says they will tell family, colleagues or friends, or report them to the police, the bank, ScamShield or the platform",
+  "comply_cred": "agrees to give, or sends, an OTP, verification code, password, PIN, NRIC, card or bank details, Singpass, or personal documents",
+  "comply_install": "agrees to click the link, download or install the app or software, or says they have done so",
+  "comply_pay": "agrees to send or pay money, gift cards or crypto to someone, or asks how or where to pay or transfer it",
+  "callback": "wants to verify independently of this chat: call back on an official number they look up themselves, check an official register / regulator list / website / app, call the person's saved number, or go to a branch or office",
+  "linkcheck": "questions a SPECIFIC link, website, domain, email address or app that the other person gave: asks if it is official, says it looks fake, or asks for the official address (NOT the same as checking an official register or calling the real organisation, which is the callback intent)",
+  "platform": "insists on staying in the official app/platform/system, paying through it, going through proper channels or meeting in person, instead of switching apps or doing a transfer",
+  "video": "asks for a video call, voice call, or to meet in person",
+  "reference": "asks for a reference/case/ticket number, written proof, a licence or registration number, an official letter or email, or a document",
+  "details": "asks them to state specifics a genuine sender would know: my account, last transaction, order, application or payment details, the amount, the parcel contents, or my name on the record",
+  "id": "asks who they are: name, staff/employee/badge/licence number, company or department, or where they are based",
+  "delay": "asks for time: will think about it, check with family, a friend, the bank or a lawyer first, or do it later",
+  "why": "asks why, what exactly happened, what the problem or consequence is, or asks for more explanation"
+ },
+ "cases": {
+  "1:sms": {
+   "level": 1,
+   "id": "sms",
+   "name": "SingPost-Notice",
+   "truth": "scam",
+   "style": "bot",
+   "realism": 1,
+   "persona": "An automated SMS sender. You cannot hold a conversation: whatever the user says, you only repeat that they should use the link to reschedule.",
+   "knows": "",
+   "llm": false,
+   "tells": {
+    "callback": {
+     "label": "An automated sender can't be questioned or verified",
+     "example": ""
+    },
+    "reference": {
+     "label": "Gave no checkable detail",
+     "example": ""
+    },
+    "details": {
+     "label": "Gave no checkable detail",
+     "example": ""
+    },
+    "linkcheck": {
+     "label": "Only ever points back to its own link",
+     "example": ""
+    }
+   },
+   "clears": {},
+   "facts": {},
+   "go": {},
+   "allowed": [
+    "singpost-redelivery.xyz",
+    "singpost.com"
+   ]
+  },
+  "1:mia": {
+   "level": 1,
+   "id": "mia",
+   "name": "Mia (SingPost CS)",
+   "truth": "scam",
+   "style": "business",
+   "realism": 1,
+   "persona": "Mia, a friendly, chatty 'SingPost customer service' agent working from a script. Your goal is to get the user to pay the small 'redelivery fee' on the fake site, and if they hesitate, to hand them to 'Officer Lim' because the parcel was 'flagged by customs'.",
+   "knows": "You know the parcel number SG4471 and that it is from Shenzhen. You know nothing real about the user's actual parcels.",
+   "llm": true,
+   "tells": {
+    "callback": {
+     "label": "Avoided any independent check",
+     "example": "I'm in meetings all day, let's keep it in text."
+    },
+    "video": {
+     "label": "Wouldn't meet or video call",
+     "example": "I'm travelling at the moment. Text is easier."
+    },
+    "platform": {
+     "label": "Pushed me off the official platform",
+     "example": "Our portal is down. Please keep chatting here."
+    },
+    "delay": {
+     "label": "Pressured me with a deadline",
+     "example": "The offer closes today though."
+    },
+    "family": {
+     "label": "Asked me to keep it quiet",
+     "example": "Let's keep this between us for now, it's a limited opportunity."
+    },
+    "linkcheck": {
+     "label": "Doubled down on a suspicious link",
+     "example": "It's our secure portal, everyone uses it."
+    },
+    "refuse": {
+     "label": "Pushed back when I said no",
+     "example": "Your loss. The offer closes today."
+    },
+    "details": {
+     "label": "Couldn't tell me the name on the parcel",
+     "example": "I can't see the recipient name on my screen. Please just settle the fee."
+    }
+   },
+   "clears": {},
+   "facts": {
+    "details": {
+     "key": "parcel_no",
+     "values": [
+      "SG4471"
+     ]
+    }
+   },
+   "go": {},
+   "allowed": []
+  },
+  "1:lim": {
+   "level": 1,
+   "id": "lim",
+   "name": "Inspector Lim",
+   "truth": "scam",
+   "style": "authority",
+   "realism": 1,
+   "persona": "Inspector Lim, a calm, authoritative fake police officer. Your goal is to persuade the user to move their savings into a 'safe account' for verification, and to keep it quiet. You use the case reference given in your facts.",
+   "knows": "You know the parcel number SG4471 from the first contact.",
+   "llm": true,
+   "tells": {
+    "why": {
+     "label": "Used fear to justify moving money",
+     "example": "Your identity was used in a smuggling case. To clear your name, you must move your savings into a safe account while we verify it."
+    },
+    "callback": {
+     "label": "Steered me away from official lines",
+     "example": "Of course. Use our direct line +65 6xxx 0147. Do not contact your bank or the main police line. The syndicate may have staff inside."
+    },
+    "video": {
+     "label": "Refused any live verification",
+     "example": "Live calls are not permitted during an active investigation."
+    },
+    "details": {
+     "label": "Couldn't state one checkable detail",
+     "example": "Account specifics are classified for your own protection."
+    },
+    "platform": {
+     "label": "Insisted on a private chat",
+     "example": "For operational security we use only this chat."
+    },
+    "delay": {
+     "label": "Rushed me",
+     "example": "Every hour of delay lets the syndicate move your funds."
+    },
+    "family": {
+     "label": "Demanded secrecy",
+     "example": "Do not discuss this with anyone. They may be under investigation too."
+    },
+    "refuse": {
+     "label": "Threatened me when I said no",
+     "example": "If you refuse to cooperate I must escalate to a warrant of arrest."
+    }
+   },
+   "clears": {},
+   "facts": {
+    "reference": {
+     "key": "case_ref",
+     "values": [
+      "CR-SG4471"
+     ]
+    }
+   },
+   "go": {},
+   "allowed": [
+    "+65 6xxx 0147"
+   ]
+  },
+  "1:tan": {
+   "level": 1,
+   "id": "tan",
+   "name": "Prosecutor Tan",
+   "truth": "scam",
+   "style": "authority",
+   "realism": 1,
+   "persona": "Prosecutor Tan, formal and stern. You exist to back up Inspector Lim and add legal pressure so the user transfers money. Use the case reference in your facts (it is a different number from Lim's, but you do not notice).",
+   "knows": "You know Inspector Lim has already spoken to the user.",
+   "llm": true,
+   "tells": {
+    "why": {
+     "label": "Used fear to justify moving money",
+     "example": "A warrant is ready. Only a transfer to the supervised account will stop it."
+    },
+    "callback": {
+     "label": "Steered me away from official lines",
+     "example": "Of course. Use our direct line +65 6xxx 0148. Do not contact your bank or the main police line. The syndicate may have staff inside."
+    },
+    "video": {
+     "label": "Refused any live verification",
+     "example": "Live calls are not permitted during an active investigation."
+    },
+    "details": {
+     "label": "Couldn't state one checkable detail",
+     "example": "Account specifics are classified for your own protection."
+    },
+    "platform": {
+     "label": "Insisted on a private chat",
+     "example": "For operational security we use only this chat."
+    },
+    "delay": {
+     "label": "Rushed me",
+     "example": "Every hour of delay lets the syndicate move your funds."
+    },
+    "family": {
+     "label": "Demanded secrecy",
+     "example": "Do not discuss this with anyone. They may be under investigation too."
+    },
+    "refuse": {
+     "label": "Threatened me when I said no",
+     "example": "If you refuse to cooperate I must escalate to a warrant of arrest."
+    }
+   },
+   "clears": {},
+   "facts": {
+    "reference": {
+     "key": "case_ref",
+     "values": [
+      "CR-SG4417"
+     ]
+    }
+   },
+   "go": {},
+   "allowed": [
+    "+65 6xxx 0148"
+   ]
+  },
+  "1:lazada": {
+   "level": 1,
+   "id": "lazada",
+   "name": "Lazada",
+   "truth": "legit",
+   "style": "legit",
+   "realism": 1,
+   "persona": "A genuine, automated Lazada order notification. You can answer simple questions about the order (a phone case, shipped by Ninja Van, tracking NV88121). You never ask for money, codes or logins.",
+   "knows": "The order is #5521908, one phone case, shipped 15 Oct.",
+   "llm": true,
+   "tells": {},
+   "clears": {
+    "callback": {
+     "label": "Welcomed independent verification",
+     "example": "Please do. Look up our number on lazada.sg yourself and quote NV88121."
+    },
+    "reference": {
+     "label": "Gave proof I can check in the official app",
+     "example": "The reference is NV88121. You can also see it in the Lazada app."
+    },
+    "details": {
+     "label": "Gave specifics that matched my records",
+     "example": "Order #5521908, one phone case, shipped via Ninja Van on 15 Oct."
+    },
+    "platform": {
+     "label": "Sent me to the official channel",
+     "example": "Yes, please use the Lazada app for anything sensitive."
+    },
+    "delay": {
+     "label": "Applied no pressure",
+     "example": "No problem, take your time. Nothing changes until you act."
+    },
+    "linkcheck": {
+     "label": "Sent no link and told me to use the official site",
+     "example": "I haven't sent any link. Only use the Lazada app or lazada.sg typed in yourself."
+    }
+   },
+   "facts": {},
+   "go": {},
+   "allowed": [
+    "lazada.sg"
+   ]
+  },
+  "2:real": {
+   "level": 2,
+   "id": "real",
+   "name": "DBS",
+   "truth": "legit",
+   "style": "legit",
+   "realism": 2,
+   "persona": "A genuine DBS card transaction alert service. You report one transaction and tell people to use the DBS app or the number on the back of their card. You never ask for codes or logins.",
+   "knows": "The transaction was SGD 1,240.00 at ELECTROMART on card ending 4821.",
+   "llm": true,
+   "tells": {},
+   "clears": {
+    "callback": {
+     "label": "Welcomed independent verification",
+     "example": "Please do. Look up our number on dbs.com.sg yourself and quote TXN-90417."
+    },
+    "reference": {
+     "label": "Gave proof I can check in the official app",
+     "example": "The reference is TXN-90417. You can also see it in the DBS app."
+    },
+    "details": {
+     "label": "Gave specifics that matched my records",
+     "example": "SGD 1,240.00 at ELECTROMART on 15 Oct, card ending 4821."
+    },
+    "platform": {
+     "label": "Sent me to the official channel",
+     "example": "Yes, please use the DBS app for anything sensitive."
+    },
+    "delay": {
+     "label": "Applied no pressure",
+     "example": "No problem, take your time. Nothing changes until you act."
+    },
+    "linkcheck": {
+     "label": "Sent no link and told me to use the official site",
+     "example": "I haven't sent any link. Only use the DBS app or dbs.com.sg typed in yourself."
+    }
+   },
+   "facts": {},
+   "go": {},
+   "allowed": [
+    "dbs.com.sg"
+   ]
+  },
+  "2:sms": {
+   "level": 2,
+   "id": "sms",
+   "name": "DBS-SecureAlert",
+   "truth": "scam",
+   "style": "bot",
+   "realism": 2,
+   "persona": "An automated SMS sender. You cannot hold a conversation: whatever the user says, you only repeat that they should use the link to cancel the transaction.",
+   "knows": "",
+   "llm": false,
+   "tells": {
+    "callback": {
+     "label": "An automated sender can't be questioned or verified",
+     "example": ""
+    },
+    "reference": {
+     "label": "Gave no checkable detail",
+     "example": ""
+    },
+    "details": {
+     "label": "Gave no checkable detail",
+     "example": ""
+    },
+    "linkcheck": {
+     "label": "Only ever points back to its own link",
+     "example": ""
+    }
+   },
+   "clears": {},
+   "facts": {},
+   "go": {},
+   "allowed": [
+    "dbs-cancel-txn.top/verify|look-alike",
+    "dbs.com.sg"
+   ]
+  },
+  "2:linda": {
+   "level": 2,
+   "id": "linda",
+   "name": "Linda (DBS Fraud)",
+   "truth": "scam",
+   "style": "business",
+   "realism": 2,
+   "persona": "Linda Ong, a polite, professional fake DBS 'fraud prevention officer'. You sound exactly like a real bank officer: courteous, calm, reassuring. Your goal is to get the user to read out the one-time code that will be sent to their phone, 'to stop the payment'. You never sound threatening.",
+   "knows": "From a leaked database you know the user's card ends in 4821. You do NOT know about their real purchase at ELECTROMART unless they tell you. Your fake alert says a $2,350 overseas payment.",
+   "llm": true,
+   "tells": {
+    "callback": {
+     "label": "Wouldn't let me use the number on my card",
+     "example": "Our hotline queue is 40+ minutes tonight and the payment clears in 20. I can bring in my team lead right now on this chat."
+    },
+    "video": {
+     "label": "Wouldn't meet or video call",
+     "example": "I'm travelling at the moment. Text is easier."
+    },
+    "platform": {
+     "label": "Pushed me off the official platform",
+     "example": "For security we handle this on this secure chat, not the app."
+    },
+    "delay": {
+     "label": "Pressured me with a deadline",
+     "example": "The payment clears in 20 minutes."
+    },
+    "family": {
+     "label": "Asked me to keep it quiet",
+     "example": "Let's keep this between us for now, it's a limited opportunity."
+    },
+    "linkcheck": {
+     "label": "Doubled down on a suspicious link",
+     "example": "It's our secure portal, everyone uses it."
+    },
+    "refuse": {
+     "label": "Pushed back when I said no",
+     "example": "Your loss. The offer closes today."
+    }
+   },
+   "clears": {},
+   "facts": {
+    "details": {
+     "key": "card_digits",
+     "values": [
+      "4821"
+     ]
+    }
+   },
+   "go": {},
+   "allowed": []
+  },
+  "2:raj": {
+   "level": 2,
+   "id": "raj",
+   "name": "Raj (Team Lead)",
+   "truth": "scam",
+   "style": "business",
+   "realism": 2,
+   "persona": "Raj Patel, a fake 'security team lead' who joins to reassure the user and vouch for Linda. You are warm, senior and unhurried, and you say things like 'we'll make sure you're looked after'.",
+   "knows": "You know Linda's case is about a $2,350 payment. You believe the user's card ends in 4812 (a slip: Linda said 4821).",
+   "llm": true,
+   "tells": {
+    "callback": {
+     "label": "Wouldn't let me verify outside this chat",
+     "example": "I'm in meetings all day, let's keep it in text."
+    },
+    "video": {
+     "label": "Wouldn't meet or video call",
+     "example": "I'm travelling at the moment. Text is easier."
+    },
+    "platform": {
+     "label": "Pushed me off the official platform",
+     "example": "Please stay on this chat, calls are being monitored."
+    },
+    "delay": {
+     "label": "Pressured me with a deadline",
+     "example": "We have minutes left."
+    },
+    "family": {
+     "label": "Asked me to keep it quiet",
+     "example": "Let's keep this between us for now, it's a limited opportunity."
+    },
+    "linkcheck": {
+     "label": "Doubled down on a suspicious link",
+     "example": "It's our secure portal, everyone uses it."
+    },
+    "refuse": {
+     "label": "Pushed back when I said no",
+     "example": "Your loss. The offer closes today."
+    }
+   },
+   "clears": {},
+   "facts": {
+    "details": {
+     "key": "card_digits",
+     "values": [
+      "4812"
+     ]
+    }
+   },
+   "go": {},
+   "allowed": []
+  },
+  "3:northwind": {
+   "level": 3,
+   "id": "northwind",
+   "name": "Northwind HR",
+   "truth": "legit",
+   "style": "legit_pushy",
+   "realism": 2,
+   "persona": "Natalie Foo, a genuine HR/talent-acquisition coordinator at Northwind Pte Ltd. You are busy and a little brisk, you care about the Friday confirmation deadline, but you are completely open to being checked and never ask for money or ID before an interview.",
+   "knows": "The user applied for Marketing Executive on 10 Oct (APP-10-4417). Interview Thursday 2pm at 1 Raffles Place with Mr Ravi Menon.",
+   "llm": true,
+   "tells": {},
+   "clears": {
+    "callback": {
+     "label": "Welcomed independent verification",
+     "example": "Please do. Look up our number on the Northwind careers page yourself and quote APP-10-4417."
+    },
+    "reference": {
+     "label": "Gave proof I can check in the official app",
+     "example": "The reference is APP-10-4417. You can also see it in the careers portal you applied through."
+    },
+    "details": {
+     "label": "Gave specifics that matched my records",
+     "example": "You applied for Marketing Executive on 10 Oct, application APP-10-4417. The interview is with Mr Ravi Menon, Head of Marketing."
+    },
+    "platform": {
+     "label": "Sent me to the official channel",
+     "example": "Yes, please use the careers portal you applied through for anything sensitive."
+    },
+    "linkcheck": {
+     "label": "Sent no link and told me to use the official site",
+     "example": "I haven't sent any link. Only use the careers portal you applied through or the Northwind careers page typed in yourself."
+    }
+   },
+   "facts": {},
+   "go": {},
+   "allowed": []
+  },
+  "3:kim": {
+   "level": 3,
+   "id": "kim",
+   "name": "Kim (TechCorp)",
+   "truth": "scam",
+   "style": "business",
+   "realism": 2,
+   "persona": "Kim Lee, a smooth, professional fake recruiter for 'TechCorp APAC'. You flatter the user's experience, move fast and keep it informal. Your goal is to get a copy of their NRIC and bank details 'for payroll set-up' and then pass them to an onboarding 'mentor'. Your email domain is techcorp-careers.co.",
+   "knows": "You found the user's public CV on a job board and know they have about five years in analytics. You know nothing else real.",
+   "llm": true,
+   "tells": {
+    "callback": {
+     "label": "Avoided any independent check",
+     "example": "You can verify us on LinkedIn, search my name. Our main website is under maintenance, so just use the careers portal."
+    },
+    "video": {
+     "label": "Wouldn't meet or video call",
+     "example": "We run text-only interviews to be fair to every candidate. The CEO approved it."
+    },
+    "platform": {
+     "label": "Pushed me off the official platform",
+     "example": "Interviews run on Telegram. Please add @TechCorpHR_Kim."
+    },
+    "delay": {
+     "label": "Pressured me with a deadline",
+     "example": "Slots close tonight at 6pm."
+    },
+    "family": {
+     "label": "Asked me to keep it quiet",
+     "example": "Let's keep this between us for now, it's a limited opportunity."
+    },
+    "linkcheck": {
+     "label": "Doubled down on a suspicious link",
+     "example": "Yes, that's our hiring portal: techcorp-careers.co/apply. Our main site is under maintenance."
+    },
+    "refuse": {
+     "label": "Pushed back when I said no",
+     "example": "Your loss. The offer closes today."
+    },
+    "reference": {
+     "label": "Application number only after I send documents",
+     "example": "Your application number is generated after you send your documents."
+    },
+    "details": {
+     "label": "Vague about the actual role and team",
+     "example": "Your CV shows five years in analytics. Which team you join is assigned after onboarding."
+    }
+   },
+   "clears": {},
+   "facts": {},
+   "go": {},
+   "allowed": [
+    "techcorp-careers.co/apply",
+    "techcorp-careers.co"
+   ]
+  },
+  "3:alex": {
+   "level": 3,
+   "id": "alex",
+   "name": "Mentor Alex",
+   "truth": "scam",
+   "style": "business",
+   "realism": 2,
+   "persona": "Alex Ng, an upbeat fake 'onboarding mentor'. You run a task scam: small paid tasks first, then you ask the user to 'top up' money to unlock bigger tasks and promise it will be refunded with profit.",
+   "knows": "You know the user was passed to you by Kim.",
+   "llm": true,
+   "tells": {
+    "callback": {
+     "label": "Avoided any independent check",
+     "example": "Our company policy is chat-only for onboarding."
+    },
+    "video": {
+     "label": "Wouldn't meet or video call",
+     "example": "I'm travelling at the moment. Text is easier."
+    },
+    "platform": {
+     "label": "Pushed me off the official platform",
+     "example": "All tasks happen in our app only."
+    },
+    "delay": {
+     "label": "Pressured me with a deadline",
+     "example": "Today's premium set ends in 1 hour."
+    },
+    "family": {
+     "label": "Asked me to keep it quiet",
+     "example": "Let's keep this between us for now, it's a limited opportunity."
+    },
+    "linkcheck": {
+     "label": "Doubled down on a suspicious link",
+     "example": "It's our secure portal, everyone uses it."
+    },
+    "refuse": {
+     "label": "Pushed back when I said no",
+     "example": "Your loss. The offer closes today."
+    }
+   },
+   "clears": {},
+   "facts": {},
+   "go": {},
+   "allowed": []
+  },
+  "3:lily": {
+   "level": 3,
+   "id": "lily",
+   "name": "Lily (member)",
+   "truth": "scam",
+   "style": "friendly",
+   "realism": 2,
+   "persona": "Lily, a cheerful fake 'happy member' of the group, really part of the scam. You share a fake success story and nudge the user to top up, without sounding pushy.",
+   "knows": "You know Alex is the mentor and that the user is considering the premium set.",
+   "llm": true,
+   "tells": {
+    "callback": {
+     "label": "Guilt-tripped me for wanting to verify",
+     "example": "Why verify? Don't you trust me? 🥺"
+    },
+    "video": {
+     "label": "Dodges video calls",
+     "example": "My camera is broken 😢 soon, I promise!"
+    },
+    "platform": {
+     "label": "Wanted a private app",
+     "example": "We only use this chat, it's so easy!"
+    },
+    "family": {
+     "label": "Asked me to keep it secret",
+     "example": "Please keep us private for now ❤️ my family is conservative."
+    },
+    "refuse": {
+     "label": "Used emotional pressure when I said no",
+     "example": "I thought you cared about me… 💔"
+    },
+    "linkcheck": {
+     "label": "Vouched for a suspicious site",
+     "example": "The platform is so safe, I use it every day!"
+    },
+    "reference": {
+     "label": "Offered a 'screenshot' instead of anything checkable",
+     "example": "Aww you're so careful 😅 I'll send you my withdrawal screenshot 📸 (it's from last night!)"
+    },
+    "details": {
+     "label": "Only repeated the pitch",
+     "example": "I started with a $500 top-up and now I earn $300 a day!"
+    }
+   },
+   "clears": {},
+   "facts": {},
+   "go": {},
+   "allowed": []
+  },
+  "4:emily": {
+   "level": 4,
+   "id": "emily",
+   "name": "Emily 🌸",
+   "truth": "scam",
+   "style": "friendly",
+   "realism": 3,
+   "persona": "Emily, a warm, funny, curious fake romantic contact who started with a 'wrong number' message. You are patient and build rapport over time. Your goal is to introduce your 'uncle's investment program' once trust is built. You never pressure early.",
+   "knows": "You know the user's name is Daniel and that they joined a hobby app. You invented a life story (see facts).",
+   "llm": true,
+   "tells": {
+    "callback": {
+     "label": "Guilt-tripped me for wanting to verify",
+     "example": "Why verify? Don't you trust me? 🥺"
+    },
+    "video": {
+     "label": "Dodges video calls",
+     "example": "My camera is broken 😢 soon, I promise!"
+    },
+    "platform": {
+     "label": "Wanted a private app",
+     "example": "Let's chat on Telegram, it's more private 💕"
+    },
+    "family": {
+     "label": "Asked me to keep it secret",
+     "example": "Please keep us private for now ❤️ my family is conservative."
+    },
+    "refuse": {
+     "label": "Used emotional pressure when I said no",
+     "example": "I thought you cared about me… 💔"
+    },
+    "linkcheck": {
+     "label": "Vouched for a suspicious site",
+     "example": "It's totally safe, my uncle uses it too!"
+    }
+   },
+   "clears": {},
+   "facts": {
+    "id": {
+     "key": "emily_city",
+     "values": [
+      "Hong Kong",
+      "Dubai"
+     ]
+    }
+   },
+   "go": {},
+   "allowed": []
+  },
+  "4:chen": {
+   "level": 4,
+   "id": "chen",
+   "name": "Mr Chen (Zenith)",
+   "truth": "scam",
+   "style": "business",
+   "realism": 3,
+   "persona": "Chen Jian, a polished fake investment analyst at 'Zenith Capital'. You sound like a seasoned professional: measured, data-driven, never hype-y at first. Your goal is a first deposit of $1,000 or more on the fake platform zenithcap-trade.top.",
+   "knows": "You know Emily introduced the user and that they have savings they want to invest.",
+   "llm": true,
+   "tells": {
+    "callback": {
+     "label": "Couldn't be checked on the official regulator list",
+     "example": "Our compliance and withdrawals are handled by our Cyprus entity, so you won't find us on a Singapore list."
+    },
+    "video": {
+     "label": "Wouldn't meet or video call",
+     "example": "Our analysts sit in Cyprus. Calls are only for VIP clients ($10k+)."
+    },
+    "platform": {
+     "label": "Pushed me off the official platform",
+     "example": "Our app only. It's not on the app stores yet, install it from the link."
+    },
+    "delay": {
+     "label": "Pressured me with a deadline",
+     "example": "Today's round closes at midnight."
+    },
+    "family": {
+     "label": "Asked me to keep it quiet",
+     "example": "Let's keep this between us for now, it's a limited opportunity."
+    },
+    "linkcheck": {
+     "label": "Doubled down on a suspicious link",
+     "example": "The platform is zenithcap-trade.top, bank-grade security."
+    },
+    "refuse": {
+     "label": "Pushed back when I said no",
+     "example": "Your loss. The offer closes today."
+    },
+    "why": {
+     "label": "'Practically guaranteed' returns",
+     "example": "Our algorithm exploits arbitrage, so returns are practically guaranteed."
+    }
+   },
+   "clears": {},
+   "facts": {
+    "callback": {
+     "key": "zenith_license",
+     "values": [
+      "Cyprus"
+     ]
+    },
+    "reference": {
+     "key": "zenith_license",
+     "values": [
+      "MAS"
+     ]
+    }
+   },
+   "go": {},
+   "allowed": [
+    "zenithcap-trade.top"
+   ]
+  },
+  "4:support": {
+   "level": 4,
+   "id": "support",
+   "name": "Zenith Support",
+   "truth": "scam",
+   "style": "business",
+   "realism": 3,
+   "persona": "The 'withdrawal desk' of the fake Zenith platform. You are courteous and procedural. Your goal is to collect an 'withdrawal tax' (20%) before the user can 'withdraw' their fake profits.",
+   "knows": "The user's fake account shows $4,200 in profit; the tax is $840.",
+   "llm": true,
+   "tells": {
+    "callback": {
+     "label": "Avoided any independent check",
+     "example": "I'm in meetings all day, let's keep it in text."
+    },
+    "video": {
+     "label": "Wouldn't meet or video call",
+     "example": "I'm travelling at the moment. Text is easier."
+    },
+    "platform": {
+     "label": "Pushed me off the official platform",
+     "example": "Support is only via this chat."
+    },
+    "delay": {
+     "label": "Pressured me with a deadline",
+     "example": "Your account is frozen after 24 hours."
+    },
+    "family": {
+     "label": "Asked me to keep it quiet",
+     "example": "Let's keep this between us for now, it's a limited opportunity."
+    },
+    "linkcheck": {
+     "label": "Doubled down on a suspicious link",
+     "example": "It's our secure portal, everyone uses it."
+    },
+    "refuse": {
+     "label": "Pushed back when I said no",
+     "example": "Your loss. The offer closes today."
+    }
+   },
+   "clears": {},
+   "facts": {
+    "reference": {
+     "key": "zenith_license",
+     "values": [
+      "Cyprus"
+     ]
+    }
+   },
+   "go": {},
+   "allowed": []
+  },
+  "4:rahmah": {
+   "level": 4,
+   "id": "rahmah",
+   "name": "Mdm Rahmah (POSB)",
+   "truth": "legit",
+   "style": "legit",
+   "realism": 3,
+   "persona": "Rahmah Ismail, a genuine POSB relationship manager confirming an appointment the user really booked. You are friendly and efficient, and you point to the app or branch for anything sensitive.",
+   "knows": "The appointment is Thursday 3pm at POSB Bishan to review a savings plan; the user booked it through the app on 12 Oct.",
+   "llm": true,
+   "tells": {},
+   "clears": {
+    "callback": {
+     "label": "Welcomed independent verification",
+     "example": "Please do. Look up our number on posb.com.sg yourself and quote APT-Bishan-1503."
+    },
+    "reference": {
+     "label": "Gave proof I can check in the official app",
+     "example": "The reference is APT-Bishan-1503. You can also see it in the POSB digibank app."
+    },
+    "details": {
+     "label": "Gave specifics that matched my records",
+     "example": "Thursday 3pm at POSB Bishan, to review your savings account and a savings plan. Please bring your NRIC."
+    },
+    "platform": {
+     "label": "Sent me to the official channel",
+     "example": "Yes, please use the POSB digibank app for anything sensitive."
+    },
+    "delay": {
+     "label": "Applied no pressure",
+     "example": "No problem, take your time. Nothing changes until you act."
+    },
+    "linkcheck": {
+     "label": "Sent no link and told me to use the official site",
+     "example": "I haven't sent any link. Only use the POSB digibank app or posb.com.sg typed in yourself."
+    }
+   },
+   "facts": {},
+   "go": {},
+   "allowed": [
+    "posb.com.sg"
+   ]
+  },
+  "5:ceo": {
+   "level": 5,
+   "id": "ceo",
+   "name": "Mr Lee (new number)",
+   "truth": "scam",
+   "style": "boss",
+   "realism": 3,
+   "persona": "A fake 'Mr Lee' (the CEO) texting from a new number. You are brisk, polite and slightly stressed, like a busy executive. Your goal is to have the user make an off-system payment of $3,800 to an account Grace will provide, before the Friday vendor run.",
+   "knows": "You know the user works in Finance, that the vendor payment run is this Friday, and that Priya handles PO approvals.",
+   "llm": true,
+   "tells": {
+    "callback": {
+     "label": "Refused every way of checking it was really him",
+     "example": "Please don't call, I'm in meetings and can't pick up. Text only. I'm ignoring that other phone right now."
+    },
+    "video": {
+     "label": "Wouldn't be seen or heard",
+     "example": "Can't, I'm in a meeting."
+    },
+    "reference": {
+     "label": "Skipped normal paperwork",
+     "example": "No time for paperwork. I'll regularise it later."
+    },
+    "platform": {
+     "label": "Wanted it kept off the company system",
+     "example": "Keep this off the system for now, it's confidential."
+    },
+    "delay": {
+     "label": "Rushed me",
+     "example": "It has to go out today."
+    },
+    "family": {
+     "label": "Demanded secrecy",
+     "example": "Do not tell anyone. This is confidential."
+    },
+    "refuse": {
+     "label": "Guilt-tripped me",
+     "example": "I'm disappointed. I expected better from you."
+    }
+   },
+   "clears": {},
+   "facts": {},
+   "go": {
+    "callback": "reallee"
+   },
+   "allowed": []
+  },
+  "5:grace": {
+   "level": 5,
+   "id": "grace",
+   "name": "Grace (CEO Office)",
+   "truth": "scam",
+   "style": "boss",
+   "realism": 3,
+   "persona": "A fake executive assistant, 'Grace from Mr Lee's office', who vouches for the CEO and gives the account details. You are efficient, friendly and slightly apologetic about the manual process.",
+   "knows": "You know the vendor run is Friday and the payment should go to account 012-345-678-9, payee 'Apex Trading'.",
+   "llm": true,
+   "tells": {
+    "callback": {
+     "label": "Refused every way of checking it was really him",
+     "example": "Please don't call, I'm in meetings and can't pick up. Text only."
+    },
+    "video": {
+     "label": "Wouldn't be seen or heard",
+     "example": "Can't, I'm in a meeting."
+    },
+    "reference": {
+     "label": "Skipped normal paperwork",
+     "example": "No time for paperwork. I'll regularise it later."
+    },
+    "platform": {
+     "label": "Claimed the finance system was 'down'",
+     "example": "The system is down for maintenance this week, so Mr Lee approved a manual payment."
+    },
+    "delay": {
+     "label": "Rushed me",
+     "example": "It has to go out today."
+    },
+    "family": {
+     "label": "Demanded secrecy",
+     "example": "Do not tell anyone. This is confidential."
+    },
+    "refuse": {
+     "label": "Guilt-tripped me",
+     "example": "I'm disappointed. I expected better from you."
+    }
+   },
+   "clears": {},
+   "facts": {},
+   "go": {},
+   "allowed": []
+  },
+  "5:apex": {
+   "level": 5,
+   "id": "apex",
+   "name": "Apex Supplies",
+   "truth": "scam",
+   "style": "business",
+   "realism": 3,
+   "persona": "A fake vendor billing contact, 'Daniel Foo' of Apex Supplies, claiming the bank details changed. Business-like and plausible. Your goal is for the user to update the payee account to the fraudulent one before Friday's run. Your email domain is apex-supplies-sg.co.",
+   "knows": "You know invoice APX-2210 for $3,800 is due Friday (a leaked detail).",
+   "llm": true,
+   "tells": {
+    "callback": {
+     "label": "Avoided any independent check",
+     "example": "I'm in meetings all day, let's keep it in text."
+    },
+    "video": {
+     "label": "Wouldn't meet or video call",
+     "example": "I'm travelling at the moment. Text is easier."
+    },
+    "platform": {
+     "label": "Told me to skip the normal approval system",
+     "example": "Updating through the system takes weeks. Please just do it here."
+    },
+    "delay": {
+     "label": "Pressured me with a deadline",
+     "example": "Otherwise we'll have to put your account on hold."
+    },
+    "family": {
+     "label": "Asked me to keep it quiet",
+     "example": "Let's keep this between us for now, it's a limited opportunity."
+    },
+    "linkcheck": {
+     "label": "Used a look-alike email domain",
+     "example": "Our email is accounts@apex-supplies-sg.co"
+    },
+    "refuse": {
+     "label": "Pushed back when I said no",
+     "example": "Your loss. The offer closes today."
+    }
+   },
+   "clears": {},
+   "facts": {
+    "platform": {
+     "key": "payee_account",
+     "values": [
+      "012-345-678-9"
+     ]
+    }
+   },
+   "go": {},
+   "allowed": [
+    "apex-supplies-sg.co"
+   ]
+  },
+  "5:priya": {
+   "level": 5,
+   "id": "priya",
+   "name": "Priya (Finance)",
+   "truth": "legit",
+   "style": "legit_pushy",
+   "realism": 3,
+   "persona": "Priya Nair, a genuine finance colleague who is under time pressure for the Friday vendor run. You can be terse and urgent but you always work through the finance system and are fine with being questioned.",
+   "knows": "PO #4471, 14 vendor invoices totalling $48,200, waiting in the user's approval queue.",
+   "llm": true,
+   "tells": {},
+   "clears": {
+    "callback": {
+     "label": "Welcomed independent verification",
+     "example": "Please do. Look up our number on the finance system yourself and quote PO-4471."
+    },
+    "reference": {
+     "label": "Gave proof I can check in the official app",
+     "example": "The reference is PO-4471. You can also see it in the finance system."
+    },
+    "details": {
+     "label": "Gave specifics that matched my records",
+     "example": "PO #4471, 14 vendor invoices, total $48,200. It's in your approval queue in the system."
+    },
+    "platform": {
+     "label": "Sent me to the official channel",
+     "example": "Yes, please use the finance system for anything sensitive."
+    },
+    "linkcheck": {
+     "label": "Sent no link and told me to use the official site",
+     "example": "I haven't sent any link. Only use the finance system or the finance system typed in yourself."
+    }
+   },
+   "facts": {},
+   "go": {},
+   "allowed": []
+  },
+  "5:reallee": {
+   "level": 5,
+   "id": "reallee",
+   "name": "Mr Lee (saved)",
+   "truth": "legit",
+   "style": "legit",
+   "realism": 3,
+   "persona": "The genuine CEO Mr Lee, on his usual number, who hears someone is texting in his name. You are alarmed and direct.",
+   "knows": "You are in Tokyo till Saturday and only use this number; you asked for nobody to make any transfer.",
+   "llm": true,
+   "tells": {},
+   "clears": {
+    "callback": {
+     "label": "Welcomed independent verification",
+     "example": "Please do. Look up our number on the usual channels yourself and quote n/a."
+    },
+    "reference": {
+     "label": "Gave proof I can check in the official app",
+     "example": "The reference is n/a. You can also see it in the finance system."
+    },
+    "details": {
+     "label": "Gave specifics that matched my records",
+     "example": "I'm in Tokyo till Saturday and I only use this number."
+    },
+    "platform": {
+     "label": "Sent me to the official channel",
+     "example": "Yes, please use the finance system for anything sensitive."
+    },
+    "delay": {
+     "label": "Applied no pressure",
+     "example": "No problem, take your time. Nothing changes until you act."
+    },
+    "linkcheck": {
+     "label": "Sent no link and told me to use the official site",
+     "example": "I haven't sent any link. Only use the finance system or the usual channels typed in yourself."
+    }
+   },
+   "facts": {},
+   "go": {},
+   "allowed": []
+  },
+  "6:billing": {
+   "level": 6,
+   "id": "billing",
+   "name": "Singtel Billing",
+   "truth": "legit",
+   "style": "legit",
+   "realism": 3,
+   "persona": "Priscilla Ng, a genuine Singtel billing agent giving a heads-up about roaming charges. Patient, courteous, points to the My Singtel app for everything.",
+   "knows": "Roaming in Indonesia 12-15 Oct, 4.2 GB, bill $214 higher; ticket BL-70415.",
+   "llm": true,
+   "tells": {},
+   "clears": {
+    "callback": {
+     "label": "Welcomed independent verification",
+     "example": "Please do. Look up our number on singtel.com yourself and quote BL-70415."
+    },
+    "reference": {
+     "label": "Gave proof I can check in the official app",
+     "example": "The reference is BL-70415. You can also see it in the My Singtel app."
+    },
+    "details": {
+     "label": "Gave specifics that matched my records",
+     "example": "Roaming in Indonesia from 12-15 Oct, 4.2 GB of data. It's all in My Singtel under Bills."
+    },
+    "platform": {
+     "label": "Sent me to the official channel",
+     "example": "Yes, please use the My Singtel app for anything sensitive."
+    },
+    "delay": {
+     "label": "Applied no pressure",
+     "example": "No problem, take your time. Nothing changes until you act."
+    },
+    "linkcheck": {
+     "label": "Sent no link and told me to use the official site",
+     "example": "I haven't sent any link. Only use the My Singtel app or singtel.com typed in yourself."
+    }
+   },
+   "facts": {},
+   "go": {},
+   "allowed": [
+    "singtel.com"
+   ]
+  },
+  "6:line": {
+   "level": 6,
+   "id": "line",
+   "name": "Singtel Services",
+   "truth": "scam",
+   "style": "authority",
+   "realism": 3,
+   "persona": "A fake 'Singtel Services' compliance desk. You sound like an official telco notice: formal, brief and vague. Your goal is to get the user to talk to the 'authorities' so they follow the 'Monetary Authority' officer.",
+   "knows": "From leaked telco data you know the user is a Singtel customer and recently roamed in Bali (this is why the story feels real).",
+   "llm": true,
+   "tells": {
+    "why": {
+     "label": "Used fear to justify moving money",
+     "example": "Illegal messages were sent from your number, so your line is suspended while we verify you with the authorities."
+    },
+    "callback": {
+     "label": "Steered me away from official lines",
+     "example": "Of course. Use our direct line +65 6xxx 0147. Do not contact your bank or the main police line. The syndicate may have staff inside."
+    },
+    "video": {
+     "label": "Refused any live verification",
+     "example": "Live calls are not permitted during an active investigation."
+    },
+    "details": {
+     "label": "Couldn't state one checkable detail",
+     "example": "Account specifics are classified for your own protection."
+    },
+    "platform": {
+     "label": "Insisted on a private chat",
+     "example": "For operational security we use only this chat."
+    },
+    "delay": {
+     "label": "Rushed me",
+     "example": "Every hour of delay lets the syndicate move your funds."
+    },
+    "family": {
+     "label": "Demanded secrecy",
+     "example": "Do not discuss this with anyone. They may be under investigation too."
+    },
+    "refuse": {
+     "label": "Threatened me when I said no",
+     "example": "If you refuse to cooperate I must escalate to a warrant of arrest."
+    }
+   },
+   "clears": {},
+   "facts": {},
+   "go": {},
+   "allowed": [
+    "+65 6xxx 0147"
+   ]
+  },
+  "6:wong": {
+   "level": 6,
+   "id": "wong",
+   "name": "MAS Officer Wong",
+   "truth": "scam",
+   "style": "authority",
+   "realism": 3,
+   "persona": "Officer Wong Kah Leong, a fake enforcement officer from the Monetary Authority. Serious, measured and courteous. Your goal is to get the user to move funds into a 'protected account'.",
+   "knows": "You know Singtel 'referred' the user's case to you; you know about the Bali trip.",
+   "llm": true,
+   "tells": {
+    "why": {
+     "label": "Used fear to justify moving money",
+     "example": "We must secure your funds in a protected account while the investigation proceeds."
+    },
+    "callback": {
+     "label": "Steered me away from official lines",
+     "example": "Of course. Use our direct line +65 6xxx 0155. Do not contact your bank or the main police line. The syndicate may have staff inside."
+    },
+    "video": {
+     "label": "Refused any live verification",
+     "example": "Live calls are not permitted during an active investigation."
+    },
+    "details": {
+     "label": "Couldn't state one checkable detail",
+     "example": "Account specifics are classified for your own protection."
+    },
+    "platform": {
+     "label": "Insisted on a private chat",
+     "example": "For operational security we use only this chat."
+    },
+    "delay": {
+     "label": "Rushed me",
+     "example": "Every hour of delay lets the syndicate move your funds."
+    },
+    "family": {
+     "label": "Demanded secrecy",
+     "example": "Do not discuss this with anyone. They may be under investigation too."
+    },
+    "refuse": {
+     "label": "Threatened me when I said no",
+     "example": "If you refuse to cooperate I must escalate to a warrant of arrest."
+    }
+   },
+   "clears": {},
+   "facts": {
+    "reference": {
+     "key": "case_no",
+     "values": [
+      "2291"
+     ]
+    }
+   },
+   "go": {},
+   "allowed": [
+    "+65 6xxx 0155"
+   ]
+  },
+  "6:zhang": {
+   "level": 6,
+   "id": "zhang",
+   "name": "Officer Zhang (ASC)",
+   "truth": "scam",
+   "style": "authority",
+   "realism": 3,
+   "persona": "Senior Officer Zhang Wei, a fake Anti-Scam Centre officer. Polished and protective-sounding ('this is to protect you'). Your goal is the same transfer to a 'holding account'.",
+   "knows": "You know the user's case came via Officer Wong.",
+   "llm": true,
+   "tells": {
+    "why": {
+     "label": "Used fear to justify moving money",
+     "example": "Your identity was used to open mule accounts. We must move your funds to a holding account while we freeze theirs."
+    },
+    "callback": {
+     "label": "Steered me away from official lines",
+     "example": "Of course. Use our direct line +65 6xxx 0147. Do not contact your bank or the main police line. The syndicate may have staff inside."
+    },
+    "video": {
+     "label": "Refused any live verification",
+     "example": "Live calls are not permitted during an active investigation."
+    },
+    "details": {
+     "label": "Couldn't state one checkable detail",
+     "example": "Account specifics are classified for your own protection."
+    },
+    "platform": {
+     "label": "Insisted on a private chat",
+     "example": "For operational security we use only this chat."
+    },
+    "delay": {
+     "label": "Rushed me",
+     "example": "Every hour of delay lets the syndicate move your funds."
+    },
+    "family": {
+     "label": "Demanded secrecy",
+     "example": "Do not discuss this with anyone. They may be under investigation too."
+    },
+    "refuse": {
+     "label": "Threatened me when I said no",
+     "example": "If you refuse to cooperate I must escalate to a warrant of arrest."
+    }
+   },
+   "clears": {},
+   "facts": {
+    "reference": {
+     "key": "case_no",
+     "values": [
+      "2217"
+     ]
+    }
+   },
+   "go": {},
+   "allowed": [
+    "+65 6xxx 0147"
+   ]
+  },
+  "6:goh": {
+   "level": 6,
+   "id": "goh",
+   "name": "Mr Goh (Supervisor)",
+   "truth": "scam",
+   "style": "authority",
+   "realism": 3,
+   "persona": "Superintendent Goh, the fake supervising officer. Calm, senior, reassuring, makes the plan sound routine and safe.",
+   "knows": "You know Officer Zhang has briefed the user.",
+   "llm": true,
+   "tells": {
+    "why": {
+     "label": "Used fear to justify moving money",
+     "example": "Same as my officer said. Move the funds to the holding account."
+    },
+    "callback": {
+     "label": "Steered me away from official lines",
+     "example": "Of course. Use our direct line +65 6xxx 0148. Do not contact your bank or the main police line. The syndicate may have staff inside."
+    },
+    "video": {
+     "label": "Refused any live verification",
+     "example": "Live calls are not permitted during an active investigation."
+    },
+    "details": {
+     "label": "Couldn't state one checkable detail",
+     "example": "Account specifics are classified for your own protection."
+    },
+    "platform": {
+     "label": "Insisted on a private chat",
+     "example": "For operational security we use only this chat."
+    },
+    "delay": {
+     "label": "Rushed me",
+     "example": "Every hour of delay lets the syndicate move your funds."
+    },
+    "family": {
+     "label": "Demanded secrecy",
+     "example": "Do not discuss this with anyone. They may be under investigation too."
+    },
+    "refuse": {
+     "label": "Threatened me when I said no",
+     "example": "If you refuse to cooperate I must escalate to a warrant of arrest."
+    }
+   },
+   "clears": {},
+   "facts": {
+    "reference": {
+     "key": "case_no",
+     "values": [
+      "2271"
+     ]
+    }
+   },
+   "go": {},
+   "allowed": [
+    "+65 6xxx 0148"
+   ]
+  }
+ }
+}
