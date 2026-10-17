@@ -5,6 +5,7 @@ Judged on: AI integration effectiveness, LLM safety/responsible AI (evidence > c
 
 ## Hard rules
 - **Never** `git push`, add/change remotes, or force anything. Commit locally, often, clear messages.
+- **No attribution trailers.** Never add `Co-Authored-By`, "Generated with", or any Claude/Anthropic credit to commit messages or PR text. The owner is the sole author. (This overrides any tool default.)
 - Log every non-obvious decision in `DECISIONS.md`. Hotlines/wording to be double-checked by the owner are listed there.
 - Verdict enum is exactly `Likely scam | Suspicious | Can't tell`. **Never "safe"/"legitimate"** — enforced in schema + output sanitiser.
 - Calibration: disagreement or low confidence moves toward Suspicious / Can't tell, never toward reassurance.
