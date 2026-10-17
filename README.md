@@ -107,7 +107,7 @@ What the numbers do and don't say:
 ```bash
 git clone … && cd scamsense
 python -m venv .venv && . .venv/bin/activate        # Windows: .venv\Scripts\activate
-pip install -r requirements-dev.txt
+pip install -r requirements-dev.txt          # (requirements.txt = just what the game's Vercel functions need)
 pytest                                               # 189 tests, offline
 
 cp .env.example .env                                 # add GROQ_API_KEY and TELEGRAM_BOT_TOKEN
@@ -123,6 +123,28 @@ Related: **No Telegram account or bot token needed to try it either:** `python -
 No key yet? `DEMO_MODE=true python -m bot.app` runs the bot with an **offline keyword stand-in** (clearly bannered "DEMO MODE", *not* an AI) so you can click through the UI.
 
 **Models** (all configurable): `openai/gpt-oss-120b` primary, `llama-3.3-70b-versatile` automatic fallback, `meta-llama/llama-prompt-guard-2-86m` for injection scoring — all on Groq. The `llm/` layer is a 3-method interface; swapping providers means writing one class (or setting `LLM_BASE_URL` for any OpenAI-compatible endpoint).
+
+## Deploy the game on Vercel
+
+The game is a static site (`game/`) plus four small stateless Python functions (`api/info.py`, `chat.py`, `probe.py`, `scan.py`). The Telegram simulator and the Telegram bot are **not** part of this deployment.
+
+1. **Push** the repo to GitHub, then in Vercel choose **Add New -> Project -> import the repo**. Framework preset: **Other** (the build command, output directory, rewrites and function settings come from `vercel.json`; leave the dashboard overrides empty).
+2. **Add environment variables** (Project -> Settings -> Environment Variables, tick Production + Preview):
+
+   | Name | Value | Required |
+   |---|---|---|
+   | `GROQ_API_KEY` | your key from console.groq.com | **yes** (without it the game still works, using scripted replies and a bannered offline scanner) |
+   | `LLM_MODEL` | `openai/gpt-oss-120b` | no (default) |
+   | `LLM_FALLBACK_MODEL` | `llama-3.3-70b-versatile` | no (default) |
+   | `USE_PROMPT_GUARD` | `true` | no (default) |
+   | `GAME_RATE_CHAT` / `GAME_RATE_SCAN` | requests per IP per 10 min per warm instance (defaults 90 / 10) | no |
+
+   Or from the CLI without printing the key: `vercel env add GROQ_API_KEY production` and paste it when prompted. **Never commit `.env`** (it is git-ignored and in `.vercelignore`; a test fails the build if a key-like string appears in tracked files).
+3. **Deploy.** Open the URL Vercel gives you. `GET /api/info` should return `{"demo": false}` when the key is picked up.
+4. **Set a spending/rate cap in the Groq console.** The functions have per-IP limits, but serverless instances don't share memory, so those limits only slow a single warm instance. A public URL means anyone can spend your key; Groq's own limits are the real cap.
+
+Preview exactly what Vercel will serve, locally and with your `.env`: `python scripts/preview_vercel.py` -> http://127.0.0.1:3000.
+Typed text is PII-redacted before it reaches the AI provider and nothing is stored server-side (functions are stateless; progress is saved in the visitor's browser only).
 
 ## Deploy (Railway / Render)
 

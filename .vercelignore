@@ -1,0 +1,12 @@
+.env
+.env.*
+.git
+__pycache__
+.pytest_cache
+tests
+eval/raw
+eval/results_mock.md
+docs
+bot
+backup*
+.venv

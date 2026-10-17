@@ -32,7 +32,7 @@ for (const L of LEVELS) {
     for (const [intent, list] of Object.entries(replies)) {
       if (intent === "_all") continue;
       const withFact = list.filter(r => typeof r === "object" && r.fact);
-      if (withFact.length) facts[intent] = { key: withFact[0].fact[0], values: withFact.map(r => r.fact[1]) };
+      if (withFact.length) facts[intent] = { key: withFact[0].fact[0], label: withFact[0].fact[2] || withFact[0].fact[0].replace(/_/g, " "), values: withFact.map(r => r.fact[1]) };
       const g = list.find(r => typeof r === "object" && r.go);
       if (g) go[intent] = g.go;
     }

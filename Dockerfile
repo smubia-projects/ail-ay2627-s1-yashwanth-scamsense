@@ -6,8 +6,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends fonts-dejavu-co
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt pytesseract
+COPY requirements.txt requirements-bot.txt .
+RUN pip install --no-cache-dir -r requirements-bot.txt pytesseract
 
 COPY . .
 RUN useradd -m app && chown -R app /app

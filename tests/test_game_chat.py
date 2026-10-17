@@ -112,6 +112,9 @@ async def test_emily_changes_her_story_when_asked_twice():
     assert f["values"] == ["Hong Kong", "Dubai"]
     second = await say(FakeLLM("id", "I'm in Dubai this month!"), "4:emily", "where are you?", fcounts={f["key"]: 1})
     assert second["fact"]["value"] == "Dubai"
+    llm = FakeLLM("id", "I'm in Dubai this month!")
+    await say(llm, "4:emily", "where are you?", fcounts={f["key"]: 1})
+    assert 'Earlier you told the player "Hong Kong"' in llm.systems[-1] and "Do not mention both" in llm.systems[-1]
 
 
 # ---------------------------------------------------------------- guardrails

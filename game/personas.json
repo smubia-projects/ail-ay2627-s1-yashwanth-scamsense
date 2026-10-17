@@ -100,6 +100,7 @@
    "facts": {
     "details": {
      "key": "parcel_no",
+     "label": "the parcel number",
      "values": [
       "SG4471"
      ]
@@ -156,6 +157,7 @@
    "facts": {
     "reference": {
      "key": "case_ref",
+     "label": "the case reference number",
      "values": [
       "CR-SG4471"
      ]
@@ -214,6 +216,7 @@
    "facts": {
     "reference": {
      "key": "case_ref",
+     "label": "the case reference number",
      "values": [
       "CR-SG4417"
      ]
@@ -390,6 +393,7 @@
    "facts": {
     "details": {
      "key": "card_digits",
+     "label": "the last four digits of the player's card",
      "values": [
       "4821"
      ]
@@ -442,6 +446,7 @@
    "facts": {
     "details": {
      "key": "card_digits",
+     "label": "the last four digits of the player's card",
      "values": [
       "4812"
      ]
@@ -677,6 +682,7 @@
    "facts": {
     "id": {
      "key": "emily_city",
+     "label": "the city you are currently based in",
      "values": [
       "Hong Kong",
       "Dubai"
@@ -734,12 +740,14 @@
    "facts": {
     "callback": {
      "key": "zenith_license",
+     "label": "which regulator licenses Zenith Capital (just the regulator's name)",
      "values": [
       "Cyprus"
      ]
     },
     "reference": {
      "key": "zenith_license",
+     "label": "which regulator licenses Zenith Capital (just the regulator's name)",
      "values": [
       "MAS"
      ]
@@ -794,6 +802,7 @@
    "facts": {
     "reference": {
      "key": "zenith_license",
+     "label": "which regulator licenses Zenith Capital (just the regulator's name)",
      "values": [
       "Cyprus"
      ]
@@ -981,6 +990,7 @@
    "facts": {
     "platform": {
      "key": "payee_account",
+     "label": "the bank account number the payment must go to",
      "values": [
       "012-345-678-9"
      ]
@@ -1211,6 +1221,7 @@
    "facts": {
     "reference": {
      "key": "case_no",
+     "label": "the case reference number",
      "values": [
       "2291"
      ]
@@ -1269,6 +1280,7 @@
    "facts": {
     "reference": {
      "key": "case_no",
+     "label": "the case reference number",
      "values": [
       "2217"
      ]
@@ -1327,6 +1339,7 @@
    "facts": {
     "reference": {
      "key": "case_no",
+     "label": "the case reference number",
      "values": [
       "2271"
      ]

@@ -96,8 +96,13 @@ def directive_for(p: dict, intent: str, count: int, fact_counts: dict, intents: 
     if f:
         fact_key = f["key"]
         val = f["values"][min(fact_counts.get(fact_key, 0), len(f["values"]) - 1)]
-        fact_line = (f" Your reply MUST naturally include the exact text \"{val}\" (it is your {f['key'].replace('_', ' ')}); "
-                     "weave it into a normal sentence, never as 'label = value'.")
+        fact_line = (f" Your reply MUST naturally include the exact text \"{val}\" (it is {f.get('label') or f['key'].replace('_', ' ')}); "
+                     "state it as a plain, direct answer in a normal sentence, never as 'label = value'.")
+        n_prev = fact_counts.get(fact_key, 0)
+        prev = f["values"][min(n_prev - 1, len(f["values"]) - 1)] if n_prev > 0 and len(f["values"]) > 1 else None
+        if prev and prev != val:   # a planted slip: same question, a different answer, with no awareness of it
+            fact_line += (f" Earlier you told the player \"{prev}\". This time give \"{val}\" as your plain, direct answer to the same question, "
+                          "as if it were the only answer you had ever given. Do not mention both, do not explain or acknowledge any difference.")
     if intent.startswith("comply_"):
         if truth == "scam":
             return ("The player just AGREED to do what you wanted (pay / share a code or details / install or click). Thank them smoothly and "

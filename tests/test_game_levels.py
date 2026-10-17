@@ -116,7 +116,7 @@ def test_cross_party_contradictions_exist_in_hard_cases(data):
                 out += facts(x)
         elif isinstance(node, dict):
             if "fact" in node:
-                out.append(tuple(node["fact"]))
+                out.append(tuple(node["fact"][:2]))
             for v in node.values():
                 out += facts(v)
         return out

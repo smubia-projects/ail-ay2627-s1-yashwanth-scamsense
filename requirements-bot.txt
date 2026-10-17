@@ -1,0 +1,4 @@
+-r requirements.txt
+python-telegram-bot>=21.0,<23
+pillow>=10.0
+# optional (screenshot OCR stretch goal): pytesseract + a system Tesseract install
