@@ -594,7 +594,7 @@ function endLevel(ok) {
 }
 
 /* ------------------------------------------------------------ level select */
-function unlocked(i) { return i === 0 || (save.stars[LEVELS[i - 1].id] || 0) > 0 || location.hash.includes("unlock"); }
+function unlocked() { return true; }   // every case is open from the start (stars are still tracked)
 function renderLevels() {
   const g = $("#level-grid"); g.innerHTML = ""; let total = 0;
   const diffName = { easy: "EASY", medium: "MEDIUM", hard: "HARD", expert: "EXPERT" };
