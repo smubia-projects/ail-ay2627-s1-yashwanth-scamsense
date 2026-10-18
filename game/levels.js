@@ -229,7 +229,7 @@ const LEVELS = [
             ultimatum: ["The warrant has been printed. Transfer now."],
             loss: { comply_pay: { money: -2000, life: 1, say: "You sent another $2,000. The more voices, the more you trusted." }, comply_cred: { money: -2000, life: 1, say: "They took another $2,000." }, comply_install: { money: -2000, life: 1, say: "They took another $2,000." } } } },
         ] },
-      { id: "lazada", name: "Lazada", avatar: "🛍️", sub: "official notification", truth: "legit", typology: "legit", start: 4200, group: "lazada", style: "legit", persona: "A genuine, automated Lazada order notification. You can answer simple questions about the order (a phone case, shipped by Ninja Van, tracking NV88121). You never ask for money, codes or logins.", knows: "The order is #5521908, one phone case, shipped 15 Oct.",
+      { id: "lazada", auto: true, name: "Lazada", avatar: "🛍️", sub: "official notification", truth: "legit", typology: "legit", start: 4200, group: "lazada", style: "legit", persona: "A genuine, automated Lazada order notification. You can answer simple questions about the order (a phone case, shipped by Ninja Van, tracking NV88121). You never ask for money, codes or logins.", knows: "The order is #5521908, one phone case, shipped 15 Oct.",
         explain: "This is the only message that matches your real order: a phone case, shipped with Ninja Van. It asks for nothing and gives checkable details. Real notices are boring on purpose.",
         script: [
           "Lazada: Your order #5521908 (phone case) has shipped with Ninja Van. Tracking number NV88121. Track it in the Lazada app. No action is needed.",
@@ -249,7 +249,7 @@ const LEVELS = [
     life: ["Yesterday you spent $1,240.00 on a laptop bag at ELECTROMART with your DBS card ending 4821.", "You always use the DBS app, never links in messages.", "Your real bank asks you to call the number on the back of your card."],
     debrief: "The ring: a phishing SMS (link) → 'Linda from fraud' (knows your partial card number, uses a real-sounding case) → a 'team lead' who vouches. They piggyback on your real purchase. The genuine alert shows $1,240 and tells you to call the card number; the fake shows $2,350 and insists you stay in chat.",
     chats: [
-      { id: "real", name: "DBS", avatar: "🏦", sub: "official sender ID", truth: "legit", typology: "legit", start: 800, group: "real", style: "legit", persona: "A genuine DBS card transaction alert service. You report one transaction and tell people to use the DBS app or the number on the back of their card. You never ask for codes or logins.", knows: "The transaction was SGD 1,240.00 at ELECTROMART on card ending 4821.",
+      { id: "real", auto: true, name: "DBS", avatar: "🏦", sub: "official sender ID", truth: "legit", typology: "legit", start: 800, group: "real", style: "legit", persona: "A genuine DBS card transaction alert service. You report one transaction and tell people to use the DBS app or the number on the back of their card. You never ask for codes or logins.", knows: "The transaction was SGD 1,240.00 at ELECTROMART on card ending 4821.",
         explain: "Matches your real $1,240 purchase, has no link, and tells you to call the number on your card. That is exactly how a genuine bank alert behaves, and it's why the fake ones copy it.",
         script: [
           "DBS: A card transaction of SGD 1,240.00 at ELECTROMART on your card ending 4821 was approved. If this wasn't you, call the number on the back of your card. We will never ask for your PIN or OTP.",

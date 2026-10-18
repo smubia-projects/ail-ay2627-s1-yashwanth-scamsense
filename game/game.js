@@ -186,7 +186,9 @@ function renderContact(chat) {
     <div class="c-prev ${chat.typing ? "typing" : ""}">${esc(prev.slice(0, 60))}</div></div><div class="c-side">${side}</div>`;
 }
 
-function canJudge(chat) { return !chat.open || chat.open.over || chat.open.n >= G.minQ; }
+// Automated senders (SMS alerts, system notices) can't answer questions, so you may judge them straight away.
+const isAuto = c => c.def.style === "bot" || !!c.def.auto;
+function canJudge(chat) { return isAuto(chat) || !!(chat.open && (chat.open.over || chat.open.n >= G.minQ)); }   // humans: no verdict until you have questioned them
 function renderHead(chat) {
   const h = $("#chat-head");
   if (!chat) { h.innerHTML = `<div class="empty-head">📨 Waiting for messages…</div>`; return; }
@@ -494,7 +496,7 @@ function verdict(chat, v) {
   const clues = cluesOf(chat);
   const [cx, cy] = center($("#chat-head"));
   if (chat.correct) {
-    const base = clues >= 2 ? 100 : 40;
+    const base = (clues >= 2 || isAuto(chat)) ? 100 : 40;   // an automated message is judged on its own content
     addScore(base); Sfx.stamp(); setTimeout(() => Sfx.good(), 250);
     stamp(truth === "scam" ? "SCAM BLOCKED" : "VERIFIED REAL", "good"); confetti(cx, cy + 120, 70);
     if (clues >= 1) { const bonus = Math.min(100, 20 * clues); addScore(bonus); toast(`🔎 Detective bonus +${bonus} for ${clues} solid clue${clues === 1 ? "" : "s"}`, "good"); }
@@ -559,7 +561,7 @@ function startLevel(idx) {
 function starsFor(ok) {
   if (!ok) return 0;
   const chats = Object.values(G.chats).filter(c => c.started);
-  const wellInvestigated = chats.length > 0 && chats.filter(c => c.verdict && cluesOf(c) >= 2).length >= Math.ceil(.75 * chats.length);
+  const wellInvestigated = chats.length > 0 && chats.filter(c => c.verdict && (isAuto(c) || cluesOf(c) >= 2)).length >= Math.ceil(.75 * chats.length);
   if (G.lives === 3 && G.money >= .9 * G.L.savings && wellInvestigated) return 3;   // flawless AND thorough
   if (G.lives >= 2 && G.money >= .5 * G.L.savings) return 2;
   return 1;
