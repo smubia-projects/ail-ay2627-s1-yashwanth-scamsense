@@ -124,6 +124,7 @@ def test_function_failures_return_a_fallback_flag_not_a_stack_trace():
 # ---------------------------------------------------------------- deployment config and secrets
 def test_vercel_config_is_valid_and_serves_the_game_at_root():
     cfg = json.loads((ROOT / "vercel.json").read_text(encoding="utf-8"))
+    assert cfg["framework"] is None, "must be preset 'Other': a Python preset demands a Flask/FastAPI entrypoint"
     assert cfg["outputDirectory"] == "public" and "cp -r game public" in cfg["buildCommand"]
     assert {"source": "/", "destination": "/game/index.html"} in cfg["rewrites"]
     inc = cfg["functions"]["api/*.py"]["includeFiles"]
