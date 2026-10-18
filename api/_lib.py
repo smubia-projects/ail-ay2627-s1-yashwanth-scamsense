@@ -66,58 +66,68 @@ def client_ip(h: BaseHTTPRequestHandler) -> str:
     return (fwd.split(",")[0].strip() or h.client_address[0])[:64]
 
 
+def send_json(h: BaseHTTPRequestHandler, obj: dict, code: int = 200) -> None:
+    body = json.dumps(obj).encode()
+    h.send_response(code)
+    h.send_header("Content-Type", "application/json")
+    h.send_header("Content-Length", str(len(body)))
+    for k, v in SECURITY_HEADERS.items():
+        h.send_header(k, v)
+    h.end_headers()
+    h.wfile.write(body)
+
+
+def _run(fn, *args):
+    r = fn(*args)
+    return asyncio.run(r) if asyncio.iscoroutine(r) else r
+
+
+def handle_get(h: BaseHTTPRequestHandler, fn=None) -> None:
+    if fn is None:
+        return send_json(h, {"error": "method_not_allowed"}, 405)
+    try:
+        send_json(h, _run(fn))
+    except Exception as e:  # noqa: BLE001
+        send_json(h, {"error": type(e).__name__}, 500)
+
+
+def handle_post(h: BaseHTTPRequestHandler, fn=None, limiter: Limiter | None = None) -> None:
+    try:
+        n = int(h.headers.get("Content-Length", 0))
+    except ValueError:
+        return send_json(h, {"error": "bad_length"}, 400)
+    if n > MAX_BODY:
+        h.close_connection = True          # do not read an oversized body at all
+        return send_json(h, {"error": "too_large"}, 413)
+    raw = h.rfile.read(n)                  # always consume the body so early rejections don't reset the connection
+    if fn is None:
+        return send_json(h, {"error": "method_not_allowed"}, 405)
+    if limiter and not limiter.allow(client_ip(h)):
+        return send_json(h, {"error": "rate_limited", "fallback": True}, 429)
+    try:
+        data = json.loads(raw or b"{}")
+        if not isinstance(data, dict):
+            raise ValueError
+    except ValueError:
+        return send_json(h, {"error": "bad_json"}, 400)
+    try:
+        send_json(h, _run(fn, data))
+    except Exception as e:  # noqa: BLE001 - the game falls back to scripted replies on any failure
+        send_json(h, {"error": type(e).__name__, "fallback": True}, 500)
+
+
 def make_handler(*, post=None, get=None, rate: int = 0, window: int = 600):
-    """Build the `handler` class Vercel's Python runtime looks for. `post(data) -> dict` / `get() -> dict` may be sync or async."""
+    """Convenience for tests: build a handler class from the same functions the api/*.py files use."""
     limiter = Limiter(rate, window) if rate else None
 
     class handler(BaseHTTPRequestHandler):
-        def log_message(self, *a):  # never log request lines
+        def log_message(self, *a):
             pass
 
-        def _send(self, obj: dict, code: int = 200) -> None:
-            body = json.dumps(obj).encode()
-            self.send_response(code)
-            self.send_header("Content-Type", "application/json")
-            self.send_header("Content-Length", str(len(body)))
-            for k, v in SECURITY_HEADERS.items():
-                self.send_header(k, v)
-            self.end_headers()
-            self.wfile.write(body)
-
-        def _run(self, fn, *args):
-            r = fn(*args)
-            return asyncio.run(r) if asyncio.iscoroutine(r) else r
-
         def do_GET(self):
-            if get is None:
-                return self._send({"error": "method_not_allowed"}, 405)
-            try:
-                self._send(self._run(get))
-            except Exception as e:  # noqa: BLE001
-                self._send({"error": type(e).__name__}, 500)
+            handle_get(self, get)
 
         def do_POST(self):
-            try:
-                n = int(self.headers.get("Content-Length", 0))
-            except ValueError:
-                return self._send({"error": "bad_length"}, 400)
-            if n > MAX_BODY:
-                self.close_connection = True      # do not read an oversized body at all
-                return self._send({"error": "too_large"}, 413)
-            raw = self.rfile.read(n)          # always consume the body so early rejections don't reset the connection
-            if post is None:
-                return self._send({"error": "method_not_allowed"}, 405)
-            if limiter and not limiter.allow(client_ip(self)):
-                return self._send({"error": "rate_limited", "fallback": True}, 429)
-            try:
-                data = json.loads(raw or b"{}")
-                if not isinstance(data, dict):
-                    raise ValueError
-            except ValueError:
-                return self._send({"error": "bad_json"}, 400)
-            try:
-                self._send(self._run(post, data))
-            except Exception as e:  # noqa: BLE001 - the game falls back to scripted replies on any failure
-                self._send({"error": type(e).__name__, "fallback": True}, 500)
+            handle_post(self, post, limiter)
 
     return handler

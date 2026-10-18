@@ -127,9 +127,10 @@ def test_vercel_config_is_valid_and_serves_the_game_at_root():
     assert cfg["framework"] is None, "must be preset 'Other': a Python preset demands a Flask/FastAPI entrypoint"
     assert cfg["outputDirectory"] == "public" and "cp -r game public" in cfg["buildCommand"]
     assert {"source": "/", "destination": "/game/index.html"} in cfg["rewrites"]
-    inc = cfg["functions"]["api/*.py"]["includeFiles"]
-    for needed in ("game/personas.json", "knowledge/**", "pipeline/**", "llm/**", "sim/gamechat.py", "sim/gameapi.py", "config.py", "strings.py"):
-        assert needed in inc, needed
+    assert cfg["functions"]["api/*.py"]["maxDuration"] >= 20
+    ignored = (ROOT / ".vercelignore").read_text(encoding="utf-8").split()
+    for needed in ("game", "knowledge", "pipeline", "llm", "sim", "api", "config.py", "strings.py"):
+        assert needed not in ignored and (ROOT / needed).exists(), f"{needed} must ship with the functions"
     assert (ROOT / "game" / "personas.json").exists()
 
 
@@ -151,3 +152,11 @@ def test_no_api_keys_in_tracked_files():
 def test_the_telegram_simulator_is_not_part_of_the_vercel_deployment():
     names = {p.stem for p in API.glob("*.py") if not p.name.startswith("_")}
     assert names == {"info", "chat", "probe", "scan"}
+
+
+def test_every_route_declares_the_documented_literal_handler_class():
+    """Vercel detects Python functions by a literal `class handler(BaseHTTPRequestHandler)` in each file."""
+    for name in ("info", "chat", "probe", "scan"):
+        src = (API / f"{name}.py").read_text(encoding="utf-8")
+        assert re.search(r"^class handler\(BaseHTTPRequestHandler\):", src, re.M), name
+        assert "sys.path.insert" in src.split("import _lib")[0], f"{name}: must make _lib importable before importing it"

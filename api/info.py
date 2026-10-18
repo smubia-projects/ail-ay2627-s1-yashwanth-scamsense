@@ -1,6 +1,9 @@
-from http.server import BaseHTTPRequestHandler  # noqa: F401  (Vercel detects the `handler` class)
+import os
+import sys
+from http.server import BaseHTTPRequestHandler
 
-import _lib
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))   # make the sibling helper importable however the runtime starts us
+import _lib  # noqa: E402
 
 
 def _info() -> dict:
@@ -8,4 +11,12 @@ def _info() -> dict:
     return {"demo": not get_settings().llm_api_key}
 
 
-handler = _lib.make_handler(get=_info)
+class handler(BaseHTTPRequestHandler):
+    def log_message(self, *args):
+        pass
+
+    def do_GET(self):
+        _lib.handle_get(self, _info)
+
+    def do_POST(self):
+        _lib.handle_post(self, None)

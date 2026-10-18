@@ -1,6 +1,9 @@
 import os
+import sys
+from http.server import BaseHTTPRequestHandler
 
-import _lib
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))   # make the sibling helper importable however the runtime starts us
+import _lib  # noqa: E402
 
 _PERSONAS = None
 
@@ -14,4 +17,15 @@ async def _chat(data: dict) -> dict:
         return await gameapi.game_chat(llm, _PERSONAS, data, demo)
 
 
-handler = _lib.make_handler(post=_chat, rate=int(os.getenv("GAME_RATE_CHAT", "90")))
+_LIMITER = _lib.Limiter(int(os.getenv("GAME_RATE_CHAT", "90")), 600)
+
+
+class handler(BaseHTTPRequestHandler):
+    def log_message(self, *args):
+        pass
+
+    def do_GET(self):
+        _lib.handle_get(self, None)
+
+    def do_POST(self):
+        _lib.handle_post(self, _chat, _LIMITER)
