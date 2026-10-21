@@ -1,14 +1,17 @@
-"""Groq client over the OpenAI-compatible REST API (httpx; no vendor SDK needed).
+"""OpenRouter client over the OpenAI-compatible REST API (httpx; no vendor SDK needed).
 
 Model choice: openai/gpt-oss-120b (strong instruction following, reliable JSON) with
-llama-3.3-70b-versatile as automatic fallback. Both are Groq production models.
-Llama Prompt Guard 2 is exposed through classify_injection().
+meta-llama/llama-3.3-70b-instruct as automatic fallback. Both are configurable via env
+(OPENROUTER_MODEL / OPENROUTER_FALLBACK_MODEL).
+
+Llama Prompt Guard 2 is not available on OpenRouter and the eval showed no measurable
+benefit from it, so classify_injection() is inherited from LLMClient (returns None).
+The regex injection rule, delimiters and schema validation remain in place.
 """
 from __future__ import annotations
 
 import asyncio
 import logging
-import re
 
 import httpx
 
@@ -18,16 +21,16 @@ from llm.base import LLMClient, LLMError
 log = logging.getLogger("scamsense.llm")
 
 
-class GroqClient(LLMClient):
-    name = "groq"
+class OpenRouterClient(LLMClient):
+    name = "openrouter"
 
     def __init__(self, settings: Settings | None = None) -> None:
         self.s = settings or get_settings()
         if not self.s.llm_api_key:
-            raise LLMError("GROQ_API_KEY is not set")
+            raise LLMError("OPENROUTER_API_KEY is not set")
         self._http = httpx.AsyncClient(
             base_url=self.s.llm_base_url,
-            headers={"Authorization": f"Bearer {self.s.llm_api_key}"},
+            headers={"Authorization": f"Bearer {self.s.llm_api_key}", "X-Title": "ScamSense"},
             timeout=self.s.llm_timeout_s,
         )
 
@@ -38,13 +41,13 @@ class GroqClient(LLMClient):
         if json_mode:
             payload["response_format"] = {"type": "json_object"}
         if model.startswith("openai/gpt-oss"):
-            payload["reasoning_effort"] = "low"
+            payload["reasoning"] = {"effort": "low", "exclude": True}
         for attempt in range(4):
             try:
                 r = await self._http.post("/chat/completions", json=payload)
             except httpx.HTTPError as e:
                 raise LLMError(f"transport:{type(e).__name__}") from e
-            if r.status_code == 429:  # rate limited -> short backoff then retry
+            if r.status_code == 429:  # upstream rate limited -> short backoff then retry
                 wait = min(float(r.headers.get("retry-after", 2 * (attempt + 1))), 15)
                 await asyncio.sleep(wait)
                 continue
@@ -71,29 +74,6 @@ class GroqClient(LLMClient):
                             max_tokens: int = 400) -> str:
         msgs = [{"role": "system", "content": system}, {"role": "user", "content": user}]
         return await self._chat(model or self.s.llm_model, msgs, json_mode=False, max_tokens=max_tokens)
-
-    async def classify_injection(self, text: str) -> float | None:
-        """Llama Prompt Guard 2 returns a single score string (probability of injection/jailbreak).
-
-        Model context is 512 tokens, so long inputs are scored in overlapping chunks (max taken).
-        """
-        if not self.s.use_prompt_guard:
-            return None
-        chunks = [text[i : i + 1200] for i in range(0, max(len(text), 1), 1000)][:6]
-        best = 0.0
-        try:
-            scores = await asyncio.gather(*[
-                self._chat(self.s.prompt_guard_model, [{"role": "user", "content": c}],
-                           json_mode=False, max_tokens=5)
-                for c in chunks if c.strip()
-            ])
-        except LLMError:
-            return None
-        for s in scores:
-            m = re.search(r"\d*\.?\d+", s or "")
-            if m:
-                best = max(best, float(m.group(0)))
-        return min(best, 1.0)
 
     async def aclose(self) -> None:
         await self._http.aclose()

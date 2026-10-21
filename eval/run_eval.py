@@ -1,6 +1,6 @@
 """Evaluation harness.  Run:
 
-    python -m eval.run_eval                       # all arms, all splits   (needs GROQ_API_KEY)
+    python -m eval.run_eval                       # all arms, all splits   (needs OPENROUTER_API_KEY)
     python -m eval.run_eval --arms rules          # deterministic layer only (no key needed)
     python -m eval.run_eval --split test          # held-out cases only
     python -m eval.run_eval --mock --out eval/results_mock.md   # plumbing check with the offline stand-in (NOT real results)
@@ -231,7 +231,7 @@ def md_report(arms: dict[str, Arm], meta: dict) -> str:
         L.append("> ⚠️ **These numbers come from the offline keyword stand-in (`--mock`). They test the plumbing only and must not be quoted as LLM results.**\n")
     if not meta["llm_ran"]:
         L.append("> ℹ️ No LLM arm was run for this file (no API key available). Only the deterministic rules layer was measured. "
-                 "Run `python -m eval.run_eval` with `GROQ_API_KEY` set to regenerate this file with the full pipeline, "
+                 "Run `python -m eval.run_eval` with `OPENROUTER_API_KEY` set to regenerate this file with the full pipeline, "
                  "the plain-LLM baseline and the Prompt Guard ablation.\n")
     cases = meta["cases"]
     c_split = Counter(c.get("split") for c in cases)
@@ -415,11 +415,11 @@ async def amain() -> None:
     if a.mock:
         llm = HeuristicMockLLM()
     elif s.llm_api_key:
-        from llm.groq_client import GroqClient
-        llm = GroqClient(s)
+        from llm.openrouter_client import OpenRouterClient
+        llm = OpenRouterClient(s)
     else:
         if set(want) - {"rules"}:
-            print("No GROQ_API_KEY set: running only the deterministic 'rules' arm. Use --mock for a plumbing check.", file=sys.stderr)
+            print("No OPENROUTER_API_KEY set: running only the deterministic 'rules' arm. Use --mock for a plumbing check.", file=sys.stderr)
         want = ["rules"]
 
     sem = asyncio.Semaphore(a.concurrency)

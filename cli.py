@@ -17,8 +17,8 @@ def make_llm(mock: bool) -> tuple[LLMClient, bool]:
     s = get_settings()
     if mock or not s.llm_api_key:
         return HeuristicMockLLM(), True
-    from llm.groq_client import GroqClient
-    return GroqClient(s), False
+    from llm.openrouter_client import OpenRouterClient
+    return OpenRouterClient(s), False
 
 
 async def main() -> None:

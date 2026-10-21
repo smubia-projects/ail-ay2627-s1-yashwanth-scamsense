@@ -2,7 +2,7 @@
 
 Layers (each independently measured in the eval):
   1. regex rule `ai_instruction_injection` (pipeline/rules.py)         - free, deterministic
-  2. Llama Prompt Guard 2 classifier (optional, via Groq)              - semantic
+  2. Prompt Guard classifier (optional; off by default, needs a client that implements classify_injection)
   3. prompt design: random delimiters + "untrusted data" clauses + JSON-only output
   4. schema validation: verdict enum has no "safe"; reassurance sanitiser on free text
 An injection attempt can only ever RAISE suspicion: it is treated as a red flag in itself.

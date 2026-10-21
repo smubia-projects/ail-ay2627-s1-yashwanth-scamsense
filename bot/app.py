@@ -26,13 +26,13 @@ def build_app() -> Application:
         sys.exit("TELEGRAM_BOT_TOKEN is not set (see .env.example)")
     demo = False
     if s.llm_api_key:
-        from llm.groq_client import GroqClient
-        llm = GroqClient(s)
+        from llm.openrouter_client import OpenRouterClient
+        llm = OpenRouterClient(s)
     elif os.getenv("DEMO_MODE", "").lower() in ("1", "true", "yes"):
         llm, demo = HeuristicMockLLM(), True
         logging.getLogger("scamsense").warning(HeuristicMockLLM.DEMO_BANNER)
     else:
-        sys.exit("GROQ_API_KEY is not set. (Set DEMO_MODE=true to run with the offline keyword stand-in for demos only.)")
+        sys.exit("OPENROUTER_API_KEY is not set. (Set DEMO_MODE=true to run with the offline keyword stand-in for demos only.)")
 
     async def post_init(app: Application) -> None:
         await app.bot.set_my_commands([

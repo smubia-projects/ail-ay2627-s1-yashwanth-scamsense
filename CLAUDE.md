@@ -18,7 +18,7 @@ Judged on: AI integration effectiveness, LLM safety/responsible AI (evidence > c
 - Don't invent URLs/statistics in knowledge files; typologies are `verified: false` with TODO.
 
 ## Layout
-`bot/` telegram · `pipeline/` redact, parse, extract, rules, stages, retrieve, verdict · `llm/` client abstraction (Groq default)
+`bot/` telegram · `pipeline/` redact, parse, extract, rules, stages, retrieve, verdict · `llm/` client abstraction (OpenRouter)
 `knowledge/` typologies + official domains · `content/` static advice + practice scenarios · `eval/` · `tests/`
 
 ## Order of work
