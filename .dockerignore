@@ -1,7 +1,32 @@
 .git
+.github
 .env
+.env.*
+!.env.example
 __pycache__
+*.pyc
 .pytest_cache
-eval/raw
-eval/results_mock.md
+.venv
+# Telegram bot: phase 2, not deployed in v1
+bot
+cli.py
+sim/server.py
+sim/index.html
+requirements-bot.txt
+requirements-dev.txt
+content
+# dev / docs only
+tests
+eval
+examples
 docs
+*.md
+# static game is served by Vercel; only personas.json is read by the API
+game/node_modules
+game/config.js
+game/*.js
+game/*.mjs
+game/*.html
+game/*.css
+game/package.json
+game/vercel.json
