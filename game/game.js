@@ -397,7 +397,7 @@ function syncComposer() {
   $("#comp-left").textContent = `❓ ${q} question${q === 1 ? "" : "s"} left`;
   $("#typed").disabled = chat.busy; $("#btn-send").disabled = chat.busy;
   $("#typed").placeholder = chat.busy ? "…" : "Type what you'd say: ask a question, or answer them…";
-  if (!chat.busy && document.activeElement !== $("#typed")) $("#typed").focus({ preventScroll: true });
+  if (!chat.busy && document.activeElement !== $("#typed") && !$("#rlOverlay").classList.contains("open")) $("#typed").focus({ preventScroll: true });
 }
 $("#composer").addEventListener("submit", e => { e.preventDefault(); sendTyped(); });
 async function sendTyped() {
