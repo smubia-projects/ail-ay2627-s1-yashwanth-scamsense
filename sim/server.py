@@ -191,13 +191,13 @@ def make_server(port: int) -> tuple[ThreadingHTTPServer, Sim]:
 
         def do_GET(self):
             path = self.path.split("?")[0]
-            if path in ("/", "/index.html", "/sim") or path.startswith("/game/"):
+            if path in ("/", "/index.html", "/sim") or path.startswith("/game/") or path.lstrip("/") in GAME_FILES:
                 if path in ("/", "/index.html"):
                     f, ctype = GAME_DIR / "index.html", GAME_FILES["index.html"]
                 elif path == "/sim":
                     f, ctype = INDEX, "text/html; charset=utf-8"
                 else:
-                    name = path[len("/game/"):]
+                    name = path.rsplit("/", 1)[-1]   # the game uses relative asset paths (also served under /game/)
                     if name not in GAME_FILES or name == "index.html":
                         return self.send_error(404)
                     f, ctype = GAME_DIR / name, GAME_FILES[name]

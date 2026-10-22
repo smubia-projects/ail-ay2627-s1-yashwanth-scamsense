@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>ScamSense · Inbox Defender</title>
-<link rel="stylesheet" href="/game/style.css">
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 <div id="bg"><i></i><i></i><i></i><i></i><i></i></div>
@@ -103,7 +103,27 @@
 <!-- ================= MODAL ================= -->
 <div id="modal" class="modal"><div class="modal-card" id="modal-card"></div></div>
 
-<script src="/game/levels.js"></script>
-<script src="/game/game.js"></script>
+<!-- ================= RATE-LIMIT CTA (AI Lodge) ================= -->
+<div class="rl-overlay" id="rlOverlay" aria-hidden="true">
+  <div class="rl-card" role="dialog" aria-modal="true" aria-labelledby="rlHeadline">
+    <div class="rl-banner">
+      <div class="rl-orb rl-orb-1"></div>
+      <div class="rl-orb rl-orb-2"></div>
+      <div class="rl-emoji" id="rlEmoji"></div>
+      <h2 class="rl-headline" id="rlHeadline"></h2>
+      <p class="rl-desc" id="rlDesc"></p>
+    </div>
+    <div class="rl-body">
+      <a class="rl-btn rl-btn-primary" id="rlJoin" target="_blank" rel="noopener noreferrer"><span id="rlJoinLabel"></span><span class="rl-arrow">→</span></a>
+      <a class="rl-btn rl-btn-secondary" id="rlGithub" target="_blank" rel="noopener noreferrer"><span>Self-host from GitHub</span><span class="rl-arrow">→</span></a>
+      <a class="rl-btn rl-btn-secondary" id="rlShowcase" target="_blank" rel="noopener noreferrer"><span>Explore other projects</span><span class="rl-arrow">→</span></a>
+      <button type="button" class="rl-dismiss" id="rlDismiss">Maybe later</button>
+    </div>
+  </div>
+</div>
+
+<script src="config.js"></script>
+<script src="levels.js"></script>
+<script src="game.js"></script>
 </body>
 </html>
