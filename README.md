@@ -110,7 +110,7 @@ python -m venv .venv && . .venv/bin/activate        # Windows: .venv\Scripts\act
 pip install -r requirements-dev.txt                  # requirements.txt = just the web API; -dev adds the bot + pytest
 pytest                                               # offline test suite
 
-cp .env.example .env                                 # add OPENROUTER_API_KEY (and TELEGRAM_BOT_TOKEN for the bot)
+cp .env.example .env                                 # add API_KEY (and TELEGRAM_BOT_TOKEN for the bot)
 python cli.py examples/gov_impersonation.txt         # analyse a file end-to-end (add --mock to run without a key)
 python -m bot.app                                    # run the Telegram bot (long polling, local only for now)
 python -m eval.run_eval                              # full evaluation → eval/results.md
@@ -118,11 +118,11 @@ python -m eval.run_eval                              # full evaluation → eval/
 
 **🎮 Play the game (no Telegram, no token): `python -m sim.server`** opens **ScamSense: Inbox Defender**, a colourful desktop detective game with 6 cases (easy → expert). Each case is **one organised scam operation**: a ring whose members hand you from one to the next, back each other up and reuse details, with **real contacts mixed in** (some of them as pushy as the scammers). Nothing is multiple choice and there are no timers: **you type your own questions** ("who are you?", "can I call you back on the official number?", "can we video call?", "what's the amount?"). A **"Your life" card** gives facts to check claims against, and some scammers know real details about you and pass the easy checks. The characters are **voiced by the real LLM in character**, using fixed authored personas (who they are, what they know, what they want, facts they must state consistently). Each case has a **realism level**: at the higher levels the scammers are courteous, specific and subtle, answer most checks smoothly, and only slip when you press the *same* angle twice; the genuine contacts sound like busy humans. In code (not the LLM) each turn decides whether a character may slip, so clues are grounded. Guardrails: the server only voices the authored cast (it never takes persona text from the browser), player text is PII-redacted, attempts to make a character write a scam message or break character get an in-character shrug, only authored links/numbers can appear, and any LLM failure falls back to authored scripted replies (what you get offline). Understanding of what you typed was 43/44 = 98% on a 44-phrase check (80% for the regex fallback). Clues (🔎 tells, ✅ good signs, ⚡ contradictions between ring members) earn points; saying "ok, sending it" to a scammer costs savings; accusing a genuine sender costs trust; you can't judge a chat before asking questions, and exposing one ring member never stops the ring: the next voice contacts you anyway. A **Scanner power-up** runs the real ScamSense pipeline on the whole storyline. Every case is open from the start; stars are saved in your browser. The plain bot-style chat simulator is at `/sim`.
 
-Related: **No Telegram account or bot token needed to try it either:** `python -m sim.server` opens a Telegram-style chat in your browser that drives the *real* bot handlers (forwards, buttons, Analyse, map, practice). It uses OpenRouter if `OPENROUTER_API_KEY` is set, otherwise the bannered offline stand-in.
+Related: **No Telegram account or bot token needed to try it either:** `python -m sim.server` opens a Telegram-style chat in your browser that drives the *real* bot handlers (forwards, buttons, Analyse, map, practice). It uses OpenRouter if `API_KEY` is set, otherwise the bannered offline stand-in.
 
 No key yet? `DEMO_MODE=true python -m bot.app` runs the bot with an **offline keyword stand-in** (clearly bannered "DEMO MODE", *not* an AI) so you can click through the UI.
 
-**Models** (all configurable via env): `openai/gpt-oss-120b` primary (`OPENROUTER_MODEL`), `meta-llama/llama-3.3-70b-instruct` automatic fallback (`OPENROUTER_FALLBACK_MODEL`), all via [OpenRouter](https://openrouter.ai). The `llm/` layer is a 3-method interface; swapping providers means writing one class. The Llama Prompt Guard 2 layer used during the hackathon eval is **off** in the deployed version (`USE_PROMPT_GUARD=false`): it isn't on OpenRouter and the eval showed no measurable difference (1/13 vs 1/13).
+**Models** (all configurable via env): `openai/gpt-oss-120b` primary (`MODEL_NAME`), `meta-llama/llama-3.3-70b-instruct` automatic fallback (`FALLBACK_MODEL_NAME`), all via [OpenRouter](https://openrouter.ai). The `llm/` layer is a 3-method interface; swapping providers means writing one class. The Llama Prompt Guard 2 layer used during the hackathon eval is **off** in the deployed version (`USE_PROMPT_GUARD=false`): it isn't on OpenRouter and the eval showed no measurable difference (1/13 vs 1/13).
 
 ## Run the web game locally (API + static site)
 
@@ -131,7 +131,7 @@ uvicorn main:app --reload --port 8080                # FastAPI web API → http:
 cd game && npm run build && npx serve -l 3000 .      # writes config.js (VITE_API_BASE, default http://localhost:8080)
 ```
 
-`CORS_ORIGINS` defaults to `http://localhost:3000,http://127.0.0.1:3000`. Without `OPENROUTER_API_KEY` the game still works on scripted replies and a bannered offline scanner.
+`CORS_ORIGINS` defaults to `http://localhost:3000,http://127.0.0.1:3000`. Without `API_KEY` the game still works on scripted replies and a bannered offline scanner.
 
 ## Deploy (AI Lodge stack: Cloud Run + Vercel)
 
