@@ -142,7 +142,7 @@ cd game && npm run build && npx serve -l 3000 .      # writes config.js (VITE_AP
 | Web API (`main.py`, FastAPI) | Google Cloud Run | `Dockerfile` at the repo root; deployed by `.github/workflows/deploy.yml` on push to `main` (env from the `DOTENV` repo secret = your filled `.env`) |
 | Game (`game/`) | Vercel | Root directory `game`, framework preset Other; `vercel.json` runs `npm run build` (writes `config.js`) and serves `.` |
 
-API routes: `GET /api/health`, `GET /api/info`, and the LLM routes `POST /api/chat`, `/api/probe`, `/api/scan`. All three LLM routes are rate-limited per IP by the shared AI Lodge engine (Upstash Redis, buckets `chat` / `probe` / `scan`). Over the limit → `429` and the game shows the AI Lodge CTA, then keeps going on authored replies. Paused via the kill switch → `503` and a "demo paused" notice.
+API routes: `GET /api/health`, `GET /api/info`, and the LLM routes `POST /api/chat`, `/api/probe`, `/api/scan`. All three LLM routes are rate-limited per IP by the shared AI Lodge engine (Upstash Redis, buckets `chat` / `probe` / `scan`). Over the limit → `429`, the game shows the AI Lodge CTA and the case chats stop until the limit resets (no scripted substitute; scripted replies remain only for provider errors and the no-key local mode). Paused via the kill switch → `503` and a "demo paused" notice.
 
 1. Fill `.env` from `.env.example`, then `gh secret set DOTENV --repo smubia-projects/ail-ay2627-s1-yashwanth-scamsense < .env` and push to `main` (or `gh workflow run deploy.yml`).
 2. In Vercel, import the repo with **root directory `game`** and set `VITE_API_BASE` to the Cloud Run URL.

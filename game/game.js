@@ -19,7 +19,7 @@ const RATE_LIMIT_CTA = {
   emoji: "🛡️",
   accentColor: "#7c4dff",
   headline: "Case closed, detective!",
-  description: "You've used all {count} AI-powered moves in this demo. The game keeps going with scripted replies. Want to build AI like this yourself?",
+  description: "You've used all {count} AI-powered moves in this demo. The case chats are paused until your limit resets. Want to build AI like this yourself?",
   programme: "AI Lodge",
   programmeLink: "https://www.smubia.com/ailodge",
   githubLink: "https://github.com/smubia-projects/ail-ay2627-s1-yashwanth-scamsense",
@@ -53,7 +53,7 @@ $("#rlOverlay").addEventListener("keydown", e => {               // focus trap +
 });
 function showPaused(message) {
   modal(`<h2>⏸️ Demo paused</h2><p>${esc(message || "This demo is temporarily paused. Check back soon.")}</p>
-    <p style="font-size:13px;opacity:.7">You can keep playing: characters use their scripted replies until the AI is back.</p>
+    <p style="font-size:13px;opacity:.7">The case chats are paused until the AI is back.</p>
     <button class="big-btn small" onclick="document.getElementById('modal').classList.remove('show')">OK</button>`);
 }
 /* 429 = this visitor used up an AI bucket -> CTA modal; 503 = demo paused via the kill switch -> plain notice (never the CTA).
@@ -370,6 +370,7 @@ function endOpen(chat) {
 
 /* ---- classification: the REAL LLM (via the local server) understands what you typed; regex is the offline fallback */
 let serverLLM = false;
+let aiStopped = false;   // set on 429 / 503: over the AI limit (or paused) the chats stop; no scripted substitute
 fetch(api("/api/info")).then(r => r.json()).then(j => { serverLLM = !j.demo; }).catch(() => { serverLLM = false; });
 function kwIntent(text) { for (const id of INTENT_ORDER) if (INTENTS[id].keys.test(text)) return id; return null; }
 async function classify(text) {
@@ -379,7 +380,7 @@ async function classify(text) {
       const r = await fetch(api("/api/probe"), { method: "POST", headers: { "Content-Type": "application/json" }, signal: ctl.signal,
         body: JSON.stringify({ text, intents: INTENT_ORDER.map(id => ({ id, desc: INTENTS[id].desc })) }) });
       clearTimeout(t);
-      if (await handleLimit(r, true)) { serverLLM = false; return kwIntent(text); }   // out of AI moves: keyword fallback
+      if (await handleLimit(r, true)) { serverLLM = false; aiStopped = true; return null; }   // out of AI moves: the chat stops
       const j = await r.json();
       if (j && !j.fallback && !j.error) return j.intent && j.intent !== "none" ? j.intent : null;
     } catch { /* fall through to keywords */ }
@@ -395,15 +396,15 @@ function syncComposer() {
   if (!on) return;
   const q = chat.open.left;
   $("#comp-left").textContent = `❓ ${q} question${q === 1 ? "" : "s"} left`;
-  $("#typed").disabled = chat.busy; $("#btn-send").disabled = chat.busy;
-  $("#typed").placeholder = chat.busy ? "…" : "Type what you'd say: ask a question, or answer them…";
-  if (!chat.busy && document.activeElement !== $("#typed") && !$("#rlOverlay").classList.contains("open")) $("#typed").focus({ preventScroll: true });
+  $("#typed").disabled = chat.busy || aiStopped; $("#btn-send").disabled = chat.busy || aiStopped;
+  $("#typed").placeholder = aiStopped ? "Out of AI moves: chats are paused until your limit resets" : chat.busy ? "…" : "Type what you'd say: ask a question, or answer them…";
+  if (!chat.busy && !aiStopped && document.activeElement !== $("#typed") && !$("#rlOverlay").classList.contains("open")) $("#typed").focus({ preventScroll: true });
 }
 $("#composer").addEventListener("submit", e => { e.preventDefault(); sendTyped(); });
 async function sendTyped() {
   if (!G || !G.alive) return;
   const chat = G.chats[G.active], inp = $("#typed"), text = inp.value.trim();
-  if (!chat || !chat.open || chat.open.over || chat.busy || chat.verdict || !text) return;
+  if (!chat || !chat.open || chat.open.over || chat.busy || chat.verdict || aiStopped || !text) return;
   inp.value = ""; await handleTyped(chat, text.slice(0, 280));
 }
 
@@ -413,8 +414,13 @@ async function handleTyped(chat, text) {
   chat.typing = true; renderContact(chat); if (G.active === chat.id) syncTyping();
   let remote = null;
   if (serverLLM && chat.def.style !== "bot") remote = await askServer(chat, text);   // in-character reply written by the AI
-  const intent = remote ? remote.intent : await classify(text);                      // else: classify + authored reply
+  const intent = remote ? remote.intent : aiStopped ? null : await classify(text);   // else: classify + authored reply
   chat.typing = false;
+  if (aiStopped) {                                                                    // over the AI limit: no reply, the question is not spent
+    o.n--; o.left++; chat.busy = false;
+    addSys(chat, "Out of AI moves: this chat is paused until your limit resets.");
+    renderContact(chat); if (G.active === chat.id) syncTyping(); renderHead(chat); syncComposer(); return;
+  }
   if (!alive(chat)) { chat.busy = false; syncComposer(); return; }
   if (intent) o.icount[intent] = (o.icount[intent] || 0) + 1;
   await respond(chat, intent, remote);
@@ -432,7 +438,7 @@ async function askServer(chat, text) {
     const r = await fetch(api("/api/chat"), { method: "POST", headers: { "Content-Type": "application/json" }, signal: ctl.signal,
       body: JSON.stringify({ case: G.L.id, chat: chat.id, history: hist, text, counts: chat.open.icount, factCounts: chat.open.fcount }) });
     clearTimeout(t);
-    if (await handleLimit(r, true)) { serverLLM = false; return null; }               // out of AI moves: authored replies
+    if (await handleLimit(r, true)) { serverLLM = false; aiStopped = true; return null; }   // out of AI moves: the chat stops
     const j = await r.json();
     return j && j.reply && !j.fallback ? j : null;
   } catch { return null; }
