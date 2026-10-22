@@ -21,9 +21,9 @@ const RATE_LIMIT_CTA = {
   headline: "Case closed, detective!",
   description: "You've used all {count} AI-powered moves in this demo. The game keeps going with scripted replies. Want to build AI like this yourself?",
   programme: "AI Lodge",
-  programmeLink: "https://www.smubia.com/ai-lodge",
+  programmeLink: "https://www.smubia.com/ailodge",
   githubLink: "https://github.com/smubia-projects/ail-ay2627-s1-yashwanth-scamsense",
-  showcaseLink: "https://www.smubia.com/showcase",
+  showcaseLink: "https://www.smubia.com/Projects",
 };
 let ctaShown = false, pausedShown = false, ctaReturnFocus = null;
 function showRateLimitCTA(count) {
