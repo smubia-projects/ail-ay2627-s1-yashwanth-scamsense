@@ -105,63 +105,59 @@ What the numbers do and don't say:
 ## Quick start
 
 ```bash
-git clone … && cd scamsense
+git clone … && cd ail-ay2627-s1-yashwanth-scamsense
 python -m venv .venv && . .venv/bin/activate        # Windows: .venv\Scripts\activate
-pip install -r requirements-dev.txt          # (requirements.txt = just what the game's Vercel functions need)
-pytest                                               # 189 tests, offline
+pip install -r requirements-dev.txt                  # requirements.txt = just the web API; -dev adds the bot + pytest
+pytest                                               # offline test suite
 
-cp .env.example .env                                 # add GROQ_API_KEY and TELEGRAM_BOT_TOKEN
+cp .env.example .env                                 # add OPENROUTER_API_KEY (and TELEGRAM_BOT_TOKEN for the bot)
 python cli.py examples/gov_impersonation.txt         # analyse a file end-to-end (add --mock to run without a key)
-python -m bot.app                                    # run the Telegram bot (long polling)
+python -m bot.app                                    # run the Telegram bot (long polling, local only for now)
 python -m eval.run_eval                              # full evaluation → eval/results.md
 ```
 
 **🎮 Play the game (no Telegram, no token): `python -m sim.server`** opens **ScamSense: Inbox Defender**, a colourful desktop detective game with 6 cases (easy → expert). Each case is **one organised scam operation**: a ring whose members hand you from one to the next, back each other up and reuse details, with **real contacts mixed in** (some of them as pushy as the scammers). Nothing is multiple choice and there are no timers: **you type your own questions** ("who are you?", "can I call you back on the official number?", "can we video call?", "what's the amount?"). A **"Your life" card** gives facts to check claims against, and some scammers know real details about you and pass the easy checks. The characters are **voiced by the real LLM in character**, using fixed authored personas (who they are, what they know, what they want, facts they must state consistently). Each case has a **realism level**: at the higher levels the scammers are courteous, specific and subtle, answer most checks smoothly, and only slip when you press the *same* angle twice; the genuine contacts sound like busy humans. In code (not the LLM) each turn decides whether a character may slip, so clues are grounded. Guardrails: the server only voices the authored cast (it never takes persona text from the browser), player text is PII-redacted, attempts to make a character write a scam message or break character get an in-character shrug, only authored links/numbers can appear, and any LLM failure falls back to authored scripted replies (what you get offline). Understanding of what you typed was 43/44 = 98% on a 44-phrase check (80% for the regex fallback). Clues (🔎 tells, ✅ good signs, ⚡ contradictions between ring members) earn points; saying "ok, sending it" to a scammer costs savings; accusing a genuine sender costs trust; you can't judge a chat before asking questions, and exposing one ring member never stops the ring: the next voice contacts you anyway. A **Scanner power-up** runs the real ScamSense pipeline on the whole storyline. Every case is open from the start; stars are saved in your browser. The plain bot-style chat simulator is at `/sim`.
 
-Related: **No Telegram account or bot token needed to try it either:** `python -m sim.server` opens a Telegram-style chat in your browser that drives the *real* bot handlers (forwards, buttons, Analyse, map, practice). It uses Groq if `GROQ_API_KEY` is set, otherwise the bannered offline stand-in.
+Related: **No Telegram account or bot token needed to try it either:** `python -m sim.server` opens a Telegram-style chat in your browser that drives the *real* bot handlers (forwards, buttons, Analyse, map, practice). It uses OpenRouter if `OPENROUTER_API_KEY` is set, otherwise the bannered offline stand-in.
 
 No key yet? `DEMO_MODE=true python -m bot.app` runs the bot with an **offline keyword stand-in** (clearly bannered "DEMO MODE", *not* an AI) so you can click through the UI.
 
-**Models** (all configurable): `openai/gpt-oss-120b` primary, `llama-3.3-70b-versatile` automatic fallback, `meta-llama/llama-prompt-guard-2-86m` for injection scoring — all on Groq. The `llm/` layer is a 3-method interface; swapping providers means writing one class (or setting `LLM_BASE_URL` for any OpenAI-compatible endpoint).
+**Models** (all configurable via env): `openai/gpt-oss-120b` primary (`OPENROUTER_MODEL`), `meta-llama/llama-3.3-70b-instruct` automatic fallback (`OPENROUTER_FALLBACK_MODEL`), all via [OpenRouter](https://openrouter.ai). The `llm/` layer is a 3-method interface; swapping providers means writing one class. The Llama Prompt Guard 2 layer used during the hackathon eval is **off** in the deployed version (`USE_PROMPT_GUARD=false`): it isn't on OpenRouter and the eval showed no measurable difference (1/13 vs 1/13).
 
-## Deploy the game on Vercel
+## Run the web game locally (API + static site)
 
-The game is a static site (`game/`) plus four small stateless Python functions (`api/info.py`, `chat.py`, `probe.py`, `scan.py`). The Telegram simulator and the Telegram bot are **not** part of this deployment.
+```bash
+uvicorn main:app --reload --port 8080                # FastAPI web API → http://localhost:8080/api/health
+cd game && npm run build && npx serve -l 3000 .      # writes config.js (VITE_API_BASE, default http://localhost:8080)
+```
 
-1. **Push** the repo to GitHub, then in Vercel choose **Add New -> Project -> import the repo**. Framework preset: **Other** (the build command, output directory, rewrites and function settings come from `vercel.json`; leave the dashboard overrides empty).
-2. **Add environment variables** (Project -> Settings -> Environment Variables, tick Production + Preview):
+`CORS_ORIGINS` defaults to `http://localhost:3000,http://127.0.0.1:3000`. Without `OPENROUTER_API_KEY` the game still works on scripted replies and a bannered offline scanner.
 
-   | Name | Value | Required |
-   |---|---|---|
-   | `GROQ_API_KEY` | your key from console.groq.com | **yes** (without it the game still works, using scripted replies and a bannered offline scanner) |
-   | `LLM_MODEL` | `openai/gpt-oss-120b` | no (default) |
-   | `LLM_FALLBACK_MODEL` | `llama-3.3-70b-versatile` | no (default) |
-   | `USE_PROMPT_GUARD` | `true` | no (default) |
-   | `GAME_RATE_CHAT` / `GAME_RATE_SCAN` | requests per IP per 10 min per warm instance (defaults 90 / 10) | no |
+## Deploy (AI Lodge stack: Cloud Run + Vercel)
 
-   Or from the CLI without printing the key: `vercel env add GROQ_API_KEY production` and paste it when prompted. **Never commit `.env`** (it is git-ignored and in `.vercelignore`; a test fails the build if a key-like string appears in tracked files).
-3. **Deploy.** Open the URL Vercel gives you. `GET /api/info` should return `{"demo": false}` when the key is picked up.
-4. **Set a spending/rate cap in the Groq console.** The functions have per-IP limits, but serverless instances don't share memory, so those limits only slow a single warm instance. A public URL means anyone can spend your key; Groq's own limits are the real cap.
+**Web game only in v1.** The Telegram bot (`bot/`) stays in the repo but is not deployed (phase 2: run it as a webhook service). It is excluded from the Docker image.
 
-Preview exactly what Vercel will serve, locally and with your `.env`: `python scripts/preview_vercel.py` -> http://127.0.0.1:3000.
-Typed text is PII-redacted before it reaches the AI provider and nothing is stored server-side (functions are stateless; progress is saved in the visitor's browser only).
+| Part | Where | Details |
+|---|---|---|
+| Web API (`main.py`, FastAPI) | Google Cloud Run | `Dockerfile` at the repo root; deployed by `.github/workflows/deploy.yml` on push to `main` (env from the `DOTENV` repo secret = your filled `.env`) |
+| Game (`game/`) | Vercel | Root directory `game`, framework preset Other; `vercel.json` runs `npm run build` (writes `config.js`) and serves `.` |
 
-## Deploy (Railway / Render)
+API routes: `GET /api/health`, `GET /api/info`, and the LLM routes `POST /api/chat`, `/api/probe`, `/api/scan`. All three LLM routes are rate-limited per IP by the shared AI Lodge engine (Upstash Redis, buckets `chat` / `probe` / `scan`). Over the limit → `429` and the game shows the AI Lodge CTA, then keeps going on authored replies. Paused via the kill switch → `503` and a "demo paused" notice.
 
-The repo ships a `Dockerfile`; there is **no database**.
+1. Fill `.env` from `.env.example`, then `gh secret set DOTENV --repo smubia-projects/ail-ay2627-s1-yashwanth-scamsense < .env` and push to `main` (or `gh workflow run deploy.yml`).
+2. In Vercel, import the repo with **root directory `game`** and set `VITE_API_BASE` to the Cloud Run URL.
+3. Put the Vercel URL in `CORS_ORIGINS` in `.env`, re-upload `DOTENV` and re-run the workflow.
 
-1. Create a new service from this repo (Dockerfile build).
-2. Set env vars: `TELEGRAM_BOT_TOKEN`, `GROQ_API_KEY` (and optionally the limits in `.env.example`).
-3. **Polling (simplest):** deploy as a *worker* with no public port. Nothing else to do.
-4. **Webhook:** set `WEBHOOK_URL=https://<your-app-domain>`; the bot listens on `$PORT` at `/telegram`.
-5. Run **one** instance only (polling + multiple replicas = Telegram "conflict" errors; in-memory sessions aren't shared).
+The API is stateless (the browser sends the conversation each time), so it scales horizontally. Typed text is PII-redacted before it reaches the AI provider and nothing is stored server-side (progress is saved in the visitor's browser only). The CSP in `game/vercel.json` allows `connect-src https://*.run.app`.
 
 ## Repo map
 
 ```
 bot/        Telegram handlers, keyboards, in-memory sessions (TTL), rate limiter, report rendering, map image, practice mode
 pipeline/   parse · redact · rules · extract · retrieve · stages · verdict · guard · analyze (orchestrator) · ocr
-llm/        base interface · Groq client · mock/scripted clients (tests, demo)
+llm/        base interface · OpenRouter client · mock/scripted clients (tests, demo)
+main.py     FastAPI web API for the game (Cloud Run) · rate_limit.py + rate_limit_engine.py (shared AI Lodge limiter)
+game/       the static web game (Vercel root): index.html · game.js · levels.js · personas.json · build.js
 knowledge/  typologies/*.yaml (10 scam types, verified:false) · official_domains.yaml
 content/    emergency.md · recovery.md · privacy.md · welcome.md · practice_scenarios.yaml   (fixed, authored)
 eval/       cases/*.yaml (79) · run_eval.py · results.md
