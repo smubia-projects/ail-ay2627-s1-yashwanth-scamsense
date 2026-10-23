@@ -122,7 +122,7 @@ Related: **No Telegram account or bot token needed to try it either:** `python -
 
 No key yet? `DEMO_MODE=true python -m bot.app` runs the bot with an **offline keyword stand-in** (clearly bannered "DEMO MODE", *not* an AI) so you can click through the UI.
 
-**Models** (all configurable via env): `openai/gpt-oss-120b` primary (`MODEL_NAME`), `meta-llama/llama-3.3-70b-instruct` automatic fallback (`FALLBACK_MODEL_NAME`), all via [OpenRouter](https://openrouter.ai). The `llm/` layer is a 3-method interface; swapping providers means writing one class. The Llama Prompt Guard 2 layer used during the hackathon eval is **off** in the deployed version (`USE_PROMPT_GUARD=false`): it isn't on OpenRouter and the eval showed no measurable difference (1/13 vs 1/13).
+**Models** (all configurable via env): `gemini-3.5-flash-lite` primary (`MODEL_NAME`), `gemini-3.1-flash-lite` automatic fallback (`FALLBACK_MODEL_NAME`), all via [apiyi](https://apiyi.com). The `llm/` layer is a 3-method interface; swapping providers means writing one class. The Llama Prompt Guard 2 layer used during the hackathon eval is **off** in the deployed version (`USE_PROMPT_GUARD=false`): it isn't on apiyi and the eval showed no measurable difference (1/13 vs 1/13).
 
 ## Run the web game locally (API + static site)
 

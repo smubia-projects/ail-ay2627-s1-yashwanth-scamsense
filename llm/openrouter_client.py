@@ -1,7 +1,7 @@
 """OpenRouter client over the OpenAI-compatible REST API (httpx; no vendor SDK needed).
 
-Model choice: openai/gpt-oss-120b (strong instruction following, reliable JSON) with
-meta-llama/llama-3.3-70b-instruct as automatic fallback. Both are configurable via env
+Model choice: gemini-3.5-flash-lite (strong instruction following, reliable JSON) with
+gemini-3.1-flash-lite as automatic fallback. Both are configurable via env
 (OPENROUTER_MODEL / OPENROUTER_FALLBACK_MODEL).
 
 Llama Prompt Guard 2 is not available on OpenRouter and the eval showed no measurable

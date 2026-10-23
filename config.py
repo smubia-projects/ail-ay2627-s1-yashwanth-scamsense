@@ -20,10 +20,10 @@ def _bool(name: str, default: bool) -> bool:
 @dataclass(frozen=True)
 class Settings:
     # LLM: all inference goes through OpenRouter (OpenAI-compatible API)
-    llm_model: str = (os.getenv("MODEL_NAME", "").strip() or os.getenv("OPENROUTER_MODEL", "openai/gpt-oss-120b"))
-    llm_fallback_model: str = (os.getenv("FALLBACK_MODEL_NAME", "").strip() or os.getenv("OPENROUTER_FALLBACK_MODEL", "meta-llama/llama-3.3-70b-instruct"))
+    llm_model: str = (os.getenv("MODEL_NAME", "").strip() or os.getenv("OPENROUTER_MODEL", "gemini-3.5-flash-lite"))
+    llm_fallback_model: str = (os.getenv("FALLBACK_MODEL_NAME", "").strip() or os.getenv("OPENROUTER_FALLBACK_MODEL", "gemini-3.1-flash-lite"))
     llm_api_key: str = (os.getenv("API_KEY", "").strip() or os.getenv("OPENROUTER_API_KEY", ""))
-    llm_base_url: str = (os.getenv("API_BASE_URL", "").strip() or os.getenv("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1"))
+    llm_base_url: str = (os.getenv("API_BASE_URL", "").strip() or os.getenv("OPENROUTER_BASE_URL", "https://api.apiyi.com/v1"))
     llm_timeout_s: float = float(os.getenv("LLM_TIMEOUT_S", "25"))
     # Prompt Guard classifier layer: off (not on OpenRouter; the eval showed no measurable difference)
     use_prompt_guard: bool = _bool("USE_PROMPT_GUARD", False)
