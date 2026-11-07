@@ -19,7 +19,7 @@ const RATE_LIMIT_CTA = {
   emoji: "🛡️",
   accentColor: "#7c4dff",
   headline: "Case closed, detective!",
-  description: "You've used all {count} AI-powered moves in this demo. The case chats are paused until your limit resets. Want to build AI like this yourself?",
+  description: "Want to build AI that trains people to spot scams before they lose a cent? Team up at AI Lodge, build something people genuinely use, and demo it at the showcase.",
   programme: "AI Lodge",
   programmeLink: "https://www.smubia.com/ailodge",
   githubLink: "https://github.com/smubia-projects/ail-ay2627-s1-yashwanth-scamsense",
