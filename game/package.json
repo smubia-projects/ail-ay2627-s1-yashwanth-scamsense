@@ -1,0 +1,10 @@
+{
+  "name": "ail-ay2627-s1-yashwanth-scamsense-game",
+  "private": true,
+  "version": "1.0.0",
+  "description": "ScamSense: Inbox Defender - static web game (Vercel)",
+  "scripts": {
+    "build": "node ./build.js",
+    "personas": "node ./build_personas.mjs"
+  }
+}
