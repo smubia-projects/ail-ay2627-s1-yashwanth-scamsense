@@ -51,8 +51,8 @@ async def llm_client():
 
     s = get_settings()
     if s.llm_api_key:
-        from llm.groq_client import GroqClient
-        c = GroqClient(s)
+        from llm.openrouter_client import OpenRouterClient
+        c = OpenRouterClient(s)
         try:
             yield c, False
         finally:

@@ -3,7 +3,7 @@ Telegram objects. No Telegram account, bot token or network access to Telegram i
 
     python -m sim.server            # then open http://127.0.0.1:8765
 
-LLM: uses Groq if GROQ_API_KEY is set, otherwise the offline keyword stand-in (clearly bannered DEMO MODE).
+LLM: uses OpenRouter if OPENROUTER_API_KEY is set, otherwise the offline keyword stand-in (clearly bannered DEMO MODE).
 Everything is in memory; nothing is written to disk.
 """
 from __future__ import annotations
@@ -58,8 +58,8 @@ class Sim:
         s = get_settings()
         demo = False
         if s.llm_api_key:
-            from llm.groq_client import GroqClient
-            llm = GroqClient(s)
+            from llm.openrouter_client import OpenRouterClient
+            llm = OpenRouterClient(s)
         else:
             llm, demo = HeuristicMockLLM(), True
         self.demo = demo
