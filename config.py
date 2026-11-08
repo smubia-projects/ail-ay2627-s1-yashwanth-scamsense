@@ -20,7 +20,7 @@ def _bool(name: str, default: bool) -> bool:
 @dataclass(frozen=True)
 class Settings:
     # LLM: all inference goes through OpenRouter (OpenAI-compatible API)
-    llm_model: str = (os.getenv("MODEL_NAME", "").strip() or os.getenv("OPENROUTER_MODEL", "gemini-3.5-flash-lite"))
+    llm_model: str = (os.getenv("MODEL_NAME", "").strip() or os.getenv("OPENROUTER_MODEL", "deepseek-v4-1-flash-260910"))
     llm_fallback_model: str = (os.getenv("FALLBACK_MODEL_NAME", "").strip() or os.getenv("OPENROUTER_FALLBACK_MODEL", "gemini-3.1-flash-lite"))
     llm_api_key: str = (os.getenv("API_KEY", "").strip() or os.getenv("OPENROUTER_API_KEY", ""))
     llm_base_url: str = (os.getenv("API_BASE_URL", "").strip() or os.getenv("OPENROUTER_BASE_URL", "https://api.apiyi.com/v1"))

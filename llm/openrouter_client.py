@@ -1,8 +1,8 @@
 """OpenRouter client over the OpenAI-compatible REST API (httpx; no vendor SDK needed).
 
-Model choice: gemini-3.5-flash-lite (strong instruction following, reliable JSON) with
-gemini-3.1-flash-lite as automatic fallback. Both are configurable via env
-(OPENROUTER_MODEL / OPENROUTER_FALLBACK_MODEL).
+Model choice: deepseek-v4-1-flash-260910 (the AI Lodge default: fast, reliable JSON) with
+gemini-3.1-flash-lite as automatic fallback from another provider. Both are configurable via env
+(MODEL_NAME / FALLBACK_MODEL_NAME, or the older OPENROUTER_MODEL / OPENROUTER_FALLBACK_MODEL).
 
 Llama Prompt Guard 2 is not available on OpenRouter and the eval showed no measurable
 benefit from it, so classify_injection() is inherited from LLMClient (returns None).
@@ -42,6 +42,8 @@ class OpenRouterClient(LLMClient):
             payload["response_format"] = {"type": "json_object"}
         if model.startswith("openai/gpt-oss"):
             payload["reasoning"] = {"effort": "low", "exclude": True}
+        if "deepseek" in model.lower():
+            payload["reasoning_effort"] = "none"  # DeepSeek thinks first by default; calls have LLM_TIMEOUT_S
         for attempt in range(4):
             try:
                 r = await self._http.post("/chat/completions", json=payload)
